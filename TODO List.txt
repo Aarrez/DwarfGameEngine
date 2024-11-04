@@ -1,0 +1,6 @@
+TODO List:
+Make a separate class for the Vertex programs
+Implement the GLM math library
+Put project on GitHub
+Make different classes for 
+DO FORWAED DECLARATION
