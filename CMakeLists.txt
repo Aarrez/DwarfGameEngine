@@ -3,15 +3,14 @@ project(DwarfGameEngine)
 
 set(CMAKE_CXX_STANDARD 20)
 
-add_executable(DwarfGameEngine main.cpp)
+add_executable(DwarfGameEngine
+        DwarfEngine/DwarfEngine.cpp
+        main.cpp)
 
-include_directories(Dependencies/glfw)
-include_directories(Dependencies/glad/include)
+find_package(glad CONFIG REQUIRED)
+target_link_libraries(DwarfGameEngine PRIVATE glad::glad)
 
-add_library(glfw STATIC IMPORTED)
+find_package(glfw3 CONFIG REQUIRED)
+target_link_libraries(DwarfGameEngine PRIVATE glfw)
 
-set_target_properties(glfw PROPERTIES
-        IMPORTED_LOCATION "${CMAKE_CURRENT_SOURCE_DIR}/Dependencies/glfw/lib-vc2022/glfw3.lib"
-        INTERFACE_INCLUDE_DIRECTORIES "${CMAKE_CURRENT_SOURCE_DIR}/Dependencies/glfw/include")
 
-target_link_libraries(DwarfGameEngine glfw)
