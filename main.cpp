@@ -6,19 +6,15 @@
 
 
 int main() {
-    GLFWwindow* window {};
-    Dwarf::DwarfEngine engine(window);
+    Dwarf::DwarfEngine engine{};
     engine.Init();
-    while(!glfwWindowShouldClose(window)) {
+    while(!glfwWindowShouldClose(engine.window)) {
         engine.Update();
         engine.Render();
-        glfwSwapBuffers(window);
+        glfwSwapBuffers(engine.window);
         glfwPollEvents();
     }
     engine.Shutdown();
-
-    glfwDestroyWindow(window);
-    glfwTerminate();
 
     return 0;
 }

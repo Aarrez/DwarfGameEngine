@@ -1,5 +1,14 @@
 EBO
 Indeces
-unifrom
-Transfrom
+Uniform
+Transform
 Matrix
+Matrix
+Projection matrix
+Clip Space
+View space
+Local space
+World Space
+Far plane
+Near plane
+Identity matrix

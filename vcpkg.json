@@ -20,5 +20,8 @@
   }, {
     "name" : "glad",
     "version>=" : "0.1.36"
+  }, {
+    "name" : "glm",
+    "version>=" : "1.0.1#3"
   } ]
 }

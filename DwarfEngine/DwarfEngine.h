@@ -2,14 +2,14 @@
 #include <glad/glad.h>
 #include <GLFW/glfw3.h>
 #include <iostream>
-
+#include "../DwarfGL/DwarfShader.h"
 
 
 namespace Dwarf {
 
     class DwarfEngine {
     public:
-        explicit DwarfEngine(GLFWwindow* window);
+        explicit DwarfEngine();
         ~DwarfEngine();
 
         void Init();
@@ -18,10 +18,12 @@ namespace Dwarf {
         void Shutdown();
 
         //Variables
-        GLsizei Width, Height;
+        GLsizei Width, Height;\
+        GLFWwindow* window {};
+        DwarfShader* shader {};
 
     private:
-        GLFWwindow* window;
+
         static void framebuffer_size_callback(GLFWwindow* window, int width, int height);
 
     };
