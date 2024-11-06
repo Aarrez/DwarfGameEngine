@@ -10,7 +10,8 @@ add_executable(DwarfGameEngine
         DwarfEngine/DwarfInput.h
         DwarfGL/ShaderProgramCode.h
         DwarfGL/DwarfShader.cpp
-        DwarfGL/DwarfShader.h)
+        DwarfGL/DwarfShader.h
+        DwarfGL/ShaderProgramCode.cpp)
 
 find_package(glad CONFIG REQUIRED)
 target_link_libraries(DwarfGameEngine PRIVATE glad::glad)

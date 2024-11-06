@@ -12,7 +12,8 @@
 
 Dwarf::DwarfShader::DwarfShader() {
     vertexShader = glCreateShader(GL_VERTEX_SHADER);
-    glShaderSource(vertexShader, 1, &vertexShaderSource, nullptr);
+    auto VShader = DwarfGetShader::GetVertexShader();
+    glShaderSource(vertexShader, 1, &VShader, nullptr);
     glCompileShader(vertexShader);
 
     int success;
@@ -24,7 +25,8 @@ Dwarf::DwarfShader::DwarfShader() {
     }
 
     fragmentShader = glCreateShader(GL_FRAGMENT_SHADER);
-    glShaderSource(fragmentShader, 1, &fragmentShaderSource, nullptr);
+    auto FShader = DwarfGetShader::GetFragmentShader();
+    glShaderSource(fragmentShader, 1, &FShader, nullptr);
     glCompileShader(fragmentShader);
 
     glGetShaderiv(fragmentShader, GL_COMPILE_STATUS, &success);
