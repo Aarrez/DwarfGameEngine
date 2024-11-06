@@ -2,46 +2,62 @@
 
 using namespace Dwarf;
 
-void DwarfGetShader::readVertexFile(const GLchar *pathToFile) {
+std::string DwarfGetShader::ReadShaderFile(const GLchar *pathToFile) {
     std::ifstream fileStream(pathToFile, std::ios::in);
-
+    std::string content;
     if(!fileStream.is_open()){
         std::cerr << "Could not read file" << pathToFile << ". File does not exist." << std::endl;
-        return;
+        return "";
     }
-    VertexShader = "";
+
     std::string line = "";
     while(!fileStream.eof()){
         std::getline(fileStream, line);
-        VertexShader.append(line + "\n");
+        content.append(line + "\n");
     }
     fileStream.close();
-    std::cout << "'" << VertexShader << "'" << std::endl;
+    std::cout << "'" << content << "'" << std::endl;
+    return content;
 }
 
-void DwarfGetShader::readFragmentFile(const GLchar *pathToFile) {
-    std::ifstream fileStream(pathToFile, std::ios::in);
+GLuint DwarfGetShader::LoadFragmentShader() {
 
-    if(!fileStream.is_open()){
-        std::cerr << "Could not read file" << pathToFile << ". File does not exist." << std::endl;
-        return;
+    int result;
+    char Log[512];
+    auto shaderString = ReadShaderFile("ShaderScripts/FragmentShader.glsl");
+    auto Fragment = shaderString.c_str();
+
+    GLuint FragmentShader = glCreateShader(GL_FRAGMENT_SHADER);
+    glShaderSource(FragmentShader, 1, &Fragment, nullptr);
+    glCompileShader(FragmentShader);
+
+    glGetShaderiv(FragmentShader, GL_COMPILE_STATUS, &result);
+
+    if(!result){
+        glGetShaderInfoLog(FragmentShader, 512, nullptr,  Log);
+        std::cerr << "Failed to compile Fragment Shader \n" << Log << std::endl;
     }
-    FragmentShader = "";
-    std::string line = "";
-    while(!fileStream.eof()){
-        std::getline(fileStream, line);
-        FragmentShader.append(line + "\n");
+
+    return FragmentShader;
+}
+
+GLuint DwarfGetShader::LoadVertexShader() {
+
+    int result;
+    char Log[512];
+    auto shaderString = ReadShaderFile("ShaderScripts/VertexShader.glsl");
+    auto Vertex = shaderString.c_str();
+
+    GLuint VertexShader = glCreateShader(GL_VERTEX_SHADER);
+    glShaderSource(VertexShader, 1, &Vertex, nullptr);
+    glCompileShader(VertexShader);
+
+    glGetShaderiv(VertexShader, GL_COMPILE_STATUS, &result);
+
+    if(!result){
+        glGetShaderInfoLog(VertexShader, 512, nullptr, Log);
+        std::cerr << "Failed to compile Vertex Shader \n" << Log << std::endl;
     }
-    fileStream.close();
-    std::cout << "'" << FragmentShader << "'" << std::endl;
-}
 
-const GLchar* DwarfGetShader::GetVertexShader() {
-    readVertexFile("ShaderScripts/VertexShader.glsl");
-    return VertexShader.c_str();
-}
-
-const GLchar* DwarfGetShader::GetFragmentShader() {
-    readFragmentFile("ShaderScripts/FragmentShader.glsl");
-    return FragmentShader.c_str();
+    return VertexShader;
 }

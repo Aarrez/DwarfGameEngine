@@ -29,20 +29,15 @@ namespace Dwarf {
 
         void PrepareTriangle(Vertex* vertices, unsigned int numVertices);
 
-        void PrepareQuad(Vertex* vertices, unsigned int numVertices);
-        void DrawShape();
         void LoadShader() const {
             glUseProgram(shaderProgram);
-            glBindVertexArray(VAO);
+            glBindVertexArray(vertex_array_object);
             glDrawArrays(GL_TRIANGLES, 0, 3);
         }
-
-        GLuint vertexShader;
-        GLuint fragmentShader;
         GLuint shaderProgram;
-        GLuint VBO;
-        GLuint VAO;
-        GLuint EBO;
+        GLuint vertex_buffer_object{};
+        GLuint vertex_array_object{};
+        GLuint EBO{};
 
     private:
     };

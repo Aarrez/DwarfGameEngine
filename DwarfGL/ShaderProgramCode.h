@@ -9,16 +9,13 @@ namespace Dwarf {
 
     class DwarfGetShader {
     public:
-        static const GLchar* GetVertexShader();
+        static GLuint LoadVertexShader();
 
-        static const GLchar* GetFragmentShader();
+        static GLuint LoadFragmentShader();
 
     private:
-        static std::string VertexShader;
-        static std::string FragmentShader;
 
-        static void readVertexFile(const GLchar *pathToFile);
-        static void readFragmentFile(const GLchar *pathToFile);
+        static std::string ReadShaderFile(const GLchar *pathToFile);
 
     };
 }
