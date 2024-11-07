@@ -1,6 +1,3 @@
-//
-// Created by Aaron on 2024-11-05.
-//
 #define GLAD_GL_IMPLEMENTATION
 #include <glad/glad.h>
 #include "DwarfShader.h"
@@ -38,6 +35,9 @@ void Dwarf::DwarfShader::PrepareTriangle(Vertex *vertices, unsigned int numVerti
 
 }
 
-Dwarf::DwarfShader::~DwarfShader() = default;
+Dwarf::DwarfShader::~DwarfShader(){
+    glDeleteVertexArrays(1, &vertex_array_object);
+    glDeleteBuffers(1, &vertex_buffer_object);
+}
 
 

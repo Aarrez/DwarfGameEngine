@@ -1,8 +1,12 @@
+#include <filesystem>
 #include "ShaderProgramCode.h"
+#include <boost/filesystem.hpp>
 
 using namespace Dwarf;
 
 std::string DwarfGetShader::ReadShaderFile(const GLchar *pathToFile) {
+    namespace fs = boost::filesystem;
+    fs::current_path("C:/Users/Aaron.Marklund/CLionProjects/DwarfGameEngine/ShaderScripts");
     std::ifstream fileStream(pathToFile, std::ios::in);
     std::string content;
     if(!fileStream.is_open()){
@@ -24,7 +28,7 @@ GLuint DwarfGetShader::LoadFragmentShader() {
 
     int result;
     char Log[512];
-    auto shaderString = ReadShaderFile("ShaderScripts/FragmentShader.glsl");
+    auto shaderString = ReadShaderFile("FragmentShader.glsl");
     auto Fragment = shaderString.c_str();
 
     GLuint FragmentShader = glCreateShader(GL_FRAGMENT_SHADER);
@@ -45,7 +49,8 @@ GLuint DwarfGetShader::LoadVertexShader() {
 
     int result;
     char Log[512];
-    auto shaderString = ReadShaderFile("ShaderScripts/VertexShader.glsl");
+
+    auto shaderString = ReadShaderFile("VertexShader.glsl");
     auto Vertex = shaderString.c_str();
 
     GLuint VertexShader = glCreateShader(GL_VERTEX_SHADER);
