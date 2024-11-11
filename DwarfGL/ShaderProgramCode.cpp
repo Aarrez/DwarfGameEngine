@@ -6,7 +6,17 @@ using namespace Dwarf;
 
 std::string DwarfGetShader::ReadShaderFile(const GLchar *pathToFile) {
     namespace fs = boost::filesystem;
-    fs::current_path("C:/Users/Aaron.Marklund/CLionProjects/DwarfGameEngine/ShaderScripts");
+    fs::path p = fs::initial_path();
+    std::string path = p.string();
+    std::string string = "cm";
+    auto i = path.find(string);
+    path = path.erase(i);
+    path.append("ShaderScripts");
+    std::replace(path.begin(), path.end(), '\\', '/');
+    fs::current_path(path);
+
+
+
     std::ifstream fileStream(pathToFile, std::ios::in);
     std::string content;
     if(!fileStream.is_open()){
@@ -29,6 +39,8 @@ GLuint DwarfGetShader::LoadFragmentShader() {
     int result;
     char Log[512];
     auto shaderString = ReadShaderFile("FragmentShader.glsl");
+    if(shaderString.empty()) return 0;
+
     auto Fragment = shaderString.c_str();
 
     GLuint FragmentShader = glCreateShader(GL_FRAGMENT_SHADER);

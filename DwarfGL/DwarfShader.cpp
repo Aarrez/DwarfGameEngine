@@ -1,9 +1,7 @@
 #define GLAD_GL_IMPLEMENTATION
 #include <glad/glad.h>
 #include "DwarfShader.h"
-
 #include <iostream>
-
 #include "ShaderProgramCode.h"
 
 
@@ -11,8 +9,8 @@ Dwarf::DwarfShader::DwarfShader() {
     int result;
     char Log[512];
 
-    GLuint vertexShader = DwarfGetShader::LoadVertexShader();
-    GLuint fragmentShader = DwarfGetShader::LoadFragmentShader();
+    vertexShader = DwarfGetShader::LoadVertexShader();
+    fragmentShader = DwarfGetShader::LoadFragmentShader();
 
     shaderProgram = glCreateProgram();
 

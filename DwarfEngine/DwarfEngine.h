@@ -20,7 +20,7 @@ namespace Dwarf {
         //Variables
         GLsizei Width, Height;\
         GLFWwindow* window {};
-        DwarfShader* shader {};
+        std::unique_ptr<DwarfShader> shader {};
 
     private:
 

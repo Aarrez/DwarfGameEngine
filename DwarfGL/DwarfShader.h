@@ -39,6 +39,10 @@ namespace Dwarf {
         GLuint vertex_array_object{};
         GLuint EBO{};
 
+        //Shaders
+        GLuint vertexShader{};
+        GLuint fragmentShader{};
+
     private:
     };
 }

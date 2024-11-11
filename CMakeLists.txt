@@ -31,6 +31,14 @@ target_link_libraries(DwarfGameEngine
         $<IF:$<TARGET_EXISTS:SDL2::SDL2>, SDL2::SDL2, SDL2::SDL2-static>
 )
 
+find_package(SDL2_image CONFIG REQUIRED)
+target_link_libraries(DwarfGameEngine PRIVATE
+        $<IF:$<TARGET_EXISTS:SDL2_image::SDL2_image>,
+        SDL2_image::SDL2_image,SDL2_image::SDL2_image-static>)
+
+find_package(boost_filesystem CONFIG REQUIRED)
+target_link_libraries(DwarfGameEngine PRIVATE Boost::filesystem)
+
 find_package(glad CONFIG REQUIRED)
 target_link_libraries(DwarfGameEngine PRIVATE glad::glad)
 
