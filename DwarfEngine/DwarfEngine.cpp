@@ -35,15 +35,10 @@ DwarfEngine::DwarfEngine(): window(nullptr) {
 }
 
 void DwarfEngine::Init() {
-    shader = std::make_unique<DwarfShader>();
-    glGenBuffers(1, &shader->vertex_buffer_object);
-    glGenVertexArrays(1, &shader->vertex_array_object);
-    glBindVertexArray(shader->vertex_array_object);
-    glBindBuffer(GL_ARRAY_BUFFER, shader->vertex_array_object);
-    glBindBuffer(GL_ARRAY_BUFFER, shader->vertex_buffer_object);
-    glBufferData(GL_ARRAY_BUFFER, sizeof(TriangleVertices), TriangleVertices, GL_STATIC_DRAW);
-    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(float), (void*)0);
-    glEnableVertexAttribArray(0);
+    shader = new DwarfShader();
+
+    mesh = new Mesh::DwarfMesh(QuadVertices, 3, indeices);
+    /*mesh_2d = new Mesh::DwarfMesh2D(TriVertices, 3);*/
 }
 
 void DwarfEngine::Update() {
@@ -53,9 +48,8 @@ void DwarfEngine::Update() {
 void DwarfEngine::Render() {
     glClear(GL_COLOR_BUFFER_BIT);
     glClearColor(70.f/255.f, 116.f/255.f, 93.f/255.f, 1.0f);
-    glUseProgram(shader->shaderProgram);
-    glBindVertexArray(shader->vertex_array_object);
-    glDrawArrays(GL_TRIANGLES, 0, 3);
+    /*mesh_2d->Draw(shader);*/
+    mesh->Draw(shader);
 }
 
 void DwarfEngine::Shutdown() {
@@ -63,6 +57,8 @@ void DwarfEngine::Shutdown() {
 }
 
 DwarfEngine::~DwarfEngine() {
+    delete mesh_2d;
+    delete shader;
     glfwDestroyWindow(window);
     glfwTerminate();
 }

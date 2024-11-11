@@ -3,6 +3,7 @@
 #include <GLFW/glfw3.h>
 #include <iostream>
 #include "../DwarfGL/DwarfShader.h"
+#include "../DwarfGL/Mesh/DwarfMesh.h"
 
 
 namespace Dwarf {
@@ -18,9 +19,12 @@ namespace Dwarf {
         void Shutdown();
 
         //Variables
-        GLsizei Width, Height;\
+        GLsizei Width, Height;
         GLFWwindow* window {};
-        std::unique_ptr<DwarfShader> shader {};
+        DwarfShader* shader {};
+        Mesh::DwarfMesh2D* mesh_2d {};
+        Mesh::DwarfMesh* mesh {};
+
 
     private:
 

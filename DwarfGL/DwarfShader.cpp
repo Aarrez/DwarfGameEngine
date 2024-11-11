@@ -29,13 +29,9 @@ Dwarf::DwarfShader::DwarfShader() {
     glDeleteShader(fragmentShader);
 }
 
-void Dwarf::DwarfShader::PrepareTriangle(Vertex *vertices, unsigned int numVertices) {
-
-}
 
 Dwarf::DwarfShader::~DwarfShader(){
-    glDeleteVertexArrays(1, &vertex_array_object);
-    glDeleteBuffers(1, &vertex_buffer_object);
+
 }
 
 

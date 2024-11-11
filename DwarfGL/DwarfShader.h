@@ -1,17 +1,17 @@
 #pragma once
 
 namespace Dwarf {
-    struct Vertex {
-        float x;
+    struct VerticesStruct {
+        float vertices;
     };
 
-    static Vertex TriangleVertices[] = {
+    static const VerticesStruct TriVertices[] = {
         -0.5f, -0.5f, 0.0f,
         0.5f, -0.5f, 0.0f,
         0.0f,  0.5f, 0.0f
     };
 
-    static const Vertex QuadVertices[] = {
+    static const VerticesStruct QuadVertices[] = {
         0.5f,  0.5f, 0.0f,
         0.5f, -0.5f, 0.0f,
         -0.5f, -0.5f, 0.0f,
@@ -27,18 +27,7 @@ namespace Dwarf {
         DwarfShader();
         ~DwarfShader();
 
-        void PrepareTriangle(Vertex* vertices, unsigned int numVertices);
-
-        void LoadShader() const {
-            glUseProgram(shaderProgram);
-            glBindVertexArray(vertex_array_object);
-            glDrawArrays(GL_TRIANGLES, 0, 3);
-        }
         GLuint shaderProgram;
-        GLuint vertex_buffer_object{};
-        GLuint vertex_array_object{};
-        GLuint EBO{};
-
         //Shaders
         GLuint vertexShader{};
         GLuint fragmentShader{};
