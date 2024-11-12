@@ -1,4 +1,5 @@
 #include "DwarfEngine.h"
+#include "../DwarfGL/Mesh/DwarfMesh.h"
 
 #include <memory>
 
@@ -34,38 +35,28 @@ DwarfEngine::DwarfEngine(): window(nullptr) {
     glfwSetFramebufferSizeCallback(window, framebuffer_size_callback);
 }
 
+
+
 void DwarfEngine::Init() {
     shader = new DwarfShader();
 
-    mesh = new Mesh::DwarfMesh(QuadVertices, 3, indeices);
-    /*mesh_2d = new Mesh::DwarfMesh2D(TriVertices, 3);*/
-    //Generate Buffers & Arrays
-    glGenBuffers(1, &mesh->vertex_buffer_object);
-    glGenVertexArrays(1, &mesh->vertex_array_object);
-    glGenBuffers(1, &mesh->element_buffer_object);
-    //Bind Buffers & Arrays
-    glBindVertexArray(mesh->vertex_array_object);
+   /* mesh2D = new Mesh2D::Triangle(3, 3);*/
+    mesh2D = new Mesh2D::Square(3, 6);
 
-    glBindBuffer(GL_ARRAY_BUFFER, mesh->vertex_buffer_object);
-    glBufferData(GL_ARRAY_BUFFER, sizeof(QuadVertices), QuadVertices, GL_STATIC_DRAW);
-
-    glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, mesh->element_buffer_object);
-    glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(indeices), indeices, GL_STATIC_DRAW);
-
-    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE,
-        3 * sizeof(float), (void*)0);
-    glEnableVertexAttribArray(0);
 }
 
 void DwarfEngine::Update() {
-
+    glfwPollEvents();
 }
 
 void DwarfEngine::Render() {
     glClear(GL_COLOR_BUFFER_BIT);
     glClearColor(70.f/255.f, 116.f/255.f, 93.f/255.f, 1.0f);
     /*mesh_2d->Draw(shader);*/
-    mesh->Draw(shader);
+    mesh2D->Draw(shader);
+
+    glfwSwapBuffers(window);
+
 }
 
 void DwarfEngine::Shutdown() {
@@ -73,7 +64,7 @@ void DwarfEngine::Shutdown() {
 }
 
 DwarfEngine::~DwarfEngine() {
-    delete mesh_2d;
+    delete mesh2D;
     delete shader;
     glfwDestroyWindow(window);
     glfwTerminate();

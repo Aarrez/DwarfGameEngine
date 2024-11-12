@@ -22,8 +22,7 @@ namespace Dwarf {
         GLsizei Width, Height;
         GLFWwindow* window {};
         DwarfShader* shader {};
-        Mesh::DwarfMesh2D* mesh_2d {};
-        Mesh::DwarfMesh* mesh {};
+        Mesh2D::DwarfMesh2D* mesh2D;
 
 
     private:

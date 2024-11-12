@@ -9,8 +9,7 @@ int main() {
     while(!glfwWindowShouldClose(engine.window)) {
         engine.Update();
         engine.Render();
-        glfwSwapBuffers(engine.window);
-        glfwPollEvents();
+
     }
     engine.Shutdown();
 

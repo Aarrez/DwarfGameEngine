@@ -4,12 +4,6 @@ project(DwarfGameEngine)
 set(CMAKE_CXX_STANDARD 20)
 
 add_executable(DwarfGameEngine
-        main.cpp
-
-        #DwarfEngine
-        DwarfEngine/DwarfEngine.cpp
-        DwarfEngine/DwarfInput.cpp
-        DwarfEngine/DwarfInput.h
 
         #DwarfGL
         DwarfGL/ShaderProgramCode.h
@@ -17,9 +11,20 @@ add_executable(DwarfGameEngine
         DwarfGL/DwarfShader.h
         DwarfGL/ShaderProgramCode.cpp
 
-        #DwarfGL/Mesh
+        #DwarfEngine
+        DwarfEngine/DwarfEngine.cpp
+        DwarfEngine/DwarfInput.cpp
+        DwarfEngine/DwarfInput.h
+
+        #DwarfGL/Mesh2D
         DwarfGL/Mesh/DwarfMesh.cpp
-        DwarfGL/Mesh/DwarfMesh.h)
+        DwarfGL/Mesh/DwarfMesh.h
+
+        main.cpp
+
+        DwarfMisc/TestCode.cpp
+        DwarfMisc/TestCode.h
+)
 
 find_package(Boost REQUIRED COMPONENTS filesystem)
 target_link_libraries(DwarfGameEngine PRIVATE Boost::filesystem)
