@@ -29,7 +29,7 @@ Dwarf::Mesh::DwarfMesh2D::~DwarfMesh2D() {
 Dwarf::Mesh::DwarfMesh::DwarfMesh(
     const VerticesStruct vertices[], size_t vertex_count, const unsigned int indices[]) {
 
-    //Generate Buffers & Arrays
+    /*//Generate Buffers & Arrays
     glGenBuffers(1, &vertex_buffer_object);
     glGenVertexArrays(1, &vertex_array_object);
     glGenBuffers(1, &element_buffer_object);
@@ -44,9 +44,7 @@ Dwarf::Mesh::DwarfMesh::DwarfMesh(
 
     glVertexAttribPointer(0, vertex_count, GL_FLOAT, GL_FALSE,
         vertex_count * sizeof(float), (void*)0);
-    glEnableVertexAttribArray(0);
-
-
+    glEnableVertexAttribArray(0);*/
 }
 
 void Dwarf::Mesh::DwarfMesh::Draw(DwarfShader* dwarf_shader) {
