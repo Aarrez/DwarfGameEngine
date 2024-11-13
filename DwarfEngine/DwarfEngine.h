@@ -4,13 +4,15 @@
 #include <iostream>
 #include "../DwarfGL/DwarfShader.h"
 #include "../DwarfGL/Mesh/DwarfMesh.h"
+#include "../DwarfMisc/DwarfPath.h"
+
 
 
 namespace Dwarf {
 
     class DwarfEngine {
     public:
-        explicit DwarfEngine();
+        DwarfEngine();
         ~DwarfEngine();
 
         void Init();
@@ -22,7 +24,7 @@ namespace Dwarf {
         GLsizei Width, Height;
         GLFWwindow* window {};
         DwarfShader* shader {};
-        Mesh2D::DwarfMesh2D* mesh2D;
+        Mesh2D::DwarfMesh2D* mesh2D {};
 
 
     private:

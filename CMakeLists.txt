@@ -24,6 +24,9 @@ add_executable(DwarfGameEngine
 
         DwarfMisc/TestCode.cpp
         DwarfMisc/TestCode.h
+        DwarfStb/DwarfGetImage.cpp
+        DwarfStb/DwarfGetImage.h
+        DwarfMisc/DwarfPath.h
 )
 
 find_package(Boost REQUIRED COMPONENTS filesystem)
@@ -40,6 +43,9 @@ find_package(SDL2_image CONFIG REQUIRED)
 target_link_libraries(DwarfGameEngine PRIVATE
         $<IF:$<TARGET_EXISTS:SDL2_image::SDL2_image>,
         SDL2_image::SDL2_image,SDL2_image::SDL2_image-static>)
+
+find_package(Stb REQUIRED)
+target_include_directories(DwarfGameEngine PRIVATE ${Stb_INCLUDE_DIR})
 
 find_package(boost_filesystem CONFIG REQUIRED)
 target_link_libraries(DwarfGameEngine PRIVATE Boost::filesystem)

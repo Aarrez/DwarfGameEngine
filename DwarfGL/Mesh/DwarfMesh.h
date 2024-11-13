@@ -1,6 +1,7 @@
 #pragma once
-#include <memory>
 #include <glad/glad.h>
+#include <GLFW/glfw3.h>
+#include <memory>
 #include <vector>
 #include <optional>
 #include "../DwarfShader.h"
@@ -10,9 +11,10 @@ namespace Dwarf::Mesh2D {
 
 
     static float TriVertices[] = {
-            -0.5f, -0.5f, 0.0f,
-            0.5f, -0.5f, 0.0f,
-            0.0f,  0.5f, 0.0f
+            //Triangle corner                   Corner colors
+            -0.5f, -0.5f, 0.0f, 1.0f, .0f, .0f,
+            0.5f, -0.5f, 0.0f,  .0f, 1.0f, .0f,
+            0.0f,  0.5f, 0.0f,  .0f, .0f, 1.0f
     };
 
     static float QuadVertices[] = {
@@ -24,6 +26,12 @@ namespace Dwarf::Mesh2D {
     static unsigned int indices[] {
             0, 1, 3,
             1, 2, 3
+    };
+
+    static const float texCoords[]{
+        .0f, .0f,
+        1.0f, .0f,
+        0.5f, 1.0f
     };
 
     class DwarfMesh2D{
@@ -61,7 +69,7 @@ namespace Dwarf::Mesh2D {
     class Square : public Mesh2D::DwarfMesh2D{
     public:
         Square(size_t vc, size_t vp) :
-                DwarfMesh2D(QuadVertices, sizeof(TriVertices), vc, indices,sizeof(indices), vp){
+                DwarfMesh2D(QuadVertices, sizeof(QuadVertices), vc, indices,sizeof(indices), vp){
             points_count = vp;
         }
     };

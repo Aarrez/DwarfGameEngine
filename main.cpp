@@ -9,7 +9,6 @@ int main() {
     while(!glfwWindowShouldClose(engine.window)) {
         engine.Update();
         engine.Render();
-
     }
     engine.Shutdown();
 

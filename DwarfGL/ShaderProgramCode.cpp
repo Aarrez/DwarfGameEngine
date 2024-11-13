@@ -1,22 +1,11 @@
-#include <filesystem>
 #include "ShaderProgramCode.h"
-#include <boost/filesystem.hpp>
+
 
 using namespace Dwarf;
 
 std::string DwarfGetShader::ReadShaderFile(const GLchar *pathToFile) {
-    namespace fs = boost::filesystem;
-    fs::path p = fs::initial_path();
-    std::string path = p.string();
-    std::string string = "cm";
-    auto i = path.find(string);
-    path = path.erase(i);
-    path.append("ShaderScripts");
-    std::replace(path.begin(), path.end(), '\\', '/');
-    fs::current_path(path);
-
-
-
+    auto path = File::DwarfPathChange::GetCurrentPath();
+    File::DwarfPathChange::AppendCurrentPath("ShaderScripts");
     std::ifstream fileStream(pathToFile, std::ios::in);
     std::string content;
     if(!fileStream.is_open()){
@@ -30,7 +19,7 @@ std::string DwarfGetShader::ReadShaderFile(const GLchar *pathToFile) {
         content.append(line + "\n");
     }
     fileStream.close();
-    std::cout << "'" << content << "'" << std::endl;
+    File::DwarfPathChange::SetCurrentPath(path);
     return content;
 }
 
