@@ -41,9 +41,10 @@ void DwarfEngine::Init() {
 
     shader = new DwarfShader();
 
-    mesh2D = new Mesh2D::Triangle(3, 6);
-    /*mesh2D = new Mesh2D::Square(3, 6);*/
+    /*mesh2D = new Mesh2D::Triangle(3, 6);*/
+    mesh2D = new Mesh2D::Square(shader);
 
+    mesh2D->SetTextureUnit();
 }
 
 void DwarfEngine::Update() {
@@ -53,6 +54,9 @@ void DwarfEngine::Update() {
 void DwarfEngine::Render() {
     glClear(GL_COLOR_BUFFER_BIT);
     glClearColor(0.0f/255.f, 0.0f/255.f, 0.0f/255.f, 1.0f);
+
+    mesh2D->BindOnTextureUnit();
+
     shader->UseShaderProgram();
     /*mesh_2d->Draw(shader);*/
     mesh2D->Draw(shader);

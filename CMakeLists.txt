@@ -3,7 +3,10 @@ project(DwarfGameEngine)
 
 set(CMAKE_CXX_STANDARD 20)
 
+
 add_executable(DwarfGameEngine
+
+        DwarfStb/stb_image.cpp
 
         #DwarfGL
         DwarfGL/ShaderProgramCode.h
@@ -27,6 +30,7 @@ add_executable(DwarfGameEngine
         DwarfStb/DwarfGetImage.cpp
         DwarfStb/DwarfGetImage.h
         DwarfMisc/DwarfPath.h
+
 )
 
 find_package(Boost REQUIRED COMPONENTS filesystem)

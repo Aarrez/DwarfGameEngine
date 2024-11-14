@@ -6,7 +6,6 @@ namespace fs = std::filesystem;
 
 namespace Dwarf::File{
     static const fs::path init_path = fs::current_path();
-    std::string project_path;
 
     class DwarfPathChange{
     public:
@@ -22,7 +21,6 @@ namespace Dwarf::File{
             path = path.erase(i);
             std::replace(path.begin(), path.end(), '\\', '/');
             fs::current_path(path);
-            project_path = path;
             return path;
         }
         static fs::path GetCurrentPath(){

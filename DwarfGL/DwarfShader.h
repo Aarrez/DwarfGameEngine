@@ -19,19 +19,18 @@ namespace Dwarf {
             return &fragmentShader;
         }
 
+
+
         //Set misc variables
-        void SetBool(const std::string &name, bool value);
-        void SetInt(const std::string &name, int value);
-        void SetFloat(const std::string &name, float value);
+        void SetBool(const char*  name, bool value);
+        void SetInt(const char* name, int value);
+        void SetFloat(const char* name, float value);
 
         //Set vector variable
-        void SetVector3(const std::string &name,
+        void SetVector3(const char* name,
                         float value1, float value2, float value3);
-        void SetVector4(const std::string &name,
+        void SetVector4(const char* name,
                         float value1, float value2, float value3, float value4);
-
-
-
 
         GLuint shaderProgram;
         //Shaders
