@@ -5,6 +5,7 @@
 #include "../DwarfGL/DwarfShader.h"
 #include "../DwarfGL/Mesh/DwarfMesh.h"
 #include "../DwarfMisc/DwarfPath.h"
+#include "DwarfTransfrom.h"
 
 
 
@@ -25,6 +26,10 @@ namespace Dwarf {
         GLFWwindow* window {};
         DwarfShader* shader {};
         Mesh2D::DwarfMesh2D* mesh2D {};
+        Transform::DwarfTransform* dwarfTransform {};
+
+        //Transform variables
+        glm::mat4 transform;
 
 
     private:

@@ -1,5 +1,9 @@
 #pragma once
 #include <string>
+#include <glm/glm.hpp>
+#include <glm/gtc/type_ptr.hpp>
+#include <glm/gtc/matrix_transform.hpp>
+
 
 namespace Dwarf {
 
@@ -31,6 +35,10 @@ namespace Dwarf {
                         float value1, float value2, float value3);
         void SetVector4(const char* name,
                         float value1, float value2, float value3, float value4);
+
+        //Set Matrix variables
+        void SetMatrix4(const char* name,
+                        int num_matrix, int transpose, glm::mat4 &trans);
 
         GLuint shaderProgram;
         //Shaders

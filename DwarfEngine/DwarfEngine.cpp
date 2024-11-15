@@ -40,11 +40,18 @@ DwarfEngine::DwarfEngine(): window(nullptr) {
 void DwarfEngine::Init() {
 
     shader = new DwarfShader();
+    dwarfTransform = new Transform::DwarfTransform(shader);
 
     /*mesh2D = new Mesh2D::Triangle(3, 6);*/
     mesh2D = new Mesh2D::Square(shader);
 
     mesh2D->SetTextureUnit();
+
+    transform = glm::mat4(1.0f);
+
+    dwarfTransform->ScaleObject(transform, glm::vec3(.5f, .5, .5f));
+
+
 }
 
 void DwarfEngine::Update() {
@@ -56,6 +63,9 @@ void DwarfEngine::Render() {
     glClearColor(0.0f/255.f, 0.0f/255.f, 0.0f/255.f, 1.0f);
 
     mesh2D->BindOnTextureUnit();
+
+    dwarfTransform->RotateObject(transform, sin(float(glfwGetTime())), glm::vec3(0.0, 0.0, 1.0));
+    dwarfTransform->ApplyTransformChanges(transform);
 
     shader->UseShaderProgram();
     /*mesh_2d->Draw(shader);*/

@@ -30,6 +30,8 @@ add_executable(DwarfGameEngine
         DwarfStb/DwarfGetImage.cpp
         DwarfStb/DwarfGetImage.h
         DwarfMisc/DwarfPath.h
+        DwarfEngine/DwarfTransfrom.cpp
+        DwarfEngine/DwarfTransfrom.h
 
 )
 
