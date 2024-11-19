@@ -5,7 +5,10 @@
 #include "../DwarfGL/DwarfShader.h"
 #include "../DwarfGL/Mesh/DwarfMesh.h"
 #include "../DwarfMisc/DwarfPath.h"
+#include "DwarfCamera.h"
 #include "DwarfTransfrom.h"
+#include <memory>
+#include "../DwarfGL/Mesh/DwarfMesh.h"
 
 
 
@@ -22,14 +25,16 @@ namespace Dwarf {
         void Shutdown();
 
         //Variables
-        GLsizei Width, Height;
+        GLsizei Width = 800;
+        GLsizei Height = 600;
         GLFWwindow* window {};
         DwarfShader* shader {};
-        Mesh2D::DwarfMesh2D* mesh2D {};
+        Mesh::DwarfModel* dwarfModel {};
         Transform::DwarfTransform* dwarfTransform {};
 
         //Transform variables
         glm::mat4 transform;
+        Camera::DwarfCamera* camera;
 
 
     private:

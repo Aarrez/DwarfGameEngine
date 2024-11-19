@@ -1,86 +1,72 @@
 #pragma once
 #include <glad/glad.h>
 #include <GLFW/glfw3.h>
-#include "../../DwarfStb/DwarfGetImage.h"
-#include <memory>
 #include <vector>
-#include <optional>
+#include "stb_image.h"
 #include "../DwarfShader.h"
+#include <assimp/Importer.hpp>
+#include <assimp/scene.h>
+#include <assimp/postprocess.h>
+#include <iostream>
+#include "../DwarfStb/DwarfGetImage.h"
 
 
 
-namespace Dwarf::Mesh2D {
+namespace Dwarf::Mesh {
 
-
-    static float TriVertices[] = {
-            //Triangle corner        Corner colors     Texture Coords
-            -0.5f, -0.5f, 0.0f,     1.0f, .0f, .0f,     0.0f, 0.0f,
-            0.5f, -0.5f, 0.0f,      .0f, 1.0f, .0f,     1.0f, 0.0f,
-            0.0f,  0.5f, 0.0f,      .0f, .0f, 1.0f,     0.5f, 1.0f,
+    struct Vertex {
+        glm::vec3 Position;
+        glm::vec3 Normal;
+        glm::vec2 TexCoords;
     };
 
-    static float QuadVertices[] = {
-            0.5f,  0.5f, 0.0f,     1.0f, 0.0f, 0.0f,    1.0f, 1.0f,
-            0.5f, -0.5f, 0.0f,     0.0f, 1.0f, 0.0f,    1.0f, 0.0f,
-            -0.5f, -0.5f, 0.0f,    0.0f, 0.0f, 1.0f,    0.0f, 0.0f,
-            -0.5f,  0.5f, 0.0f,    1.0f, 1.0f, 0.0f,    0.0f, 1.0f,
-    };
-    static unsigned int indices[] {
-            0, 1, 3,
-            1, 2, 3
+    struct Texture{
+        unsigned int id;
+        std::string type;
+        std::string path;
     };
 
-    static const float texCoords[]{
-        .0f, .0f,
-        1.0f, .0f,
-        0.5f, 1.0f
-    };
-
-    class DwarfMesh2D{
+    class DwarfMesh{
     public:
+        std::vector<Vertex> vertices;
+        std::vector<unsigned int> indices;
+        std::vector<Texture> textures;
 
-        DwarfMesh2D(DwarfShader* shader,
-                    float* vertices,
-                    GLsizeiptr v_size,
-                    unsigned int* _indices,
-                    GLsizeiptr i_size);
+        DwarfMesh(std::vector<Vertex> vertices,
+                  std::vector<unsigned int> indices,
+                  std::vector<Texture> texture);
 
-        void CreateTextures(GLuint &texture, const char* image_name, int color_format);
-        void SetTextureUnit();
-        void BindOnTextureUnit();
+        void Draw(DwarfShader* shader);
 
-        size_t texture_count = 0;
+    private:
+        unsigned int VAO;
+        unsigned int VBO;
+        unsigned int EBO;
 
-        DwarfShader* dwarfShader;
-
-        GLuint vertex_buffer_object{};
-        GLuint vertex_array_object{};
-        GLuint element_buffer_object{};
-        GLuint texture1 {};
-        GLuint texture2 {};
-
-        size_t points_count{};
-
-        ~DwarfMesh2D();
-
-        void Draw(DwarfShader* dwarf_shader);
+        void setupMesh();
     };
 
-    class Triangle : public Mesh2D::DwarfMesh2D {
+    class DwarfModel{
     public:
-        explicit Triangle(DwarfShader* shader) :
-        DwarfMesh2D(shader, TriVertices, sizeof(TriVertices),
-                nullptr, 0){
+        DwarfModel(char* path){
+            loadModel(path);
         }
+        void Draw(DwarfShader* shader);
+    private:
+        std::vector<DwarfMesh> meshes;
+        std::string directory;
+        std::vector<Texture> textures_loaded;
+
+        void loadModel(const std::string &path);
+        void processNode(aiNode *node, const aiScene *scene);
+        DwarfMesh processMesh(aiMesh *mesh, const aiScene* scene);
+        std::vector<Texture> loadMaterialTextures(aiMaterial* mat, aiTextureType type,
+                                                  std::string typeName);
     };
 
-    class Square : public Mesh2D::DwarfMesh2D{
-    public:
-        explicit Square(DwarfShader* shader) :
-                DwarfMesh2D(shader, QuadVertices, sizeof(QuadVertices),
-                            indices,sizeof(indices)){;
-        }
-    };
+
+
+
 }
 
 

@@ -1,0 +1,52 @@
+# Blender 4.3.0 MTL File: 'None'
+# www.blender.org
+
+newmtl 01_-_Default.001
+Ns 20.000006
+Ka 1.000000 1.000000 1.000000
+Ks 0.000000 0.000000 0.000000
+Ke 0.000000 0.000000 0.000000
+Ni 1.500000
+illum 1
+map_Kd C:/Users/Aaron.Marklund/Downloads/low-poly-dwarf-warrior-rigged/Textures/Skin.fw.png
+map_d C:/Users/Aaron.Marklund/Downloads/low-poly-dwarf-warrior-rigged/Textures/Skin.fw.png
+
+newmtl 02_-_Default.001
+Ns 20.000006
+Ka 1.000000 1.000000 1.000000
+Ks 0.000000 0.000000 0.000000
+Ke 0.000000 0.000000 0.000000
+Ni 1.500000
+illum 1
+map_Kd C:/Users/Aaron.Marklund/Downloads/low-poly-dwarf-warrior-rigged/Textures/Brown.fw.png
+map_d C:/Users/Aaron.Marklund/Downloads/low-poly-dwarf-warrior-rigged/Textures/Brown.fw.png
+
+newmtl 03_-_Default.001
+Ns 20.000006
+Ka 1.000000 1.000000 1.000000
+Ks 0.000000 0.000000 0.000000
+Ke 0.000000 0.000000 0.000000
+Ni 1.500000
+illum 1
+map_Kd C:/Users/Aaron.Marklund/Downloads/low-poly-dwarf-warrior-rigged/Textures/Blue.fw.png
+map_d C:/Users/Aaron.Marklund/Downloads/low-poly-dwarf-warrior-rigged/Textures/Blue.fw.png
+
+newmtl 07_-_Default.001
+Ns 20.000006
+Ka 1.000000 1.000000 1.000000
+Ks 0.000000 0.000000 0.000000
+Ke 0.000000 0.000000 0.000000
+Ni 1.500000
+illum 1
+map_Kd C:/Users/Aaron.Marklund/Downloads/low-poly-dwarf-warrior-rigged/Textures/Armor3.fw.png
+map_d C:/Users/Aaron.Marklund/Downloads/low-poly-dwarf-warrior-rigged/Textures/Armor3.fw.png
+
+newmtl 08_-_Default.001
+Ns 20.000006
+Ka 1.000000 1.000000 1.000000
+Ks 0.000000 0.000000 0.000000
+Ke 0.000000 0.000000 0.000000
+Ni 1.500000
+illum 1
+map_Kd C:/Users/Aaron.Marklund/Downloads/low-poly-dwarf-warrior-rigged/Textures/Metal.fw.png
+map_d C:/Users/Aaron.Marklund/Downloads/low-poly-dwarf-warrior-rigged/Textures/Metal.fw.png

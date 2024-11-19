@@ -1,5 +1,5 @@
 #include "DwarfEngine.h"
-#include <memory>
+
 
 
 
@@ -16,7 +16,7 @@ DwarfEngine::DwarfEngine(): window(nullptr) {
 #endif
 
     File::DwarfPathChange::ChangeCurrentPathToProjectRoot();
-    window = glfwCreateWindow(800, 600, "DwarfEngine", nullptr, nullptr);
+    window = glfwCreateWindow(Width, Height, "DwarfEngine", nullptr, nullptr);
     if (window == nullptr) {
         /*std::cerr << "Failed to create GLFW window" << std::endl;*/
         glfwTerminate();
@@ -42,16 +42,13 @@ void DwarfEngine::Init() {
     shader = new DwarfShader();
     dwarfTransform = new Transform::DwarfTransform(shader);
 
-    /*mesh2D = new Mesh2D::Triangle(3, 6);*/
-    mesh2D = new Mesh2D::Square(shader);
+    //TODO figure out how to draw and what path to give
+    dwarfModel = new Mesh::DwarfModel("");
 
-    mesh2D->SetTextureUnit();
-
+    camera = new Camera::DwarfCamera();
     transform = glm::mat4(1.0f);
 
     dwarfTransform->ScaleObject(transform, glm::vec3(.5f, .5, .5f));
-
-
 }
 
 void DwarfEngine::Update() {
@@ -62,14 +59,21 @@ void DwarfEngine::Render() {
     glClear(GL_COLOR_BUFFER_BIT);
     glClearColor(0.0f/255.f, 0.0f/255.f, 0.0f/255.f, 1.0f);
 
-    mesh2D->BindOnTextureUnit();
 
-    dwarfTransform->RotateObject(transform, sin(float(glfwGetTime())), glm::vec3(0.0, 0.0, 1.0));
+    dwarfModel->Draw(shader);
+   /* mesh2D->BindOnTextureUnit();*/
+
+   /* dwarfTransform->RotateObject(transform, sin(float(glfwGetTime())), glm::vec3(0.0, 0.0, 1.0));
     dwarfTransform->ApplyTransformChanges(transform);
+    camera->RotateModel(glfwGetTime(), 50.0f, glm::vec3(0.5f, 1.0f, 0.0f));
+    shader->SetMatrix4("model", 1, GL_FALSE, camera->model);
+    shader->SetMatrix4("view", 1, GL_FALSE, camera->view);
+    shader->SetMatrix4("projection", 1, GL_FALSE, camera->projection);
+*/
+
 
     shader->UseShaderProgram();
     /*mesh_2d->Draw(shader);*/
-    mesh2D->Draw(shader);
 
     glfwSwapBuffers(window);
 
@@ -80,7 +84,7 @@ void DwarfEngine::Shutdown() {
 }
 
 DwarfEngine::~DwarfEngine() {
-    delete mesh2D;
+    delete dwarfModel;
     delete shader;
     glfwDestroyWindow(window);
     glfwTerminate();

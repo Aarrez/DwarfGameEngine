@@ -3,6 +3,14 @@ project(DwarfGameEngine)
 
 set(CMAKE_CXX_STANDARD 20)
 
+include_directories(
+        DwarfStb,
+        DwarfGL,
+        DwarfMisc,
+        DwarfEngine,
+        DwarfStb
+)
+
 
 add_executable(DwarfGameEngine
 
@@ -32,11 +40,14 @@ add_executable(DwarfGameEngine
         DwarfMisc/DwarfPath.h
         DwarfEngine/DwarfTransfrom.cpp
         DwarfEngine/DwarfTransfrom.h
-
+        DwarfEngine/DwarfCamera.cpp
+        DwarfEngine/DwarfCamera.h
+        DwarfGL/Mesh/DwarfMesh2D.cpp
+        DwarfGL/Mesh/DwarfMesh2D.h
 )
 
-find_package(Boost REQUIRED COMPONENTS filesystem)
-target_link_libraries(DwarfGameEngine PRIVATE Boost::filesystem)
+find_package(assimp CONFIG REQUIRED)
+target_link_libraries(DwarfGameEngine PRIVATE assimp::assimp)
 
 find_package(SDL2 CONFIG REQUIRED)
 target_link_libraries(DwarfGameEngine
@@ -52,9 +63,6 @@ target_link_libraries(DwarfGameEngine PRIVATE
 
 find_package(Stb REQUIRED)
 target_include_directories(DwarfGameEngine PRIVATE ${Stb_INCLUDE_DIR})
-
-find_package(boost_filesystem CONFIG REQUIRED)
-target_link_libraries(DwarfGameEngine PRIVATE Boost::filesystem)
 
 find_package(glad CONFIG REQUIRED)
 target_link_libraries(DwarfGameEngine PRIVATE glad::glad)

@@ -52,9 +52,9 @@ void Dwarf::DwarfShader::SetVector4(const char* name,
 }
 
 void Dwarf::DwarfShader::SetMatrix4(const char *name,
-                                    int num_matrix, int transpose, glm::mat4 &trans) {
-    GLint transformLoc = glGetUniformLocation(shaderProgram, "transform");
-    glUniformMatrix4fv(transformLoc, num_matrix, transpose, glm::value_ptr(trans));
+                                    int num_matrix, int transpose, glm::mat4 &value) {
+    GLint transformLoc = glGetUniformLocation(shaderProgram, name);
+    glUniformMatrix4fv(transformLoc, num_matrix, transpose, glm::value_ptr(value));
 
 }
 
