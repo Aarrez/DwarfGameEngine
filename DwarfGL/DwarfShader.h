@@ -1,4 +1,5 @@
 #pragma once
+#include <glad/glad.h>
 #include <string>
 #include <glm/glm.hpp>
 #include <glm/gtc/type_ptr.hpp>
@@ -6,9 +7,6 @@
 
 
 namespace Dwarf {
-
-
-
     class DwarfShader {
     public:
         DwarfShader();
@@ -16,10 +14,10 @@ namespace Dwarf {
         void UseShaderProgram(){
             glUseProgram(shaderProgram);
         }
-        GLuint* GetVertexShader(){
+        unsigned int* GetVertexShader(){
             return &vertexShader;
         }
-        GLuint* GetFragmentShader(){
+        unsigned int* GetFragmentShader(){
             return &fragmentShader;
         }
 
@@ -40,11 +38,11 @@ namespace Dwarf {
         void SetMatrix4(const char* name,
                         int num_matrix, int transpose, glm::mat4 &trans);
 
-        GLuint shaderProgram;
+        unsigned int shaderProgram {};
         //Shaders
     private:
-        GLuint vertexShader{};
-        GLuint fragmentShader{};
+        unsigned int vertexShader{};
+        unsigned int fragmentShader{};
     };
 }
 

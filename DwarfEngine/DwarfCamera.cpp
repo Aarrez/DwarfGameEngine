@@ -1,5 +1,7 @@
 #include "DwarfCamera.h"
 
+#include <glad/glad.h>
+
 using namespace Dwarf::Camera;
 
 DwarfCamera::DwarfCamera() {
@@ -11,6 +13,10 @@ DwarfCamera::DwarfCamera() {
     projection = glm::perspective(glm::radians(45.0f), 800.0f/ 600.0f, 0.1f, 100.0f);
 }
 
-void DwarfCamera::RotateModel(double time, float radians, glm::vec3 direction) {
+void DwarfCamera::RotateModelWithTime(double time, float radians, glm::vec3 direction) {
     model = glm::rotate(model, (float)time * glm::radians(radians), direction);
+}
+
+void DwarfCamera::SetModelRotation(float radians, glm::vec3 direction) {
+    model = glm::rotate(model, radians, direction);
 }

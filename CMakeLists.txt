@@ -44,10 +44,15 @@ add_executable(DwarfGameEngine
         DwarfEngine/DwarfCamera.h
         DwarfGL/Mesh/DwarfMesh2D.cpp
         DwarfGL/Mesh/DwarfMesh2D.h
+        DwarfEngine/DwarfEntityManager.cpp
+        DwarfEngine/DwarfEntityManager.h
 )
 
 find_package(assimp CONFIG REQUIRED)
 target_link_libraries(DwarfGameEngine PRIVATE assimp::assimp)
+
+find_package(imgui CONFIG REQUIRED)
+target_link_libraries(DwarfGameEngine PRIVATE imgui::imgui)
 
 find_package(SDL2 CONFIG REQUIRED)
 target_link_libraries(DwarfGameEngine

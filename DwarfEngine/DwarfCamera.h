@@ -3,6 +3,8 @@
 #include "glm/gtc/matrix_transform.hpp"
 #include <memory>
 
+#include "../DwarfGL/DwarfShader.h"
+
 
 namespace Dwarf::Camera{
 
@@ -11,7 +13,8 @@ namespace Dwarf::Camera{
     public:
         DwarfCamera();
 
-        void RotateModel(double time, float radians, glm::vec3 direction);
+        void RotateModelWithTime(double time, float radians, glm::vec3 direction);
+        void SetModelRotation(float radians, glm::vec3 direction);
 
         glm::mat4 model {};
         glm::mat4 view {};
