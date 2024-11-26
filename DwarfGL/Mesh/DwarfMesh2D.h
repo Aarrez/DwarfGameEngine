@@ -8,7 +8,7 @@
 
 namespace Dwarf::Mesh2D{
     static float TriVertices[] = {
-            //Triangle corner        Corner colors     Texture Coords
+            //Triangle corner        Corner colors     ModelTexture Coords
             -0.5f, -0.5f, 0.0f,     1.0f, .0f, .0f,     0.0f, 0.0f,
             0.5f, -0.5f, 0.0f,      .0f, 1.0f, .0f,     1.0f, 0.0f,
             0.0f,  0.5f, 0.0f,      .0f, .0f, 1.0f,     0.5f, 1.0f,
@@ -75,15 +75,15 @@ namespace Dwarf::Mesh2D{
     public:
         using MeshData = std::tuple<vector<Vertex>, vector<Vertex>>;
         DwarfMesh2D(DwarfShader* shader,
-                    MeshData vertices,
-                    unsigned int* _indices,
-                    GLsizeiptr i_size);
+                    vector<Vertex> _vertices,
+                    vector<Face> _faces = {});
 
         void CreateTextures(GLuint &texture, const char* image_name, int color_format);
         void SetTextureUnit();
         void BindOnTextureUnit();
 
         size_t vertices_size;
+        size_t faces_size;
 
         size_t texture_count = 0;
 

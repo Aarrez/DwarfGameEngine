@@ -12,15 +12,15 @@
 
 
 
-namespace Dwarf::Mesh {
+namespace Dwarf {
 
-    struct Vertex {
+    struct ModelVertex {
         glm::vec3 Position;
         glm::vec3 Normal;
         glm::vec2 TexCoords;
     };
 
-    struct Texture{
+    struct ModelTexture{
         unsigned int id;
         std::string type;
         std::string path;
@@ -28,13 +28,13 @@ namespace Dwarf::Mesh {
 
     class DwarfMesh{
     public:
-        std::vector<Vertex> vertices;
+        std::vector<ModelVertex> vertices;
         std::vector<unsigned int> indices;
-        std::vector<Texture> textures;
+        std::vector<ModelTexture> textures;
 
-        DwarfMesh(std::vector<Vertex> vertices,
+        DwarfMesh(std::vector<ModelVertex> vertices,
                   std::vector<unsigned int> indices,
-                  std::vector<Texture> texture);
+                  std::vector<ModelTexture> texture);
 
         void Draw(DwarfShader* shader);
 
@@ -55,13 +55,13 @@ namespace Dwarf::Mesh {
     private:
         std::vector<DwarfMesh> meshes;
         std::string directory;
-        std::vector<Texture> textures_loaded;
+        std::vector<ModelTexture> textures_loaded;
 
         void loadModel(const std::string &path);
         void processNode(aiNode *node, const aiScene *scene);
         DwarfMesh processMesh(aiMesh *mesh, const aiScene* scene);
-        std::vector<Texture> loadMaterialTextures(aiMaterial* mat, aiTextureType type,
-                                                  std::string typeName);
+        std::vector<ModelTexture> loadMaterialTextures(aiMaterial* mat, aiTextureType type,
+                                                       std::string typeName);
     };
 
 

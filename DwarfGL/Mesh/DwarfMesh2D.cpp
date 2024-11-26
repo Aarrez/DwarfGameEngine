@@ -11,9 +11,9 @@ using namespace Dwarf;
 
 Mesh2D::DwarfMesh2D::DwarfMesh2D(
         DwarfShader* shader,
-        MeshData vertices,
-        unsigned int *_indices,
-        GLsizeiptr i_size) :dwarfShader(shader), vertices_size(std::get<0>(vertices).size()){
+        vector<Vertex> _vertices,
+        vector<Face> _faces)
+        :dwarfShader(shader), vertices_size(_vertices.size()), faces_size(_faces.size()){
 
     glGenBuffers(1, &vertex_buffer_object);
     glGenVertexArrays(1, &vertex_array_object);
@@ -25,24 +25,24 @@ Mesh2D::DwarfMesh2D::DwarfMesh2D(
     glBindBuffer(GL_ARRAY_BUFFER, vertex_buffer_object);
     glBufferData(GL_ARRAY_BUFFER,
         vertices_size * sizeof(Vertex),
-        &std::get<0>(vertices)[0], GL_STATIC_DRAW);
+                 &_vertices[0], GL_STATIC_DRAW);
 
-    if(_indices){
+
+    if(!_faces.empty()){
 
         glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, element_buffer_object);
         glBufferData(GL_ELEMENT_ARRAY_BUFFER,
-                     i_size, _indices, GL_STATIC_DRAW);
+                     faces_size * sizeof(Face), &_faces[0], GL_STATIC_DRAW);
+
     }
 
     glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE,
                           3 * sizeof(float), (void*)0);
     glEnableVertexAttribArray(0);
 
+    glBindBuffer(GL_ARRAY_BUFFER, 0);
 
-    /*glVertexAttribPointer(2, 2, GL_FLOAT, GL_FALSE,
-                          5 * sizeof (float), (void*)(3 * sizeof(float)));
-    glEnableVertexAttribArray(2);*/
-
+    glBindVertexArray(0);
 
 
     CreateTextures(texture1, "container.jpg", GL_RGB);
@@ -53,6 +53,12 @@ Mesh2D::DwarfMesh2D::DwarfMesh2D(
 
 void Mesh2D::DwarfMesh2D::Draw(DwarfShader* dwarf_shader){
     glBindVertexArray(vertex_array_object);
+
+    if(element_buffer_object != 0){
+        glDrawElements(GL_TRIANGLES, faces_size, GL_UNSIGNED_INT, 0);
+        glBindVertexArray(0);
+        return;
+    }
 
     glDrawArrays(GL_TRIANGLES, 0, vertices_size);
     glBindVertexArray(0);

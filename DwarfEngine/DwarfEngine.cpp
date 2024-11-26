@@ -60,15 +60,16 @@ namespace Dwarf {
         camera = new Camera::DwarfCamera();
         std::string some = "DwarfModels/OBJFiles/teapot.obj";
         auto out = DwarfOBJLoader::DwarfVerticesParser(some);
-        dwarfMesh2D = new Mesh2D::DwarfMesh2D(shader, out, nullptr, 0);
-        camera->model = scale(camera->model, glm::vec3(.5, .5, .5));
+        dwarfMesh2D = new Mesh2D::DwarfMesh2D(shader, std::get<0>(out), std::get<1>(out));
 
-        /*DEM = new Entity::DwarfEntityManager();
-        DEM->CreateDwarfEntity("First");
-        DEM->CreateDwarfEntity("Second");
-        DEM->CreateDwarfEntity("Third");
-        DEM->CreateDwarfEntity("Fourth");
-        DEM->CreateDwarfEntity("Fifth");*/
+        DEM = new DwarfEntityManager();
+
+        /*for(int i {0}; i < 10; i++){
+            auto entity = DEM->CreateDwarfEntity();
+            entity.transform = glm::translate(entity.transform, glm::vec3(0,0, i+1));
+            entity.transform =
+                    glm::rotate(entity.transform, glm::radians(40.0f + i*2), glm::vec3(0,0,1));
+        }*/
     }
 
     void DwarfEngine::Update() {
@@ -80,9 +81,6 @@ namespace Dwarf {
 
     void DwarfEngine::Render() {
 
-
-
-
         glfwGetFramebufferSize(window, &Width, &Height);
         glViewport(0, 0, Width, Height);
 
@@ -91,12 +89,13 @@ namespace Dwarf {
 
         dwarfMesh2D->BindOnTextureUnit();
 
+        glm::mat4 model {glm::mat4(1.0f)};
+        glm::mat4 view {glm::mat4(1.0f)};
+        glm::mat4 projection {glm::mat4(1.0f)};
 
-        /*camera->RotateModelWithTime(glfwGetTime(), 1.0f, glm::vec3(0.5f, 1.0f, 0.0f));*/
-
-        shader->SetMatrix4("model", 1, GL_FALSE, camera->model);
-        shader->SetMatrix4("view", 1, GL_FALSE, camera->view);
-        shader->SetMatrix4("projection", 1, GL_FALSE, camera->projection);
+        shader->SetMatrix4("model", 1, GL_FALSE, model);
+        shader->SetMatrix4("view", 1, GL_FALSE, view);
+        shader->SetMatrix4("projection", 1, GL_FALSE, projection);
 
 
         shader->UseShaderProgram();
@@ -104,9 +103,13 @@ namespace Dwarf {
             DEM->entities.at(i)->transform = glm::translate(DEM->entities.at(i)->transform, glm::vec3(i + 1, i + 1, i - 1));
             shader->SetMatrix4("model", 1, GL_FALSE, DEM->entities.at(i)->transform);
         }*/
+
+        /*for(Entity &entity : *DEM->GetEntityList()){
+            shader->SetMatrix4("moodel", 1, GL_FALSE, entity.transform);
+
+        }*/
+
         dwarfMesh2D->Draw(shader);
-
-
         ImGui_ImplGlfw_NewFrame();
         ImGui_ImplOpenGL3_NewFrame();
         ImGui::NewFrame();
@@ -146,7 +149,6 @@ namespace Dwarf {
     }
 
     DwarfEngine::~DwarfEngine() {
-        delete dwarfModel;
         delete dwarfMesh2D;
         delete shader;
         delete DEM;

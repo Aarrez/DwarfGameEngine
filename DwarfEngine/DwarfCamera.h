@@ -5,6 +5,7 @@
 
 #include "../DwarfGL/DwarfShader.h"
 
+using namespace glm;
 
 namespace Dwarf::Camera{
 
@@ -13,12 +14,19 @@ namespace Dwarf::Camera{
     public:
         DwarfCamera();
 
-        void RotateModelWithTime(double time, float radians, glm::vec3 direction);
-        void SetModelRotation(float radians, glm::vec3 direction);
+        void RotateCameraWithTime(double time, const float radius);
 
-        glm::mat4 model {};
-        glm::mat4 view {};
-        glm::mat4 projection {};
+    private:
+
+        mat4 view {};
+
+        vec3 cameraPos {};
+        vec3 cameraTarget {};
+        vec3 cameraDirection {};
+        vec3 up {vec3(0, 1.0f, 0)};
+        vec3 cameraRight {};
+        vec3 cameraUp {};
+
 
     };
 

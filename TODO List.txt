@@ -1,5 +1,5 @@
 TODO List:
-Make a separate class for the Vertex programs
+Make a separate class for the ModelVertex programs
 Implement the GLM math library
 Put project on GitHub
 Make different classes for 

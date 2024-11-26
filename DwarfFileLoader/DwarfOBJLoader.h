@@ -15,20 +15,14 @@ namespace Dwarf {
     struct Vertex {
         float x, y, z;
     };
-
     struct Face {
-        vector<Vertex*> face;
-    };
-
-    struct Mesh {
-        vector<Vertex*> vertices;
-        vector<Face*> faces;
+        unsigned int x, y, z;
     };
 
     class DwarfOBJLoader{
         DwarfOBJLoader();
     public:
-        static std::tuple<vector<Vertex>, vector<Vertex>> DwarfVerticesParser(string filename);
+        static std::tuple<vector<Vertex>, vector<Face>> DwarfVerticesParser(string filename);
 
     };
 

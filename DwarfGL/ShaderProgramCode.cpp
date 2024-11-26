@@ -62,7 +62,7 @@ GLuint DwarfGetShader::LoadVertexShader() {
 
     if(!result){
         glGetShaderInfoLog(VertexShader, 512, nullptr, Log);
-        std::cerr << "Failed to compile Vertex Shader \n" << Log << std::endl;
+        std::cerr << "Failed to compile ModelVertex Shader \n" << Log << std::endl;
     }
 
     return VertexShader;

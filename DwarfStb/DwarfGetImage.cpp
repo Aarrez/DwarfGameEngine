@@ -41,7 +41,7 @@ unsigned int Dwarf::Texture::TextureFromFile(const char *filename) {
         stbi_image_free(data);
     }
     else{
-        std::cerr << "Failed to load Texture: " << filename << std::endl;
+        std::cerr << "Failed to load ModelTexture: " << filename << std::endl;
     }
     Dwarf::File::DwarfPathChange::SetCurrentPath(p);
     return textureID;
@@ -79,7 +79,7 @@ unsigned int Dwarf::Texture::TextureFromFile(const std::string &filename, const 
         stbi_image_free(data);
     }
     else{
-        std::cerr << "Failed to load Texture: " << filename << std::endl;
+        std::cerr << "Failed to load ModelTexture: " << filename << std::endl;
     }
     DwarfPathChange::SetCurrentPath(p);
     return textureID;

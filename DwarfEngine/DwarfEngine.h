@@ -48,9 +48,8 @@ namespace Dwarf {
         GLsizei Height = 600;
         GLFWwindow* window {};
         DwarfShader* shader {};
-        Mesh::DwarfModel* dwarfModel {};
         Mesh2D::DwarfMesh2D* dwarfMesh2D {};
-        Entity::DwarfEntityManager* DEM {};
+        DwarfEntityManager* DEM {};
 
         double deltaTime;
 
@@ -61,9 +60,6 @@ namespace Dwarf {
 
         //Transform variables
         Camera::DwarfCamera* camera;
-
-        //Temp Variables
-        vector<unique_ptr<Entity::Entity>> entityList;
 
 
     private:

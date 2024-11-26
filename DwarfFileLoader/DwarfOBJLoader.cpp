@@ -1,9 +1,9 @@
 #include "DwarfOBJLoader.h"
 
 namespace Dwarf {
-    std::tuple<vector<Vertex>, vector<Vertex>> DwarfOBJLoader::DwarfVerticesParser(string filename) {
+    std::tuple<vector<Vertex>, vector<Face>> DwarfOBJLoader::DwarfVerticesParser(string filename) {
         vector<Vertex> vertices;
-        vector<Vertex> faces;
+        vector<Face> faces;
         std::ifstream file(filename);
         std::string line;
         if (!file.is_open()) {
@@ -20,7 +20,7 @@ namespace Dwarf {
                 vertices.push_back(vertex);
             }
             if (prefix == "f") {
-                Vertex face;
+                Face face;
                 iss >> face.x >> face.y >> face.z;
                 faces.push_back(face);
             }

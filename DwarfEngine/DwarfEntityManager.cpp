@@ -1,24 +1,30 @@
 #include "DwarfEntityManager.h"
 
-Dwarf::Entity::DwarfEntityManager::DwarfEntityManager() {
-    entities.reserve(10);
-}
+namespace Dwarf{
+    DwarfEntityManager::DwarfEntityManager() {
+    }
 
-shared_ptr<Dwarf::Entity::Entity> Dwarf::Entity::DwarfEntityManager::CreateDwarfEntity(string name) {
-    shared_ptr<Entity>entity = make_shared<Entity>(name);
-    entity->transform = glm::mat4(1.0f);
-    entities.push_back(entity);
-    return entity;
-}
+    Entity DwarfEntityManager::CreateDwarfEntity(const string &name) {
+        Entity entity {name + std::to_string(entities.capacity())};
+        entity.transform = glm::mat4(1.0f);
+        entities.push_back(entity);
+        return entity;
+    }
 
-/*
- * No idea if this works
- * Used this -->https://www.fluentcpp.com/2018/09/18/how-to-remove-pointers-from-a-vector-in-cpp/
- */
-/*void Dwarf::Entity::DwarfEntityManager::DeleteDwarfEntity(string name) {
-    entities.erase(remove_if(entities.begin(), entities.end(),[&name](shared_ptr<Entity> &entity){
-        return entity->name == name;
-    }));
-}*/
+    vector<Entity> *DwarfEntityManager::GetEntityList() {
+        return &entities;
+    }
+
+    void DwarfEntityManager::RemoveEntity(string name) {
+        erase_if(entities, [&name](Entity &entity){
+            return entity.name == name;
+        });
+    }
+
+    void DwarfEntityManager::RemoveAllEntitys() {
+        entities.clear();
+    }
+
+}
 
 
