@@ -46,6 +46,8 @@ add_executable(DwarfGameEngine
         DwarfGL/Mesh/DwarfMesh2D.h
         DwarfEngine/DwarfEntityManager.cpp
         DwarfEngine/DwarfEntityManager.h
+        DwarfFileLoader/DwarfOBJLoader.cpp
+        DwarfFileLoader/DwarfOBJLoader.h
 )
 
 find_package(assimp CONFIG REQUIRED)

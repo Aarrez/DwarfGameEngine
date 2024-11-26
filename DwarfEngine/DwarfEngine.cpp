@@ -2,160 +2,163 @@
 
 
 
+namespace Dwarf {
+    DwarfEngine::DwarfEngine(): window(nullptr) {
+        glfwInit();
+        glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3);
+        glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 3);
+        glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
+    #ifdef __APPLE__
+        glfwWindowHint(GLFW_OPENGL_FORWARD_COMPAT, GL_TRUE);
+    #endif
 
-using namespace Dwarf;
-
-DwarfEngine::DwarfEngine(): window(nullptr) {
-    glfwInit();
-    glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3);
-    glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 3);
-    glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
-#ifdef __APPLE__
-    glfwWindowHint(GLFW_OPENGL_FORWARD_COMPAT, GL_TRUE);
-#endif
-
-    File::DwarfPathChange::ChangeCurrentPathToProjectRoot();
-    window = glfwCreateWindow(Width, Height, "DwarfEngine", nullptr, nullptr);
-    if (window == nullptr) {
-        /*std::cerr << "Failed to create GLFW window" << std::endl;*/
-        glfwTerminate();
-        return;
-    }
-    glfwMakeContextCurrent(window);
-    glfwSwapInterval(1);
+        File::DwarfPathChange::ChangeCurrentPathToProjectRoot();
+        window = glfwCreateWindow(Width, Height, "DwarfEngine", nullptr, nullptr);
+        if (window == nullptr) {
+            /*std::cerr << "Failed to create GLFW window" << std::endl;*/
+            glfwTerminate();
+            return;
+        }
+        glfwMakeContextCurrent(window);
+        glfwSwapInterval(1);
 
 
-    if (!gladLoadGLLoader(reinterpret_cast<GLADloadproc>(glfwGetProcAddress))) {
-        std::cerr << "Failed to initialize GLAD" << std::endl;
-        glfwTerminate();
-        return;
-    }
+        if (!gladLoadGLLoader(reinterpret_cast<GLADloadproc>(glfwGetProcAddress))) {
+            std::cerr << "Failed to initialize GLAD" << std::endl;
+            glfwTerminate();
+            return;
+        }
 
-    glViewport(0, 0, Width, Height);
+        glViewport(0, 0, Width, Height);
 
-    glfwSetFramebufferSizeCallback(window, framebuffer_size_callback);
-}
-
-
-void DwarfEngine::Init() {
-
-    glEnable(GL_DEPTH_TEST);
-    IMGUI_CHECKVERSION();
-    ImGui::CreateContext();
-    ImGuiIO& io = ImGui::GetIO(); (void) io;
-    io.ConfigFlags |= ImGuiConfigFlags_NavEnableKeyboard;
-
-    ImGui::StyleColorsDark();
-
-    if (ImGui_ImplGlfw_InitForOpenGL(window, true) == false) {
-        std::cerr << "Failed to init glfw for imgui" << std::endl;
-    }
-    if (ImGui_ImplOpenGL3_Init("#version 330") == false) {
-        std::cerr << "Failed to initialize OpenGL for imgui" << std::endl;
+        glfwSetFramebufferSizeCallback(window, framebuffer_size_callback);
     }
 
-    shader = new DwarfShader();
 
-    //TODO figure out how to draw and what path to give
-    /*dwarfModel = new Mesh::DwarfModel("");*/
+    void DwarfEngine::Init() {
 
-    dwarfMesh2D = new Mesh2D::Square(shader);
+        glEnable(GL_DEPTH_TEST);
+        IMGUI_CHECKVERSION();
+        ImGui::CreateContext();
+        ImGuiIO& io = ImGui::GetIO(); (void) io;
+        io.ConfigFlags |= ImGuiConfigFlags_NavEnableKeyboard;
 
-    camera = new Camera::DwarfCamera();
+        ImGui::StyleColorsDark();
 
-    DEM = new Entity::DwarfEntityManager();
-    DEM->CreateDwarfEntity("First");
-    DEM->CreateDwarfEntity("Second");
-    DEM->CreateDwarfEntity("Third");
-    DEM->CreateDwarfEntity("Fourth");
-    DEM->CreateDwarfEntity("Fifth");
-}
+        if (ImGui_ImplGlfw_InitForOpenGL(window, true) == false) {
+            std::cerr << "Failed to init glfw for imgui" << std::endl;
+        }
+        if (ImGui_ImplOpenGL3_Init("#version 330") == false) {
+            std::cerr << "Failed to initialize OpenGL for imgui" << std::endl;
+        }
 
-void DwarfEngine::Update() {
-    currentTime = glfwGetTime();
-    deltaTime = currentTime - lastTime;
-    lastTime = currentTime;
-    glfwPollEvents();
-}
+        shader = new DwarfShader();
 
-void DwarfEngine::Render() {
+        //TODO figure out how to draw and what path to give
+        /*dwarfModel = new Mesh::DwarfModel("");*/
+
+        camera = new Camera::DwarfCamera();
+        std::string some = "DwarfModels/OBJFiles/teapot.obj";
+        auto out = DwarfOBJLoader::DwarfVerticesParser(some);
+        dwarfMesh2D = new Mesh2D::DwarfMesh2D(shader, out, nullptr, 0);
+        camera->model = scale(camera->model, glm::vec3(.5, .5, .5));
+
+        /*DEM = new Entity::DwarfEntityManager();
+        DEM->CreateDwarfEntity("First");
+        DEM->CreateDwarfEntity("Second");
+        DEM->CreateDwarfEntity("Third");
+        DEM->CreateDwarfEntity("Fourth");
+        DEM->CreateDwarfEntity("Fifth");*/
+    }
+
+    void DwarfEngine::Update() {
+        currentTime = glfwGetTime();
+        deltaTime = currentTime - lastTime;
+        lastTime = currentTime;
+        glfwPollEvents();
+    }
+
+    void DwarfEngine::Render() {
 
 
 
 
-    glfwGetFramebufferSize(window, &Width, &Height);
-    glViewport(0, 0, Width, Height);
+        glfwGetFramebufferSize(window, &Width, &Height);
+        glViewport(0, 0, Width, Height);
 
-    glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-    glClearColor(clear_color.x, clear_color.y, clear_color.z, clear_color.w);
+        glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+        glClearColor(clear_color.x, clear_color.y, clear_color.z, clear_color.w);
 
-    dwarfMesh2D->BindOnTextureUnit();
-
-
-    /*camera->RotateModelWithTime(glfwGetTime(), 1.0f, glm::vec3(0.5f, 1.0f, 0.0f));*/
-    shader->SetMatrix4("model", 1, GL_FALSE, camera->model);
-    shader->SetMatrix4("view", 1, GL_FALSE, camera->view);
-    shader->SetMatrix4("projection", 1, GL_FALSE, camera->projection);
+        dwarfMesh2D->BindOnTextureUnit();
 
 
-    shader->UseShaderProgram();
-    for (unsigned int i = 0; i < DEM->entities.capacity() -1; i++) {
-        DEM->entities.at(i)->transform = glm::translate(DEM->entities.at(i)->transform, glm::vec3(i + 1, i + 1, i - 1));
-        shader->SetMatrix4("model", 1, GL_FALSE, DEM->entities.at(i)->transform);
+        /*camera->RotateModelWithTime(glfwGetTime(), 1.0f, glm::vec3(0.5f, 1.0f, 0.0f));*/
+
+        shader->SetMatrix4("model", 1, GL_FALSE, camera->model);
+        shader->SetMatrix4("view", 1, GL_FALSE, camera->view);
+        shader->SetMatrix4("projection", 1, GL_FALSE, camera->projection);
+
+
+        shader->UseShaderProgram();
+        /*for (unsigned int i = 0; i < DEM->entities.capacity() -1; i++) {
+            DEM->entities.at(i)->transform = glm::translate(DEM->entities.at(i)->transform, glm::vec3(i + 1, i + 1, i - 1));
+            shader->SetMatrix4("model", 1, GL_FALSE, DEM->entities.at(i)->transform);
+        }*/
         dwarfMesh2D->Draw(shader);
+
+
+        ImGui_ImplGlfw_NewFrame();
+        ImGui_ImplOpenGL3_NewFrame();
+        ImGui::NewFrame();
+
+        if (show_demo_window)
+        {
+            static float f = 0.0f;
+            static int counter = 0;
+            ImGui::Begin("DwarfDemoWindow", &show_demo_window);
+            ImGui::Text("FPS: %.2f\n", ImGui::GetIO().Framerate);
+            ImGui::Text("Change window showed\n");
+            ImGui::Checkbox("Show demo window", &show_demo_window);
+            ImGui::Checkbox("Show another window", &show_another_window);
+
+            ImGui::Text("Change the background color");
+            ImGui::SliderFloat("float", &f, 0.0f, 1.0f);
+            ImGui::ColorEdit3("clear color", (float*)&clear_color);
+
+            ImGui::Text("Application avrage %.3f ms/frame (%.1f FPS)", 1000.0f / ImGui::GetIO().Framerate, ImGui::GetIO().Framerate);
+            ImGui::End();
+        }
+
+        ImGui::Render();
+        ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());
+        /*dwarfModel->Draw(shader);*/
+
+
+        glfwSwapBuffers(window);
+
     }
 
+    void DwarfEngine::Shutdown() {
+        ImGui_ImplGlfw_Shutdown();
+        ImGui_ImplOpenGL3_Shutdown();
+        ImGui::DestroyContext();
 
-    ImGui_ImplGlfw_NewFrame();
-    ImGui_ImplOpenGL3_NewFrame();
-    ImGui::NewFrame();
-
-    if (show_demo_window)
-    {
-        static float f = 0.0f;
-        static int counter = 0;
-        ImGui::Begin("DwarfDemoWindow", &show_demo_window);
-        ImGui::Text("FPS: %.2f\n", ImGui::GetIO().Framerate);
-        ImGui::Text("Change window showed\n");
-        ImGui::Checkbox("Show demo window", &show_demo_window);
-        ImGui::Checkbox("Show another window", &show_another_window);
-
-        ImGui::Text("Change the background color");
-        ImGui::SliderFloat("float", &f, 0.0f, 1.0f);
-        ImGui::ColorEdit3("clear color", (float*)&clear_color);
-
-        ImGui::Text("Application avrage %.3f ms/frame (%.1f FPS)", 1000.0f / ImGui::GetIO().Framerate, ImGui::GetIO().Framerate);
-        ImGui::End();
     }
 
-    ImGui::Render();
-    ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());
-    /*dwarfModel->Draw(shader);*/
+    DwarfEngine::~DwarfEngine() {
+        delete dwarfModel;
+        delete dwarfMesh2D;
+        delete shader;
+        delete DEM;
+        glfwDestroyWindow(window);
+        glfwTerminate();
+    }
 
-
-    glfwSwapBuffers(window);
-
+    void DwarfEngine::framebuffer_size_callback(GLFWwindow *window, int width, int height) {
+        glViewport(0, 0, width, height);
+    }
 }
 
-void DwarfEngine::Shutdown() {
-    ImGui_ImplGlfw_Shutdown();
-    ImGui_ImplOpenGL3_Shutdown();
-    ImGui::DestroyContext();
-
-}
-
-DwarfEngine::~DwarfEngine() {
-    delete dwarfModel;
-    delete dwarfMesh2D;
-    delete shader;
-    delete DEM;
-    glfwDestroyWindow(window);
-    glfwTerminate();
-}
-
-void DwarfEngine::framebuffer_size_callback(GLFWwindow *window, int width, int height) {
-    glViewport(0, 0, width, height);
-}
 
 
 

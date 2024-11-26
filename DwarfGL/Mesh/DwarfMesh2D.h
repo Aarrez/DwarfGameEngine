@@ -4,6 +4,7 @@
 #include "../../DwarfStb/DwarfGetImage.h"
 #include <vector>
 #include "../DwarfShader.h"
+#include "../../DwarfFileLoader/DwarfOBJLoader.h"
 
 namespace Dwarf::Mesh2D{
     static float TriVertices[] = {
@@ -68,18 +69,21 @@ namespace Dwarf::Mesh2D{
         -0.5f,  0.5f,  0.5f,  0.0f, 0.0f,
         -0.5f,  0.5f, -0.5f,  0.0f, 1.0f
     };
+
+
     class DwarfMesh2D{
     public:
-
+        using MeshData = std::tuple<vector<Vertex>, vector<Vertex>>;
         DwarfMesh2D(DwarfShader* shader,
-                    float* vertices,
-                    GLsizeiptr v_size,
+                    MeshData vertices,
                     unsigned int* _indices,
                     GLsizeiptr i_size);
 
         void CreateTextures(GLuint &texture, const char* image_name, int color_format);
         void SetTextureUnit();
         void BindOnTextureUnit();
+
+        size_t vertices_size;
 
         size_t texture_count = 0;
 
@@ -98,7 +102,7 @@ namespace Dwarf::Mesh2D{
         void Draw(DwarfShader* dwarf_shader);
     };
 
-    class Triangle : public Mesh2D::DwarfMesh2D {
+    /*class Triangle : public Mesh2D::DwarfMesh2D {
     public:
         explicit Triangle(DwarfShader* shader) :
                 DwarfMesh2D(shader, TriVertices, sizeof(TriVertices),
@@ -112,5 +116,5 @@ namespace Dwarf::Mesh2D{
                 DwarfMesh2D(shader, vertices, sizeof(vertices),
                             nullptr, 0){;
         }
-    };
+    };*/
 }

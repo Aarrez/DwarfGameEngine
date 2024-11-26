@@ -4,15 +4,17 @@
 
 #include "DwarfMesh2D.h"
 
+#include "DwarfMesh.h"
+
 using namespace Dwarf;
 
 
 Mesh2D::DwarfMesh2D::DwarfMesh2D(
         DwarfShader* shader,
-        float *vertices,
-        GLsizeiptr v_size,
+        MeshData vertices,
         unsigned int *_indices,
-        GLsizeiptr i_size) : dwarfShader(shader){
+        GLsizeiptr i_size) :dwarfShader(shader), vertices_size(std::get<0>(vertices).size()){
+
     glGenBuffers(1, &vertex_buffer_object);
     glGenVertexArrays(1, &vertex_array_object);
     glGenBuffers(1, &element_buffer_object);
@@ -21,7 +23,9 @@ Mesh2D::DwarfMesh2D::DwarfMesh2D(
     glBindVertexArray(vertex_array_object);
 
     glBindBuffer(GL_ARRAY_BUFFER, vertex_buffer_object);
-    glBufferData(GL_ARRAY_BUFFER, v_size, vertices, GL_STATIC_DRAW);
+    glBufferData(GL_ARRAY_BUFFER,
+        vertices_size * sizeof(Vertex),
+        &std::get<0>(vertices)[0], GL_STATIC_DRAW);
 
     if(_indices){
 
@@ -31,16 +35,13 @@ Mesh2D::DwarfMesh2D::DwarfMesh2D(
     }
 
     glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE,
-                          5 * sizeof(float), (void*)0);
+                          3 * sizeof(float), (void*)0);
     glEnableVertexAttribArray(0);
 
-    /*glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE,
-                          8 * sizeof(float), (void*)(3 * sizeof(float)));
-    glEnableVertexAttribArray(1);*/
 
-    glVertexAttribPointer(2, 2, GL_FLOAT, GL_FALSE,
+    /*glVertexAttribPointer(2, 2, GL_FLOAT, GL_FALSE,
                           5 * sizeof (float), (void*)(3 * sizeof(float)));
-    glEnableVertexAttribArray(2);
+    glEnableVertexAttribArray(2);*/
 
 
 
@@ -53,8 +54,7 @@ Mesh2D::DwarfMesh2D::DwarfMesh2D(
 void Mesh2D::DwarfMesh2D::Draw(DwarfShader* dwarf_shader){
     glBindVertexArray(vertex_array_object);
 
-    /*glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);*/
-    glDrawArrays(GL_TRIANGLES, 0, 36);
+    glDrawArrays(GL_TRIANGLES, 0, vertices_size);
     glBindVertexArray(0);
 }
 

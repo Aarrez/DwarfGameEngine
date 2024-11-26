@@ -19,6 +19,8 @@
 //DwarfMisc
 #include "../DwarfMisc/DwarfPath.h"
 
+#include "../DwarfFileLoader/DwarfOBJLoader.h"
+
 //DwarfEngine
 #include "DwarfEntityManager.h"
 #include "DwarfCamera.h"
@@ -41,7 +43,7 @@ namespace Dwarf {
 
 
         //Variables
-        ImVec4 clear_color = ImVec4(0.0f/255.f, 0.0f/255.f, 0.0f/255.f, 1.0f);
+        ImVec4 clear_color = ImVec4(.2, .2, .2, 1.0f);
         GLsizei Width = 800;
         GLsizei Height = 600;
         GLFWwindow* window {};

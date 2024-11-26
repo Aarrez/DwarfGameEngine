@@ -18,7 +18,6 @@ namespace Dwarf::Entity {
 
     class DwarfEntityManager {
     private:
-        static int id;
         public:
         DwarfEntityManager();
 
