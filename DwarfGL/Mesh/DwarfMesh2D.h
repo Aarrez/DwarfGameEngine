@@ -73,21 +73,19 @@ namespace Dwarf::Mesh2D{
 
     class DwarfMesh2D{
     public:
-        using MeshData = std::tuple<vector<Vertex>, vector<Vertex>>;
-        DwarfMesh2D(DwarfShader* shader,
-                    vector<Vertex> _vertices,
-                    vector<Face> _faces = {});
+
+        DwarfMesh2D(std::shared_ptr<DwarfShader> shader,
+            vector<Vertex> vertices);
 
         void CreateTextures(GLuint &texture, const char* image_name, int color_format);
         void SetTextureUnit();
         void BindOnTextureUnit();
 
-        size_t vertices_size;
-        size_t faces_size;
+        size_t vertices_size;;
 
         size_t texture_count = 0;
 
-        DwarfShader* dwarfShader;
+        std::shared_ptr<DwarfShader> dwarfShader;
 
         GLuint vertex_buffer_object{};
         GLuint vertex_array_object{};
@@ -99,7 +97,7 @@ namespace Dwarf::Mesh2D{
 
         ~DwarfMesh2D();
 
-        void Draw(DwarfShader* dwarf_shader);
+        void Draw(std::shared_ptr<DwarfShader> dwarf_shader);
     };
 
     /*class Triangle : public Mesh2D::DwarfMesh2D {

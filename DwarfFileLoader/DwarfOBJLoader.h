@@ -17,12 +17,20 @@ namespace Dwarf {
     };
     struct Face {
         unsigned int x, y, z;
+        void operator-= (const unsigned int &value) {
+            x -= value;
+            y -= value;
+            z -= value;
+        }
     };
-
+    using MeshData = std::tuple<vector<float>, vector<Face>>;
     class DwarfOBJLoader{
-        DwarfOBJLoader();
+
+        DwarfOBJLoader() = default;
+        static std::tuple<vector<float>, vector<Face>> OBJFileParser(const string& filename);
     public:
-        static std::tuple<vector<Vertex>, vector<Face>> DwarfVerticesParser(string filename);
+
+        static vector<Vertex> GetVerticesFromOBJ(const string& filename);
 
     };
 

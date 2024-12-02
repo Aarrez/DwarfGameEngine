@@ -18,12 +18,13 @@
 
 //DwarfMisc
 #include "../DwarfMisc/DwarfPath.h"
-
+/*#include "../DwarfMisc/Memory.h"*/
 #include "../DwarfFileLoader/DwarfOBJLoader.h"
 
 //DwarfEngine
 #include "DwarfEntityManager.h"
 #include "DwarfCamera.h"
+#include "DwarfInput.h"
 #include "DwarfTransfrom.h"
 #pragma endregion Dwarf-Includes
 
@@ -47,9 +48,12 @@ namespace Dwarf {
         GLsizei Width = 800;
         GLsizei Height = 600;
         GLFWwindow* window {};
-        DwarfShader* shader {};
-        Mesh2D::DwarfMesh2D* dwarfMesh2D {};
-        DwarfEntityManager* DEM {};
+        std::shared_ptr<DwarfShader> shader {};
+        /*std::shared_ptr<DwarfInput> dwarf_input {};*/
+
+        std::unique_ptr<Mesh2D::DwarfMesh2D> dwarfMesh2D {};
+        std::unique_ptr<DwarfEntityManager> DEM {};
+        std::unique_ptr<Camera::DwarfCamera> camera {};
 
         double deltaTime;
 
@@ -59,7 +63,7 @@ namespace Dwarf {
         bool show_another_window {false};
 
         //Transform variables
-        Camera::DwarfCamera* camera;
+        vec3 model_position {};
 
 
     private:

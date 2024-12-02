@@ -1,11 +1,10 @@
 #pragma once
 
-#include <iostream>
 #include <string>
 #include <fstream>
 #include "glad/glad.h"
 #include <filesystem>
-#include "../DwarfEngine/DwarfEngine.h"
+#include "../DwarfMisc/DwarfPath.h"
 
 namespace fs = std::filesystem;
 

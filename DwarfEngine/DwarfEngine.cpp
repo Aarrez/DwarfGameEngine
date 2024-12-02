@@ -22,7 +22,7 @@ namespace Dwarf {
         glfwMakeContextCurrent(window);
         glfwSwapInterval(1);
 
-
+        /*dwarf_input = std::make_shared<DwarfInput>(window);*/
         if (!gladLoadGLLoader(reinterpret_cast<GLADloadproc>(glfwGetProcAddress))) {
             std::cerr << "Failed to initialize GLAD" << std::endl;
             glfwTerminate();
@@ -46,30 +46,21 @@ namespace Dwarf {
         ImGui::StyleColorsDark();
 
         if (ImGui_ImplGlfw_InitForOpenGL(window, true) == false) {
-            std::cerr << "Failed to init glfw for imgui" << std::endl;
+            std::cerr << "Failed to Initialize IMGUI Implementation for GLFW" << std::endl;
         }
         if (ImGui_ImplOpenGL3_Init("#version 330") == false) {
-            std::cerr << "Failed to initialize OpenGL for imgui" << std::endl;
+            std::cerr << "Failed to initialize IMGUI Implementation for OpenGL3" << std::endl;
         }
+        shader = std::make_shared<DwarfShader>();
 
-        shader = new DwarfShader();
+        camera = make_unique<Camera::DwarfCamera>(shader);
+        /*std::cout << "Current available phys memory" << to_string(Memory::GetPhysicalMemoryAvailable()) << std::endl;*/
+        std::string filename = "DwarfModels/OBJFiles/Cube.obj";
+        auto vertex_vector = DwarfOBJLoader::GetVerticesFromOBJ(filename);
 
-        //TODO figure out how to draw and what path to give
-        /*dwarfModel = new Mesh::DwarfModel("");*/
+        dwarfMesh2D = make_unique<Mesh2D::DwarfMesh2D>(shader, vertex_vector);
 
-        camera = new Camera::DwarfCamera();
-        std::string some = "DwarfModels/OBJFiles/teapot.obj";
-        auto out = DwarfOBJLoader::DwarfVerticesParser(some);
-        dwarfMesh2D = new Mesh2D::DwarfMesh2D(shader, std::get<0>(out), std::get<1>(out));
-
-        DEM = new DwarfEntityManager();
-
-        /*for(int i {0}; i < 10; i++){
-            auto entity = DEM->CreateDwarfEntity();
-            entity.transform = glm::translate(entity.transform, glm::vec3(0,0, i+1));
-            entity.transform =
-                    glm::rotate(entity.transform, glm::radians(40.0f + i*2), glm::vec3(0,0,1));
-        }*/
+        DEM = make_unique<DwarfEntityManager>();
     }
 
     void DwarfEngine::Update() {
@@ -90,24 +81,17 @@ namespace Dwarf {
         dwarfMesh2D->BindOnTextureUnit();
 
         glm::mat4 model {glm::mat4(1.0f)};
-        glm::mat4 view {glm::mat4(1.0f)};
         glm::mat4 projection {glm::mat4(1.0f)};
 
+        model = glm::scale(model, glm::vec3(.5f, .5f , .5f));
+        model = glm::translate(model, model_position);
+
         shader->SetMatrix4("model", 1, GL_FALSE, model);
-        shader->SetMatrix4("view", 1, GL_FALSE, view);
         shader->SetMatrix4("projection", 1, GL_FALSE, projection);
 
+        camera->RotateCameraWithTime(glfwGetTime(), .1f);
 
         shader->UseShaderProgram();
-        /*for (unsigned int i = 0; i < DEM->entities.capacity() -1; i++) {
-            DEM->entities.at(i)->transform = glm::translate(DEM->entities.at(i)->transform, glm::vec3(i + 1, i + 1, i - 1));
-            shader->SetMatrix4("model", 1, GL_FALSE, DEM->entities.at(i)->transform);
-        }*/
-
-        /*for(Entity &entity : *DEM->GetEntityList()){
-            shader->SetMatrix4("moodel", 1, GL_FALSE, entity.transform);
-
-        }*/
 
         dwarfMesh2D->Draw(shader);
         ImGui_ImplGlfw_NewFrame();
@@ -123,6 +107,7 @@ namespace Dwarf {
             ImGui::Text("Change window showed\n");
             ImGui::Checkbox("Show demo window", &show_demo_window);
             ImGui::Checkbox("Show another window", &show_another_window);
+            ImGui::InputFloat3("Position", value_ptr(model_position));
 
             ImGui::Text("Change the background color");
             ImGui::SliderFloat("float", &f, 0.0f, 1.0f);
@@ -134,8 +119,6 @@ namespace Dwarf {
 
         ImGui::Render();
         ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());
-        /*dwarfModel->Draw(shader);*/
-
 
         glfwSwapBuffers(window);
 
@@ -149,9 +132,6 @@ namespace Dwarf {
     }
 
     DwarfEngine::~DwarfEngine() {
-        delete dwarfMesh2D;
-        delete shader;
-        delete DEM;
         glfwDestroyWindow(window);
         glfwTerminate();
     }
