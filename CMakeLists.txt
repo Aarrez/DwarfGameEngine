@@ -24,8 +24,8 @@ add_executable(DwarfGameEngine
 
         #DwarfEngine
         DwarfEngine/DwarfEngine.cpp
-        #[[DwarfEngine/DwarfInput.cpp
-        DwarfEngine/DwarfInput.h]]
+        DwarfEngine/DwarfInput.cpp
+        DwarfEngine/DwarfInput.h
 
         #DwarfGL/Mesh2D
         DwarfGL/Mesh/DwarfMesh.cpp

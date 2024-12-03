@@ -27,6 +27,7 @@ namespace Dwarf::Camera{
         vec3 cameraTarget {};
         vec3 cameraDirection {};
         vec3 up {vec3(0, 1.0f, 0)};
+        vec3 cameraFront {};
         vec3 cameraRight {};
         vec3 cameraUp {};
 

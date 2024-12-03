@@ -1,8 +1,8 @@
 #include "DwarfOBJLoader.h"
 
 namespace Dwarf {
-    std::tuple<vector<float>, vector<Face>> DwarfOBJLoader::OBJFileParser(const string& filename) {
-        vector<float> vertices;
+    std::tuple<vector<Vertex>, vector<Face>> DwarfOBJLoader::OBJFileParser(const string& filename) {
+        vector<Vertex> vertices;
         vector<Face> faces;
         std::ifstream file(filename);
         std::string line;
@@ -15,8 +15,8 @@ namespace Dwarf {
             string prefix;
             iss >> prefix;
             if (prefix == "v") {
-                float vert;
-                iss >> vert;
+                Vertex vert;
+                iss >> vert.x >> vert.y >> vert.z;
                 vertices.push_back(vert);
             }
             if (prefix == "f") {
@@ -37,11 +37,16 @@ namespace Dwarf {
 
             Face face = std::get<1>(data)[i];
 
-            auto temp = Vertex(
-                std::get<0>(data)[face.x],
-                std::get<0>(data)[face.y],
-                std::get<0>(data)[face.z]);
-            ordered_vertices.push_back(temp);
+            auto temp1 =
+                std::get<0>(data)[face.x];
+            auto temp2 =
+                std::get<0>(data)[face.y];
+            auto temp3 =
+                std::get<0>(data)[face.z];
+
+            ordered_vertices.push_back(temp1);
+            ordered_vertices.push_back(temp2);
+            ordered_vertices.push_back(temp3);
         }
         return ordered_vertices;
     }

@@ -10,8 +10,9 @@ DwarfCamera::DwarfCamera(std::shared_ptr<DwarfShader> shader) : shader(shader){
     cameraPos = glm::vec3(0,0,3.0f);
     cameraDirection = glm::vec3(0, 0, 0);
     cameraDirection = glm::normalize(cameraPos - cameraTarget);
-    cameraRight = normalize(glm::cross(up, cameraDirection));
-    cameraUp = glm::cross(cameraDirection, cameraRight);
+    cameraRight = normalize(cross(up, cameraDirection));
+    cameraUp = glm::vec3(0, 1.0f, 0);
+    cameraFront =  glm::vec3(0, 0, -1.0f);
     view = glm::lookAt(cameraPos, cameraTarget, up);
 }
 
@@ -27,7 +28,10 @@ void DwarfCamera::RotateCameraWithTime(
 }
 
 void DwarfCamera::MoveCamera(glm::vec3 direction, float speed) {
-    view = lookAt(direction * speed, cameraTarget, cameraUp);
+    if (glm::length(direction) < 0.0f) return;
+    cameraPos += direction * speed;
+
+    view = lookAt(cameraPos, cameraPos + cameraFront, cameraUp);
     shader->SetMatrix4("view", 1, GL_FALSE, view);
 }
 

@@ -25,7 +25,7 @@ Mesh2D::DwarfMesh2D::DwarfMesh2D(
 
     glBindBuffer(GL_ARRAY_BUFFER, vertex_buffer_object);
     glBufferData(GL_ARRAY_BUFFER,
-        vertices_size * sizeof(Vertex),
+        vertices.size() * sizeof(Vertex),
                  &vertices[0], GL_STATIC_DRAW);
 
 
@@ -55,6 +55,7 @@ Mesh2D::DwarfMesh2D::DwarfMesh2D(
 
 void Mesh2D::DwarfMesh2D::Draw(std::shared_ptr<DwarfShader> dwarf_shader){
     glBindVertexArray(vertex_array_object);
+
 
     /*if(element_buffer_object != 0){
         glDrawElements(GL_TRIANGLES, faces_size, GL_UNSIGNED_INT, 0);

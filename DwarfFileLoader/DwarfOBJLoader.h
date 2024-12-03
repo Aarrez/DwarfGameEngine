@@ -23,11 +23,11 @@ namespace Dwarf {
             z -= value;
         }
     };
-    using MeshData = std::tuple<vector<float>, vector<Face>>;
+    using MeshData = std::tuple<vector<Vertex>, vector<Face>>;
     class DwarfOBJLoader{
 
         DwarfOBJLoader() = default;
-        static std::tuple<vector<float>, vector<Face>> OBJFileParser(const string& filename);
+        static std::tuple<vector<Vertex>, vector<Face>> OBJFileParser(const string& filename);
     public:
 
         static vector<Vertex> GetVerticesFromOBJ(const string& filename);

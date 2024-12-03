@@ -63,7 +63,13 @@ namespace Dwarf {
         bool show_another_window {false};
 
         //Transform variables
-        vec3 model_position {};
+        vec3 model_position {0, 0, 0};
+        vec3 model_rotation {0, 0, 0};
+        vec3 model_scale {.5f, .5f, .5f};
+        float rad = 45.0f;
+        unsigned int AmountOfMeshes {10};
+
+
 
 
     private:

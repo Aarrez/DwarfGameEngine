@@ -1,58 +1,72 @@
 #include "DwarfInput.h"
 
 #include <algorithm>
+#include <iostream>
 
 namespace Dwarf
 {
-    DwarfInput::DwarfInput(GLFWwindow *window) : window(window){
+    DwarfInput* DwarfInput::Instance = nullptr;
+
+    MovementValue moveValue {0, 0, 0};
+
+    void DwarfInput::Allocate(GLFWwindow *window) {
+        assert(Instance == nullptr);
+        if (Instance) return;
+        Instance = new DwarfInput();
         glfwSetKeyCallback(window, key_callback);
     }
 
-    void DwarfInput::input() {
+    DwarfInput & DwarfInput::Get() {
+        if (!Instance)
+            Allocate(nullptr);
+        return *Instance;
     }
 
-    void DwarfInput::key_callback(GLFWwindow* window, const int key, int scancode, const int action, int mods) {
-        /*switch (key) {
-            case key == GLFW_KEY_ESCAPE && action == GLFW_PRESS:
+    MovementValue* DwarfInput::GetMoveValue() {
+        return &moveValue;
+    }
+
+    void DwarfInput::key_callback(GLFWwindow *window, int key, int scancode, int action, int mods) {
+        if (action == GLFW_REPEAT) return;
+        switch (key) {
+            case GLFW_KEY_ESCAPE:
                 glfwSetWindowShouldClose(window, GLFW_TRUE);
             return;
-            case key == GLFW_KEY_SPACE && action != GLFW_REPEAT:
-                HandleMovementInput(
-                    {movement_input.vertical, action, movement_input.forward});
-            case key == GLFW_KEY_LEFT_CONTROL && action != GLFW_REPEAT:
-                HandleMovementInput(
-                    {movement_input.vertical, -action, movement_input.forward});
-            case key == GLFW_KEY_W && action != GLFW_REPEAT:
-                HandleMovementInput(
-                    {movement_input.vertical, movement_input.horizontal, action});
-            case key == GLFW_KEY_A && action != GLFW_REPEAT:
-                HandleMovementInput(
-                     {action, movement_input.horizontal, movement_input.forward});
-            case key == GLFW_KEY_S && action != GLFW_REPEAT:
-                HandleMovementInput(
-                    {movement_input.vertical, movement_input.horizontal, -action});
-            case key == GLFW_KEY_D && action != GLFW_REPEAT:
-                HandleMovementInput(
-                    {-action, movement_input.horizontal, movement_input.forward});
-            default: ;
-        }*/
+            case GLFW_KEY_SPACE:
+                if (moveValue.vertical == -1) action = 0;
+                moveValue = MovementValue(moveValue.horizontal, action, moveValue.forward);
+            break;
+
+            case GLFW_KEY_LEFT_CONTROL:
+                if (moveValue.vertical == 1) action = 0;
+                moveValue = MovementValue(moveValue.horizontal, -action, moveValue.forward);
+            break;
+
+            case GLFW_KEY_W: case GLFW_KEY_UP:
+                if (moveValue.forward == -1) action = 0;
+                moveValue = MovementValue(moveValue.horizontal, moveValue.vertical, action);
+            break;
+
+            case GLFW_KEY_DOWN: case GLFW_KEY_S:
+                if (moveValue.forward == 1) action = 0;
+                moveValue = MovementValue(moveValue.horizontal, moveValue.vertical, -action);
+            break;
+
+            case GLFW_KEY_RIGHT: case GLFW_KEY_D:
+                if (moveValue.horizontal == -1) action = 0;
+                moveValue = MovementValue(action, moveValue.vertical, moveValue.forward);
+                auto some = moveValue;
+            break;
+
+            case GLFW_KEY_LEFT: case GLFW_KEY_A:
+                if (moveValue.horizontal == 1) action = 0;
+                moveValue = MovementValue(-action, moveValue.vertical, moveValue.forward);
+            break;
+
+            default:
+                moveValue = {0, 0, 0};
+        }
     }
-
-    void DwarfInput::HandleMovementInput(MovementValue value) {
-        if (movement_input == value) return;
-
-        if (movement_input.vertical != value.vertical)
-            movement_input.vertical = 0;
-        if (movement_input.horizontal != value.horizontal)
-            movement_input.horizontal = 0;
-        if (movement_input.forward != value.forward)
-            movement_input.forward = 0;
-    }
-
-    MovementValue DwarfInput::GetMovementValue() {
-        return movement_input;
-    }
-
 }
 
 
