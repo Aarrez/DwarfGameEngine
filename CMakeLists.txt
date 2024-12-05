@@ -31,13 +31,20 @@ add_executable(DwarfGameEngine
         DwarfGL/Mesh/DwarfMesh.cpp
         DwarfGL/Mesh/DwarfMesh.h
 
-        main.cpp
-
+        #DwarfMisc
         DwarfMisc/TestCode.cpp
         DwarfMisc/TestCode.h
+        DwarfMisc/DwarfPath.h
+        DwarfMisc/Memory.cpp
+        DwarfMisc/Memory.h
+        DwarfMisc/DwarfPublicStructs.h
+
+        main.cpp
+
+
         DwarfStb/DwarfGetImage.cpp
         DwarfStb/DwarfGetImage.h
-        DwarfMisc/DwarfPath.h
+
         DwarfEngine/DwarfTransfrom.cpp
         DwarfEngine/DwarfTransfrom.h
         DwarfEngine/DwarfCamera.cpp
@@ -48,8 +55,7 @@ add_executable(DwarfGameEngine
         DwarfEngine/DwarfEntityManager.h
         DwarfFileLoader/DwarfOBJLoader.cpp
         DwarfFileLoader/DwarfOBJLoader.h
-        DwarfMisc/Memory.cpp
-        DwarfMisc/Memory.h
+
 )
 
 find_package(assimp CONFIG REQUIRED)

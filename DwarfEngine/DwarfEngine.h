@@ -1,4 +1,5 @@
 #pragma once
+#define GLM_ENABLE_EXPERIMENTAL
 #include <glad/glad.h>
 #include <GLFW/glfw3.h>
 #include <memory>
@@ -6,6 +7,8 @@
 #include "imgui.h"
 #include "imgui_impl_glfw.h"
 #include "imgui_impl_opengl3.h"
+
+#include "glm/gtx/matrix_decompose.hpp"
 
 
 
@@ -19,7 +22,10 @@
 //DwarfMisc
 #include "../DwarfMisc/DwarfPath.h"
 /*#include "../DwarfMisc/Memory.h"*/
+
+//OBJLoaders
 #include "../DwarfFileLoader/DwarfOBJLoader.h"
+#include "../DwarfFileLoader/OptimizedOBJLoader.h"
 
 //DwarfEngine
 #include "DwarfEntityManager.h"
@@ -51,7 +57,7 @@ namespace Dwarf {
         std::shared_ptr<DwarfShader> shader {};
         /*std::shared_ptr<DwarfInput> dwarf_input {};*/
 
-        std::unique_ptr<Mesh2D::DwarfMesh2D> dwarfMesh2D {};
+        std::unique_ptr<DwarfMesh2D> dwarfMesh2D {};
         std::unique_ptr<DwarfEntityManager> DEM {};
         std::unique_ptr<Camera::DwarfCamera> camera {};
 
@@ -67,7 +73,7 @@ namespace Dwarf {
         vec3 model_rotation {0, 0, 0};
         vec3 model_scale {.5f, .5f, .5f};
         float rad = 45.0f;
-        unsigned int AmountOfMeshes {10};
+        int AmountOfMeshes {5};
 
 
 

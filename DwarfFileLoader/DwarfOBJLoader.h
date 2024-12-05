@@ -9,31 +9,37 @@
 #include "vector"
 #include <fstream>
 #include <sstream>
+#include "../DwarfMisc/DwarfPublicStructs.h"
 using namespace std;
 
 namespace Dwarf {
-    struct Vertex {
-        float x, y, z;
+
+    struct MeshDataSize {
+        size_t verticesCount, vFacesCount;
+        size_t texCordCount, vNormalCount;
+        size_t uvsCount;
     };
-    struct Face {
-        unsigned int x, y, z;
-        void operator-= (const unsigned int &value) {
-            x -= value;
-            y -= value;
-            z -= value;
-        }
+
+    struct SerializedFile {
+        string fileName;
+        string path;
+        MeshDataSize meshDataSize;;
     };
-    using MeshData = std::tuple<vector<Vertex>, vector<Face>>;
     class DwarfOBJLoader{
 
         DwarfOBJLoader() = default;
-        static std::tuple<vector<Vertex>, vector<Face>> OBJFileParser(const string& filename);
-    public:
+        ~DwarfOBJLoader();
 
-        static vector<Vertex> GetVerticesFromOBJ(const string& filename);
+    public:
+        static MeshData OBJFileParser(const string& filename);
+        static vector<Vertex> GetVerticesFromData(MeshData& data);
+
+        static void OBJDataSerializer(string& path, MeshData& meshData);
+        static MeshData OBJDataDeserializer(const char* filename);
+
+        static vector<SerializedFile> FilesSerialized;
 
     };
-
 }
 
 

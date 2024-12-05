@@ -68,17 +68,29 @@ namespace Dwarf {
         }
         shader = std::make_shared<DwarfShader>();
 
+
+
         camera = make_unique<Camera::DwarfCamera>(shader);
         /*std::cout << "Current available phys memory" << to_string(Memory::GetPhysicalMemoryAvailable()) << std::endl;*/
-        std::string filename = "DwarfModels/OBJFiles/teapot.obj";
-        vector<Vertex> vertex_vector = DwarfOBJLoader::GetVerticesFromOBJ(filename);
+        std::string filename = "DwarfModels/OBJFiles/Cube.obj";
+        MeshData meshData = DwarfOBJLoader::OBJFileParser(filename);
+        DwarfOBJLoader::OBJDataSerializer("DwarfModels/OBJFiles/Cube.dat", meshData);
+        auto data = DwarfOBJLoader::OBJDataDeserializer("DwarfModels/OBJFiles/Cube.dat");
+        vector<Vertex> vertex_vector = DwarfOBJLoader::GetVerticesFromData(data);
 
-        dwarfMesh2D = make_unique<Mesh2D::DwarfMesh2D>(shader, vertex_vector);
+        dwarfMesh2D = make_unique<DwarfMesh2D>(shader, vertex_vector);
 
         DEM = make_unique<DwarfEntityManager>();
 
         dwarfMesh2D->SetTextureUnit();
 
+        for (int i = 0; i < AmountOfMeshes; i++) {
+            auto e = DEM->CreateEntity();
+            e.transform = translate(e.transform, cubePositions[i] + model_position);
+            e.transform = scale(e.transform, model_scale);
+            float angle = 20.0f * i;
+            e.transform = rotate(e.transform, glm::radians(angle), vec3(1.f, .3f, .5f));
+        }
     }
 
     void DwarfEngine::Update() {
@@ -100,13 +112,13 @@ namespace Dwarf {
 
         const float cameraSpeed = deltaTime * 2.5f;
 
-        /*camera->MoveCamera(DwarfInput::GetMoveValue()->ToVec3(), cameraSpeed);*/
 
         glm::mat4 model {glm::mat4(1.0f)};
         glm::mat4 projection {glm::mat4(1.0f)};
-        projection = glm::perspective(glm::radians(45.0f), static_cast<float>(Width) / Height, 0.1f, 100.0f);
+        projection = glm::perspective(radians(45.0f), static_cast<float>(Width) / Height, 0.1f, 100.0f);
         mat4 view {mat4(1.0f)};
         view = translate(view, glm::vec3(0.0f, 0.0f, -3.0f));
+        shader->SetMatrix4("veiw", 1, GL_FALSE, view);
 
         model = glm::scale(model, model_scale);
         model = glm::translate(model, model_position);
@@ -114,26 +126,20 @@ namespace Dwarf {
             model = glm::rotate(model, glm::radians(rad), model_rotation);
         }
 
-
-
         /*camera->RotateCameraWithTime(glfwGetTime(), .1f);*/
 
         shader->SetMatrix4("projection", 1, GL_FALSE, projection);
-        shader->SetMatrix4("view", 1, GL_FALSE, view);
-
+        camera->MoveCamera(DwarfInput::GetMoveValue(), DwarfInput::GetCameraDirection(), .1);
+        auto temp = DwarfInput::GetCameraDirection();
+        std::cout << temp.x << ", " << temp.y << ", " << temp.z << std::endl;
 
 
         shader->UseShaderProgram();
 
-        for (unsigned int i = 0; i < AmountOfMeshes; i++) {
-            mat4 tempmodel = mat4(1.0f);
-            tempmodel = translate(tempmodel, cubePositions[i] + model_position);
-            tempmodel = scale(tempmodel, model_scale);
-            float angle = 20.0f * i;
-            tempmodel = rotate(tempmodel, glm::radians(angle), vec3(1.f, .3f, .5f));
-            shader->SetMatrix4("model", 1, GL_FALSE, tempmodel);
-            dwarfMesh2D->Draw(shader);
+        for (int i = 0; i < DEM->GetEntityList().size(); i++) {
 
+            shader->SetMatrix4("model", 1, GL_FALSE, DEM->GetEntityList()[i].transform);
+            dwarfMesh2D->Draw(shader);
         }
 
         ImGui_ImplGlfw_NewFrame();
@@ -145,22 +151,40 @@ namespace Dwarf {
             static float f = 0.0f;
             static int counter = 0;
             ImGui::Begin("DwarfDemoWindow", &show_demo_window);
-            if (ImGui::Button("Button")) {
-                DwarfInput::GetMoveValue();
+
+            for (Entity& e: DEM->GetEntityList()) {
+                if (ImGui::BeginMenu(e.name.c_str())) {
+
+                    glm::vec3 pos, _scale, skew, rot;
+                    quat quatrot;
+                    vec4 perspective;
+                    rot = eulerAngles(quatrot);
+                    float x, y, z;
+                    ImGui::DragFloat3("Position", value_ptr(pos), 1, -10, 10);
+                    /*ImGui::DragFloat4("Rotaion", value_ptr(rot));*/
+                    ImGui::DragFloat3("Scale", value_ptr(_scale));
+                    e.transform = translate(e.transform, pos);
+                    /*e.transform = rotate(e.transform, rot.x , vec3(1.0f, 0.0f, 0.0f));
+                    e.transform = rotate(e.transform, rot.y , vec3(0.0f, 1.0f, 0.0f));
+                    e.transform = rotate(e.transform, rot.z , vec3(0.0f, 0.0f, 1.0f));*/
+                    e.transform = scale(e.transform, _scale);
+                    ImGui::EndMenu();
+                }
             }
 
-            ImGui::Text("FPS: %.2f\n", ImGui::GetIO().Framerate);
-            ImGui::Text("Change window showed\n");
-            ImGui::Checkbox("Show demo window", &show_demo_window);
-            ImGui::Checkbox("Show another window", &show_another_window);
-            ImGui::DragFloat3
-            ("Position", value_ptr(model_position),1.0f,-10.0f, 10.0f);
-            ImGui::DragFloat3
-            ("Rotation axis", value_ptr(model_rotation), 1.0f, 0.0f, 1.0f);
-            ImGui::DragFloat
-            ("Radians", &rad, 1.0f, 0.0f, 360.0f);
-            ImGui::DragFloat3
-            ("Scale", value_ptr(model_scale), .1f, 0.1f, 2.0f);
+
+            /*if (ImGui::BeginMenu("Transfrom")) {
+                ImGui::DragFloat3
+                ("Position", value_ptr(model_position),1.0f,-10.0f, 10.0f);
+                ImGui::DragFloat3
+                ("Rotation axis", value_ptr(model_rotation), 1.0f, 0.0f, 1.0f);
+                ImGui::DragFloat
+                ("Radians", &rad, 1.0f, 0.0f, 360.0f);
+                ImGui::DragFloat3
+                ("Scale", value_ptr(model_scale), .1f, 0.1f, 2.0f);
+                ImGui::EndMenu();
+            }*/
+
 
             ImGui::Text("Change the background color");
             ImGui::ColorEdit3("clear color", (float*)&clear_color);

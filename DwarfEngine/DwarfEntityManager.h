@@ -19,12 +19,12 @@ namespace Dwarf {
         public:
         DwarfEntityManager();
 
-        Entity CreateDwarfEntity(const string &name = "Entity");
-        vector<Entity>* GetEntityList();
+        Entity CreateEntity(const string &name = "Entity");
+        vector<Entity> GetEntityList();
         /*void SetEntityModel(shared_ptr<Entity> entity, const char* model);
         void SetEntityTexture(shared_ptr<Entity> entity, const char* texture);*/
         void RemoveEntity(string name);
-        void RemoveAllEntitys();
+        void RemoveAllEntities();
 
 
         /*~DwarfEntityManager();*/

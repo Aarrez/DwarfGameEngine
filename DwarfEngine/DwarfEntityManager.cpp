@@ -4,15 +4,15 @@ namespace Dwarf{
     DwarfEntityManager::DwarfEntityManager() {
     }
 
-    Entity DwarfEntityManager::CreateDwarfEntity(const string &name) {
+    Entity DwarfEntityManager::CreateEntity(const string &name) {
         Entity entity {name + std::to_string(entities.capacity())};
         entity.transform = glm::mat4(1.0f);
         entities.push_back(entity);
         return entity;
     }
 
-    vector<Entity> *DwarfEntityManager::GetEntityList() {
-        return &entities;
+    vector<Entity> DwarfEntityManager::GetEntityList() {
+        return entities;
     }
 
     void DwarfEntityManager::RemoveEntity(string name) {
@@ -21,7 +21,7 @@ namespace Dwarf{
         });
     }
 
-    void DwarfEntityManager::RemoveAllEntitys() {
+    void DwarfEntityManager::RemoveAllEntities() {
         entities.clear();
     }
 

@@ -14,8 +14,7 @@ namespace Dwarf::Camera{
     public:
         DwarfCamera(std::shared_ptr<DwarfShader> shader);
 
-        void MoveCamera(glm::vec3 direction, float speed);
-        void RotateCamera(glm::vec3 axis, float angle);
+        void MoveCamera(glm::vec3 direction, vec3 camDirection, float speed);
 
         void RotateCameraWithTime(double time, float radius, vec3 direction = vec3(0, 1.0f, 0));
 
@@ -23,7 +22,7 @@ namespace Dwarf::Camera{
 
         mat4 view {};
 
-        vec3 cameraPos {};
+        vec3 cameraPos {0, 0, 3.0f};
         vec3 cameraTarget {};
         vec3 cameraDirection {};
         vec3 up {vec3(0, 1.0f, 0)};

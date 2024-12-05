@@ -6,7 +6,7 @@
 #include "../DwarfShader.h"
 #include "../../DwarfFileLoader/DwarfOBJLoader.h"
 
-namespace Dwarf::Mesh2D{
+namespace Dwarf{
     static float TriVertices[] = {
             //Triangle corner        Corner colors     ModelTexture Coords
             -0.5f, -0.5f, 0.0f,     1.0f, .0f, .0f,     0.0f, 0.0f,
