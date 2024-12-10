@@ -1,6 +1,8 @@
 #include "DwarfOBJLoader.h"
 
 namespace Dwarf {
+
+    vector<SerializedFile> DwarfOBJLoader::FilesSerialized;
     DwarfOBJLoader::~DwarfOBJLoader() {
     }
 
@@ -110,30 +112,51 @@ namespace Dwarf {
     }
 
     MeshData DwarfOBJLoader::OBJDataDeserializer(const char* filename) {
+        MeshDataSize data_size;
+        string fname;
+
+        bool foundNam = false;
+        for (SerializedFile data : FilesSerialized) {
+            if (data.fileName == filename) {
+                data_size = data.meshDataSize;
+                fname = data.path;
+                foundNam = true;
+                break;
+            }
+        }
+        if (!foundNam) {
+            cerr << "File name not found: " << filename << endl;
+            return MeshData();
+        }
+        MeshData meshData;
         std::ifstream file;
-        file.open(filename, std::ios_base::binary);
+        file.open(fname, std::ios_base::binary | std::ios_base::in);
         if (!file.is_open()) {
             cerr << "File not found: " << filename << endl;
             return MeshData();
         }
-        MeshData meshData;
-
-        for (int i {0}; i < meshData.vertices.size(); i++) {
+        meshData.vertices.resize(data_size.verticesCount);
+        meshData.texCords.resize(data_size.texCordCount);
+        meshData.normals_vertices.resize(data_size.vNormalCount);
+        meshData.vertices_faces.resize(data_size.vFacesCount);
+        meshData.uvs_faces.resize(data_size.uvsCount);
+        meshData.normals_faces.resize(data_size.iNormalCount);
+        for (int i {0}; i < data_size.verticesCount; i++) {
             file.read(reinterpret_cast<char*>(&meshData.vertices[i]), sizeof(Vertex));
         }
-        for (int i {0}; i < meshData.texCords.size(); i++) {
+        for (int i {0}; i < data_size.texCordCount; i++) {
             file.read(reinterpret_cast<char*>(&meshData.texCords[i]), sizeof(TexCord));
         }
-        for (int i {0}; i < meshData.normals_vertices.size(); i++) {
+        for (int i {0}; i < data_size.vNormalCount; i++) {
             file.read(reinterpret_cast<char*>(&meshData.normals_vertices[i]), sizeof(Vertex));
         }
-        for (int i {0}; i < meshData.vertices_faces.size(); i++) {
+        for (int i {0}; i < data_size.vFacesCount; i++) {
             file.read(reinterpret_cast<char*>(&meshData.vertices_faces[i]), sizeof(Face));
         }
-        for (int i {0}; i < meshData.uvs_faces.size(); i++) {
+        for (int i {0}; i < data_size.uvsCount; i++) {
             file.read(reinterpret_cast<char*>(&meshData.uvs_faces[i]), sizeof(Face));
         }
-        for (int i {0}; i < meshData.normals_faces.size(); i++) {
+        for (int i {0}; i < data_size.iNormalCount; i++) {
             file.read(reinterpret_cast<char*>(&meshData.normals_faces[i]), sizeof(Face));
         }
         file.close();
@@ -144,46 +167,54 @@ namespace Dwarf {
         return meshData;
     }
 
-    void DwarfOBJLoader::OBJDataSerializer(string& path, MeshData &meshData) {
-        string thepath = path;
+    void DwarfOBJLoader::OBJDataSerializer(string& filePath, MeshData &meshData, const string& binPath) {
+        SerializedFile serialized_file;
 
-        path.erase(0, path.rfind(path, '/'));
-        path.erase(path.find('.'));
+        string pathToFile = binPath;
+        string filename = filePath;
+        filename = filename.substr(filename.find_last_of('/') + 1);
+        filename = filename.erase(filename.find_last_of('.'));
+
+        filename.append(".bin");
+        pathToFile.append(filename);
+
+        serialized_file.path = pathToFile;
+        serialized_file.fileName = filename;
+
         MeshDataSize mds = MeshDataSize(
             meshData.vertices.size(),
             meshData.vertices_faces.size(),
             meshData.texCords.size(),
             meshData.normals_vertices.size(),
-            meshData.uvs_faces.size());
-        SerializedFile serialized_file;
-        serialized_file = SerializedFile(path, thepath, mds);
+            meshData.uvs_faces.size(),
+            meshData.normals_faces.size());
+        serialized_file.meshDataSize = mds;
         FilesSerialized.push_back(serialized_file);
 
         //TODO Check path has the correct name, replace meshData.{structname}.size()
         std::ofstream file;
-        file.open(path, std::ios_base::binary);
+        file.open(pathToFile, std::ios_base::binary | std::ios_base::out);
         if (!file.is_open()) {
-            cerr << path << " \n is not a valid path" << endl;
+            cerr << filePath << " \n is not a valid path" << endl;
             return;
         }
-
-        for (int i {0}; i < meshData.vertices.size(); i++) {
-            file.write(reinterpret_cast<const char*>(&meshData.vertices[i]), sizeof(Vertex));
+        for (int i {0}; i < mds.verticesCount; i++) {
+            file.write(reinterpret_cast<char*>(&meshData.vertices[i]), sizeof(Vertex));
         }
-        for (int i {0}; i < meshData.texCords.size(); i++) {
-            file.write(reinterpret_cast<const char*>(&meshData.texCords[i]), sizeof(TexCord));
+        for (int i {0}; i < mds.texCordCount; i++) {
+            file.write(reinterpret_cast<char*>(&meshData.texCords[i]), sizeof(TexCord));
         }
-        for (int i {0}; i < meshData.normals_vertices.size(); i++) {
-            file.write(reinterpret_cast<const char*>(&meshData.normals_vertices[i]), sizeof(Vertex));
+        for (int i {0}; i < mds.vNormalCount; i++) {
+            file.write(reinterpret_cast<char*>(&meshData.normals_vertices[i]), sizeof(Vertex));
         }
-        for (int i {0}; i < meshData.vertices_faces.size(); i++) {
-            file.write(reinterpret_cast<const char*>(&meshData.vertices_faces[i]), sizeof(Face));
+        for (int i {0}; i < mds.vFacesCount; i++) {
+            file.write(reinterpret_cast<char*>(&meshData.vertices_faces[i]), sizeof(Face));
         }
-        for (int i {0}; i < meshData.uvs_faces.size(); i++) {
-            file.write(reinterpret_cast<const char*>(&meshData.uvs_faces[i]), sizeof(Face));
+        for (int i {0}; i < mds.uvsCount; i++) {
+            file.write(reinterpret_cast<char*>(&meshData.uvs_faces[i]), sizeof(Face));
         }
-        for (int i {0}; i < meshData.normals_faces.size(); i++) {
-            file.write(reinterpret_cast<const char*>(&meshData.normals_faces[i]), sizeof(Face));
+        for (int i {0}; i < mds.iNormalCount; i++) {
+            file.write(reinterpret_cast<char*>(&meshData.normals_faces[i]), sizeof(Face));
         }
         file.close();
         if (!file.good()) {

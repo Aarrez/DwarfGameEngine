@@ -72,10 +72,12 @@ namespace Dwarf {
 
         camera = make_unique<Camera::DwarfCamera>(shader);
         /*std::cout << "Current available phys memory" << to_string(Memory::GetPhysicalMemoryAvailable()) << std::endl;*/
-        std::string filename = "DwarfModels/OBJFiles/Cube.obj";
-        MeshData meshData = DwarfOBJLoader::OBJFileParser(filename);
-        DwarfOBJLoader::OBJDataSerializer("DwarfModels/OBJFiles/Cube.dat", meshData);
-        auto data = DwarfOBJLoader::OBJDataDeserializer("DwarfModels/OBJFiles/Cube.dat");
+        std::string filePath = "DwarfModels/OBJFiles/bear.obj";
+        MeshData meshData = DwarfOBJLoader::OBJFileParser(filePath);
+
+        DwarfOBJLoader::OBJDataSerializer(filePath, meshData);
+        MeshData data = DwarfOBJLoader::OBJDataDeserializer("bear.bin");
+
         vector<Vertex> vertex_vector = DwarfOBJLoader::GetVerticesFromData(data);
 
         dwarfMesh2D = make_unique<DwarfMesh2D>(shader, vertex_vector);

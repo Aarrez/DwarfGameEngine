@@ -26,15 +26,6 @@ namespace Dwarf {
         vertices.size() * sizeof(Vertex),
                  &vertices[0], GL_STATIC_DRAW);
 
-
-    /*if(!_faces.empty()){
-
-        glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, element_buffer_object);
-        glBufferData(GL_ELEMENT_ARRAY_BUFFER,
-                     faces_size * sizeof(Face), &_faces[0], GL_STATIC_DRAW);
-
-    }*/
-
     glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE,
                           3 * sizeof(float), (void*)0);
 
@@ -53,12 +44,6 @@ namespace Dwarf {
 
     void DwarfMesh2D::Draw(std::shared_ptr<DwarfShader> dwarf_shader){
         glBindVertexArray(vertex_array_object);
-
-
-        /*if(element_buffer_object != 0){
-            glDrawElements(GL_TRIANGLES, faces_size, GL_UNSIGNED_INT, 0);
-            return;
-        }*/
 
         glDrawArrays(GL_TRIANGLES, 0, vertices_size);
         glBindVertexArray(0);

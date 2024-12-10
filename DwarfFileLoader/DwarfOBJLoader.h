@@ -17,7 +17,7 @@ namespace Dwarf {
     struct MeshDataSize {
         size_t verticesCount, vFacesCount;
         size_t texCordCount, vNormalCount;
-        size_t uvsCount;
+        size_t uvsCount, iNormalCount;
     };
 
     struct SerializedFile {
@@ -34,7 +34,8 @@ namespace Dwarf {
         static MeshData OBJFileParser(const string& filename);
         static vector<Vertex> GetVerticesFromData(MeshData& data);
 
-        static void OBJDataSerializer(string& path, MeshData& meshData);
+        static void OBJDataSerializer(string& filepath, MeshData& meshData,
+            const string& binPath = "DwarfModels/BinaryFiles/");
         static MeshData OBJDataDeserializer(const char* filename);
 
         static vector<SerializedFile> FilesSerialized;
