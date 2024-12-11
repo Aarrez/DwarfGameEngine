@@ -7,29 +7,37 @@
 using namespace std;
 
 namespace Dwarf {
+
     struct Entity {
         string name;
-        const char* model;
-        const char* texture;
+        string model;
+        string texture;
         glm::mat4 transform;
+
+        void Translate(glm::vec3 translation) {
+            transform = glm::translate(transform, translation);
+        }
     };
 
     class DwarfEntityManager {
     private:
         public:
-        DwarfEntityManager();
+        static void Allocate();
 
-        Entity CreateEntity(const string &name = "Entity");
-        vector<Entity> GetEntityList();
-        /*void SetEntityModel(shared_ptr<Entity> entity, const char* model);
-        void SetEntityTexture(shared_ptr<Entity> entity, const char* texture);*/
-        void RemoveEntity(string name);
-        void RemoveAllEntities();
+
+        static Entity* CreateEntity(const string &name = "Entity");
+        static vector<Entity*>* GetEntityList();
+        void SetEntityMesh(Entity* entity, const string& model);
+        /*void SetEntityTexture(shared_ptr<Entity> entity, const string& texture);*/
+        static void RemoveEntity(Entity* entity);
+        static void RemoveEntityByName(string& name);
+        static void RemoveAllEntities();
 
 
         /*~DwarfEntityManager();*/
     private:
-
-        vector<Entity> entities {};
+        static DwarfEntityManager* Instance;
+        DwarfEntityManager();
+        static vector<Entity*> entities;
     };
 }

@@ -4,8 +4,8 @@
 using namespace Dwarf;
 
 std::string DwarfGetShader::ReadShaderFile(const GLchar *pathToFile) {
-    auto path = File::DwarfPathChange::GetCurrentPath();
-    File::DwarfPathChange::AppendCurrentPath("ShaderScripts");
+    auto path = DwarfPathChange::GetCurrentPath();
+    DwarfPathChange::AppendCurrentPath("ShaderScripts");
     std::ifstream fileStream(pathToFile, std::ios::in);
     std::string content;
     if(!fileStream.is_open()){
@@ -19,7 +19,7 @@ std::string DwarfGetShader::ReadShaderFile(const GLchar *pathToFile) {
         content.append(line + "\n");
     }
     fileStream.close();
-    File::DwarfPathChange::SetCurrentPath(path);
+    DwarfPathChange::SetCurrentPath(path);
     return content;
 }
 

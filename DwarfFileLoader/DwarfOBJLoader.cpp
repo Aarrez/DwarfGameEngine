@@ -1,9 +1,53 @@
 #include "DwarfOBJLoader.h"
 
+#include "../DwarfMisc/DwarfPath.h"
+
 namespace Dwarf {
 
     vector<SerializedFile> DwarfOBJLoader::FilesSerialized;
-    DwarfOBJLoader::~DwarfOBJLoader() {
+    /* DwarfModels/BinaryFiles/ */
+    string DwarfOBJLoader::defaultBinPath = "DwarfModels/BinaryFiles/";
+
+    void DwarfOBJLoader::GetBinaryFiles() {
+        auto binFiles = DwarfPathChange::GetNameFilesInDirectory(defaultBinPath);
+        for (auto& binFile : binFiles) {
+            size_t i = binFile.find('.');
+            if (i == binFile.npos) continue;
+            MeshDataSize data_size{};
+            SerializedFile serialized_file;
+            string fileType = binFile.substr(i + 1);
+            bool exists = false;
+            for (auto& files_serialized : FilesSerialized) {
+                if (files_serialized.fileName == binFile.erase(i)) {
+                    serialized_file = files_serialized;
+                    exists = true;
+                }
+            }
+            if (fileType == "json") {
+                string filePath = defaultBinPath + binFile + ".json";
+                ifstream f;
+                f.open(filePath);
+                json data = json::parse(f);
+                f.close();
+                data_size.VertexCount = data["vCount"].get<size_t>();
+                data_size.VertexIndexCount = data["viCount"].get<size_t>();
+                data_size.TexCordCount = data["texCordCount"].get<size_t>();
+                data_size.VertexNormalCount = data["nvCount"].get<size_t>();
+                data_size.UvsCount = data["uvsCount"].get<size_t>();
+                data_size.NormalIndexCount = data["inCount"].get<size_t>();
+
+                serialized_file.meshDataSize = data_size;
+                serialized_file.jsonPath = filePath;
+                serialized_file.fileName = binFile.erase(i);
+            }
+            if (fileType == "bin") {
+                serialized_file.binPath = defaultBinPath + binFile;
+                serialized_file.fileName = binFile.erase(i);
+            }
+            if (exists) continue;
+            FilesSerialized.push_back(serialized_file);
+        }
+
     }
 
     MeshData DwarfOBJLoader::OBJFileParser(const string& filename) {
@@ -17,12 +61,7 @@ namespace Dwarf {
         std::string line;
         if (!file.is_open()) {
             cerr << "File not found: " << filename << endl;
-            return MeshData(vertices,
-                tex_cords,
-                normals,
-                vertices_faces,
-                uv_faces,
-                normal_faces);
+            return MeshData();
         }
 
         while (std::getline(file, line)) {
@@ -85,24 +124,27 @@ namespace Dwarf {
             }
         }
         file.close();
-        return MeshData(vertices,
-               tex_cords,
-               normals,
-               vertices_faces,
-               uv_faces,
-               normal_faces);
+        auto meshData = MeshData();
+        meshData.vertexes = vertices;
+        meshData.texCords = tex_cords;
+        meshData.vertex_normals = normals;
+        meshData.vertex_indexes = vertices_faces;
+        meshData.uvs_indexes = uv_faces;
+        meshData.vertex_normals_indexes = normal_faces;
+
+        return meshData;
     }
 
     vector<Vertex> DwarfOBJLoader::GetVerticesFromData(MeshData& data) {
         vector<Vertex> ordered_vertices;
-        for (unsigned int i {0}; i < data.vertices_faces.size(); i++) {
+        for (unsigned int i {0}; i < data.vertex_indexes.size(); i++) {
 
             Vertex temp1 =
-                data.vertices[data.vertices_faces[i].x];
+                data.vertexes[data.vertex_indexes[i].x];
             Vertex temp2 =
-                data.vertices[data.vertices_faces[i].y];
+                data.vertexes[data.vertex_indexes[i].y];
             Vertex temp3 =
-                data.vertices[data.vertices_faces[i].z];
+                data.vertexes[data.vertex_indexes[i].z];
 
             ordered_vertices.push_back(temp1);
             ordered_vertices.push_back(temp2);
@@ -111,7 +153,7 @@ namespace Dwarf {
         return ordered_vertices;
     }
 
-    MeshData DwarfOBJLoader::OBJDataDeserializer(const char* filename) {
+    MeshData<> DwarfOBJLoader::OBJDataDeserializer(const string& filename) {
         MeshDataSize data_size;
         string fname;
 
@@ -119,50 +161,57 @@ namespace Dwarf {
         for (SerializedFile data : FilesSerialized) {
             if (data.fileName == filename) {
                 data_size = data.meshDataSize;
-                fname = data.path;
+                fname = data.binPath;
                 foundNam = true;
                 break;
             }
         }
         if (!foundNam) {
             cerr << "File name not found: " << filename << endl;
-            return MeshData();
+            return {};
         }
-        MeshData meshData;
+        MeshData<> meshData;
         std::ifstream file;
         file.open(fname, std::ios_base::binary | std::ios_base::in);
         if (!file.is_open()) {
             cerr << "File not found: " << filename << endl;
-            return MeshData();
+            return {};
         }
-        meshData.vertices.resize(data_size.verticesCount);
-        meshData.texCords.resize(data_size.texCordCount);
-        meshData.normals_vertices.resize(data_size.vNormalCount);
-        meshData.vertices_faces.resize(data_size.vFacesCount);
-        meshData.uvs_faces.resize(data_size.uvsCount);
-        meshData.normals_faces.resize(data_size.iNormalCount);
-        for (int i {0}; i < data_size.verticesCount; i++) {
-            file.read(reinterpret_cast<char*>(&meshData.vertices[i]), sizeof(Vertex));
+
+        for (int i {0}; i < data_size.VertexCount; i++) {
+            Vertex temp {};
+            file.read(reinterpret_cast<char*>(&temp), sizeof(Vertex));
+            meshData.vertexes.push_back(temp);
         }
-        for (int i {0}; i < data_size.texCordCount; i++) {
-            file.read(reinterpret_cast<char*>(&meshData.texCords[i]), sizeof(TexCord));
+        for (int i {0}; i < data_size.TexCordCount; i++) {
+            TexCord temp {};
+            file.read(reinterpret_cast<char*>(&temp), sizeof(TexCord));
+            meshData.texCords.push_back(temp);
         }
-        for (int i {0}; i < data_size.vNormalCount; i++) {
-            file.read(reinterpret_cast<char*>(&meshData.normals_vertices[i]), sizeof(Vertex));
+        for (int i {0}; i < data_size.VertexNormalCount; i++) {
+            Vertex temp {};
+            file.read(reinterpret_cast<char*>(&temp), sizeof(Vertex));
+            meshData.vertex_normals.push_back(temp);
         }
-        for (int i {0}; i < data_size.vFacesCount; i++) {
-            file.read(reinterpret_cast<char*>(&meshData.vertices_faces[i]), sizeof(Face));
+        for (int i {0}; i < data_size.VertexIndexCount; i++) {
+            Face temp {};
+            file.read(reinterpret_cast<char*>(&temp), sizeof(Face));
+            meshData.vertex_indexes.push_back(temp);
         }
-        for (int i {0}; i < data_size.uvsCount; i++) {
-            file.read(reinterpret_cast<char*>(&meshData.uvs_faces[i]), sizeof(Face));
+        for (int i {0}; i < data_size.UvsCount; i++) {
+            Face temp {};
+            file.read(reinterpret_cast<char*>(&temp), sizeof(Face));
+            meshData.uvs_indexes.push_back(temp);
         }
-        for (int i {0}; i < data_size.iNormalCount; i++) {
-            file.read(reinterpret_cast<char*>(&meshData.normals_faces[i]), sizeof(Face));
+        for (int i {0}; i < data_size.NormalIndexCount; i++) {
+            Face temp {};
+            file.read(reinterpret_cast<char*>(&temp), sizeof(Face));
+            meshData.vertex_normals_indexes.push_back(temp);
         }
         file.close();
         if (!file.good()) {
             cerr << "Error while writing to binary file" << endl;
-            return MeshData();
+            return {};
         }
         return meshData;
     }
@@ -170,25 +219,48 @@ namespace Dwarf {
     void DwarfOBJLoader::OBJDataSerializer(string& filePath, MeshData &meshData, const string& binPath) {
         SerializedFile serialized_file;
 
+        //"filePath" looks something like this
+        //DwarfModels/BinaryFiles/{Filename}.obj
+
         string pathToFile = binPath;
         string filename = filePath;
         filename = filename.substr(filename.find_last_of('/') + 1);
+        //{Filename}.obj
         filename = filename.erase(filename.find_last_of('.'));
+        //{Filename}
 
-        filename.append(".bin");
         pathToFile.append(filename);
 
-        serialized_file.path = pathToFile;
+        serialized_file.binPath = pathToFile;
         serialized_file.fileName = filename;
 
         MeshDataSize mds = MeshDataSize(
-            meshData.vertices.size(),
-            meshData.vertices_faces.size(),
+            meshData.vertexes.size(),
+            meshData.vertex_indexes.size(),
             meshData.texCords.size(),
-            meshData.normals_vertices.size(),
-            meshData.uvs_faces.size(),
-            meshData.normals_faces.size());
+            meshData.vertex_normals.size(),
+            meshData.uvs_indexes.size(),
+            meshData.vertex_normals_indexes.size());
+
         serialized_file.meshDataSize = mds;
+        //Creating a json object that holds the data of mds
+        json s
+        {
+            {"vCount", mds.VertexCount},
+            {"viCount", mds.VertexIndexCount},
+            {"texCordCount", mds.TexCordCount},
+            {"nvCount", mds.VertexNormalCount},
+            {"uvsCount", mds.UvsCount},
+            {"inCount", mds.NormalIndexCount}
+        };
+
+        //Creating a json file and serializing the data in the json object "s"
+        string jsonFile = defaultBinPath + filename + ".json";
+        ofstream i(jsonFile);
+        i << s << '\n';
+        //i << std::setw(2) << s << '\n';
+        i.close();
+        serialized_file.jsonPath = jsonFile;
         FilesSerialized.push_back(serialized_file);
 
         //TODO Check path has the correct name, replace meshData.{structname}.size()
@@ -198,23 +270,23 @@ namespace Dwarf {
             cerr << filePath << " \n is not a valid path" << endl;
             return;
         }
-        for (int i {0}; i < mds.verticesCount; i++) {
-            file.write(reinterpret_cast<char*>(&meshData.vertices[i]), sizeof(Vertex));
+        for (int i {0}; i < mds.VertexCount; i++) {
+            file.write(reinterpret_cast<char*>(&meshData.vertexes[i]), sizeof(Vertex));
         }
-        for (int i {0}; i < mds.texCordCount; i++) {
+        for (int i {0}; i < mds.TexCordCount; i++) {
             file.write(reinterpret_cast<char*>(&meshData.texCords[i]), sizeof(TexCord));
         }
-        for (int i {0}; i < mds.vNormalCount; i++) {
-            file.write(reinterpret_cast<char*>(&meshData.normals_vertices[i]), sizeof(Vertex));
+        for (int i {0}; i < mds.VertexNormalCount; i++) {
+            file.write(reinterpret_cast<char*>(&meshData.vertex_normals[i]), sizeof(Vertex));
         }
-        for (int i {0}; i < mds.vFacesCount; i++) {
-            file.write(reinterpret_cast<char*>(&meshData.vertices_faces[i]), sizeof(Face));
+        for (int i {0}; i < mds.VertexIndexCount; i++) {
+            file.write(reinterpret_cast<char*>(&meshData.vertex_indexes[i]), sizeof(Face));
         }
-        for (int i {0}; i < mds.uvsCount; i++) {
-            file.write(reinterpret_cast<char*>(&meshData.uvs_faces[i]), sizeof(Face));
+        for (int i {0}; i < mds.UvsCount; i++) {
+            file.write(reinterpret_cast<char*>(&meshData.uvs_indexes[i]), sizeof(Face));
         }
-        for (int i {0}; i < mds.iNormalCount; i++) {
-            file.write(reinterpret_cast<char*>(&meshData.normals_faces[i]), sizeof(Face));
+        for (int i {0}; i < mds.NormalIndexCount; i++) {
+            file.write(reinterpret_cast<char*>(&meshData.vertex_normals_indexes[i]), sizeof(Face));
         }
         file.close();
         if (!file.good()) {
@@ -222,7 +294,6 @@ namespace Dwarf {
             return;
         }
     }
-
 
 }
 

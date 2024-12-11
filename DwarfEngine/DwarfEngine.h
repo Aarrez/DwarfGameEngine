@@ -55,10 +55,8 @@ namespace Dwarf {
         GLsizei Height = 600;
         GLFWwindow* window {};
         std::shared_ptr<DwarfShader> shader {};
-        /*std::shared_ptr<DwarfInput> dwarf_input {};*/
 
         std::unique_ptr<DwarfMesh2D> dwarfMesh2D {};
-        std::unique_ptr<DwarfEntityManager> DEM {};
         std::unique_ptr<Camera::DwarfCamera> camera {};
 
         double deltaTime;

@@ -4,7 +4,7 @@
 namespace fs = std::filesystem;
 
 
-namespace Dwarf::File{
+namespace Dwarf{
     static const fs::path init_path = fs::current_path();
 
     class DwarfPathChange{
@@ -35,6 +35,19 @@ namespace Dwarf::File{
         }
         static void ResetToDefaultPath(){
             fs::current_path(init_path);
+        }
+
+        static std::vector<std::string> GetNameFilesInDirectory(const std::string &directory) {
+            std::vector<std::string> pathList;
+            for (const auto & entry : fs::directory_iterator(directory)) {
+                std::string file = entry.path().string();
+                file = file.substr(file.find_last_of('/') + 1);
+                pathList.push_back(file);
+            }
+            if (pathList.empty()) {
+                std::cerr << directory << "Directory does not exist or does not contain any files" << std::endl;
+            }
+            return pathList;
         }
 
     };

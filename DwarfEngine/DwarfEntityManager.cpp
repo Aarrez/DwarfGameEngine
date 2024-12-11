@@ -1,29 +1,72 @@
 #include "DwarfEntityManager.h"
 
 namespace Dwarf{
-    DwarfEntityManager::DwarfEntityManager() {
+
+    vector<Entity*> DwarfEntityManager::entities;
+    DwarfEntityManager* DwarfEntityManager::Instance;
+
+    void DwarfEntityManager::Allocate() {
+        assert(Instance == nullptr);
+        if (Instance) return;
+        Instance = new DwarfEntityManager();
     }
 
-    Entity DwarfEntityManager::CreateEntity(const string &name) {
-        Entity entity {name + std::to_string(entities.capacity())};
-        entity.transform = glm::mat4(1.0f);
+    Entity * DwarfEntityManager::CreateEntity(const string &name) {
+        string nameWithIndex = name + std::to_string(entities.size());
+        Entity *entity = new Entity(nameWithIndex);
+        entity->transform = glm::mat4(1.0f);
         entities.push_back(entity);
         return entity;
     }
 
-    vector<Entity> DwarfEntityManager::GetEntityList() {
-        return entities;
+    vector<Entity *>* DwarfEntityManager::GetEntityList() {
+        return &entities;
     }
 
-    void DwarfEntityManager::RemoveEntity(string name) {
-        erase_if(entities, [&name](Entity &entity){
-            return entity.name == name;
-        });
+    void DwarfEntityManager::SetEntityMesh(Entity* entity, const string& model) {
+        entity->model = model;
+    }
+
+    void DwarfEntityManager::RemoveEntity(Entity *entity) {
+        if (entities.empty()) return;
+        auto ToRemove = stable_partition(entities.begin() , entities.end(),
+            [entity](Entity *e) {
+                if (e == entity) {
+                    delete e;
+                    e = nullptr;
+                }
+                return e == entity;
+            });
+        entities.erase(ToRemove);
+
+    }
+
+    void DwarfEntityManager::RemoveEntityByName(string &name) {
+        if (entities.empty()) return;
+        auto ToRemove = stable_partition(entities.begin() , entities.end(),
+            [name](Entity *e) {
+                if (name == e->name) {
+                    delete e;
+                    e = nullptr;
+                }
+               return name == e->name;
+            });
+        entities.erase(ToRemove);
     }
 
     void DwarfEntityManager::RemoveAllEntities() {
+        for_each(entities.begin(), entities.end(), [](Entity *e) {
+            delete e;
+            e = nullptr;
+        });
         entities.clear();
     }
+
+    DwarfEntityManager::DwarfEntityManager() {
+    }
+
+
+
 
 }
 

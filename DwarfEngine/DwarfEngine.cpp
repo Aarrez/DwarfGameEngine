@@ -25,7 +25,7 @@ namespace Dwarf {
         glfwWindowHint(GLFW_OPENGL_FORWARD_COMPAT, GL_TRUE);
 #endif
 
-        File::DwarfPathChange::ChangeCurrentPathToProjectRoot();
+        DwarfPathChange::ChangeCurrentPathToProjectRoot();
         window = glfwCreateWindow(Width, Height, "DwarfEngine", nullptr, nullptr);
         if (window == nullptr) {
             /*std::cerr << "Failed to create GLFW window" << std::endl;*/
@@ -49,7 +49,9 @@ namespace Dwarf {
 
 
     void DwarfEngine::Init() {
+        DwarfOBJLoader::GetBinaryFiles();
         DwarfInput::Allocate(window);
+        DwarfEntityManager::Allocate();
 
 
         glEnable(GL_DEPTH_TEST);
@@ -76,22 +78,16 @@ namespace Dwarf {
         MeshData meshData = DwarfOBJLoader::OBJFileParser(filePath);
 
         DwarfOBJLoader::OBJDataSerializer(filePath, meshData);
-        MeshData data = DwarfOBJLoader::OBJDataDeserializer("bear.bin");
+        MeshData data = DwarfOBJLoader::OBJDataDeserializer("bear");
 
         vector<Vertex> vertex_vector = DwarfOBJLoader::GetVerticesFromData(data);
 
         dwarfMesh2D = make_unique<DwarfMesh2D>(shader, vertex_vector);
 
-        DEM = make_unique<DwarfEntityManager>();
-
         dwarfMesh2D->SetTextureUnit();
 
         for (int i = 0; i < AmountOfMeshes; i++) {
-            auto e = DEM->CreateEntity();
-            e.transform = translate(e.transform, cubePositions[i] + model_position);
-            e.transform = scale(e.transform, model_scale);
-            float angle = 20.0f * i;
-            e.transform = rotate(e.transform, glm::radians(angle), vec3(1.f, .3f, .5f));
+            auto e = DwarfEntityManager::CreateEntity();
         }
     }
 
@@ -131,16 +127,20 @@ namespace Dwarf {
         /*camera->RotateCameraWithTime(glfwGetTime(), .1f);*/
 
         shader->SetMatrix4("projection", 1, GL_FALSE, projection);
-        camera->MoveCamera(DwarfInput::GetMoveValue(), DwarfInput::GetCameraDirection(), .1);
+        camera->MoveCamera(DwarfInput::GetMoveValue(),
+            DwarfInput::GetCameraDirection(),
+            .1);
+
         auto temp = DwarfInput::GetCameraDirection();
         std::cout << temp.x << ", " << temp.y << ", " << temp.z << std::endl;
 
 
         shader->UseShaderProgram();
 
-        for (int i = 0; i < DEM->GetEntityList().size(); i++) {
+        for (auto & i : *DwarfEntityManager::GetEntityList()) {
 
-            shader->SetMatrix4("model", 1, GL_FALSE, DEM->GetEntityList()[i].transform);
+            shader->SetMatrix4("model", 1, GL_FALSE,
+                i->transform);
             dwarfMesh2D->Draw(shader);
         }
 
@@ -150,29 +150,18 @@ namespace Dwarf {
 
         if (show_demo_window)
         {
-            static float f = 0.0f;
-            static int counter = 0;
             ImGui::Begin("DwarfDemoWindow", &show_demo_window);
 
-            for (Entity& e: DEM->GetEntityList()) {
-                if (ImGui::BeginMenu(e.name.c_str())) {
+            /*for (Entity* e: DwarfEntityManager::GetEntityList()) {
+                if (ImGui::BeginMenu(e->name.c_str())) {
 
-                    glm::vec3 pos, _scale, skew, rot;
-                    quat quatrot;
-                    vec4 perspective;
-                    rot = eulerAngles(quatrot);
-                    float x, y, z;
+                    vec3 pos, _scale;
                     ImGui::DragFloat3("Position", value_ptr(pos), 1, -10, 10);
-                    /*ImGui::DragFloat4("Rotaion", value_ptr(rot));*/
                     ImGui::DragFloat3("Scale", value_ptr(_scale));
-                    e.transform = translate(e.transform, pos);
-                    /*e.transform = rotate(e.transform, rot.x , vec3(1.0f, 0.0f, 0.0f));
-                    e.transform = rotate(e.transform, rot.y , vec3(0.0f, 1.0f, 0.0f));
-                    e.transform = rotate(e.transform, rot.z , vec3(0.0f, 0.0f, 1.0f));*/
-                    e.transform = scale(e.transform, _scale);
+
                     ImGui::EndMenu();
                 }
-            }
+            }*/
 
 
             /*if (ImGui::BeginMenu("Transfrom")) {

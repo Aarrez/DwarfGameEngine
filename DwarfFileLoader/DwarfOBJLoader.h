@@ -10,33 +10,41 @@
 #include <fstream>
 #include <sstream>
 #include "../DwarfMisc/DwarfPublicStructs.h"
+#include <nlohmann/json.hpp>
+using json = nlohmann::json;
 using namespace std;
 
 namespace Dwarf {
 
     struct MeshDataSize {
-        size_t verticesCount, vFacesCount;
-        size_t texCordCount, vNormalCount;
-        size_t uvsCount, iNormalCount;
+        size_t VertexCount, VertexIndexCount;
+        size_t TexCordCount, VertexNormalCount;
+        size_t UvsCount, NormalIndexCount;
+
     };
 
     struct SerializedFile {
         string fileName;
-        string path;
+        string binPath;
+        string jsonPath;
         MeshDataSize meshDataSize;;
     };
     class DwarfOBJLoader{
 
         DwarfOBJLoader() = default;
-        ~DwarfOBJLoader();
+        ~DwarfOBJLoader() = default;
+        static string defaultBinPath;
 
     public:
+        static void GetBinaryFiles();
+
         static MeshData OBJFileParser(const string& filename);
         static vector<Vertex> GetVerticesFromData(MeshData& data);
 
         static void OBJDataSerializer(string& filepath, MeshData& meshData,
-            const string& binPath = "DwarfModels/BinaryFiles/");
-        static MeshData OBJDataDeserializer(const char* filename);
+            const string& binPath = defaultBinPath);
+        static MeshData OBJDataDeserializer(const string& filename);
+
 
         static vector<SerializedFile> FilesSerialized;
 

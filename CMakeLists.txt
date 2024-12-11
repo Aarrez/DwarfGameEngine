@@ -89,3 +89,9 @@ find_package(glm CONFIG REQUIRED)
 target_link_libraries(DwarfGameEngine PRIVATE glm::glm-header-only)
 
 
+find_package(nlohmann_json CONFIG REQUIRED)
+target_link_libraries(DwarfGameEngine PRIVATE nlohmann_json::nlohmann_json)
+
+set(nlohmann-json_IMPLICIT_CONVERSIONS OFF)
+
+
