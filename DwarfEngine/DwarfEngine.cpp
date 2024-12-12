@@ -163,35 +163,45 @@ namespace Dwarf {
             }
 
             for (auto & e : *DwarfEntityManager::GetEntityList()) {
-                if (ImGui::CollapsingHeader(e->name.c_str())) {
-                    if (ImGui::BeginChild("E", ImVec2(0,0), ImGuiChildFlags_AutoResizeY)) {
-                        vec3 translation = e->GetPosition();
-                        string posName = "Position" + to_string(e->id);
-                        if (ImGui::DragFloat3(posName.c_str(), value_ptr(translation),
-                            0.0f, -10.0f, 10.0f, "%.2f")) {
-                            e->Translate(translation);
-                            }
-                        vec3 scale = e->GetScale();
-                        string sclName = "Scale" + to_string(e->id);
-                        if (ImGui::DragFloat3(sclName.c_str(), value_ptr(scale),
-                            0.0f, 0.0f, 10.0f, "%.2f")) {
-                            e->SetScale(scale);
-                            }
-                        vec3 rotation = e->GetRotation();
-                        string sroName = "Rotation" + to_string(e->id);
-                        if (ImGui::DragFloat3(sroName.c_str(), value_ptr(rotation),
-                            0, -360, 360)) {
-                            e->SetRotation(rotation);
-                            }
-                        e->SetTransformMatrix();
-
-                        ImGui::EndChild();
-                    }
+                if (ImGui::CollapsingHeader(e->name.c_str(), ImGuiTreeNodeFlags_None)) {
+                    vec3 translation = e->GetPosition();
+                    string posName = "Position" + to_string(e->id);
+                    if (ImGui::DragFloat3(posName.c_str(), value_ptr(translation),
+                        0.0f, -10.0f, 10.0f, "%.2f")) {
+                        e->Translate(translation);
+                        }
+                    vec3 scale = e->GetScale();
+                    string sclName = "Scale" + to_string(e->id);
+                    if (ImGui::DragFloat3(sclName.c_str(), value_ptr(scale),
+                        0.0f, 0.0f, 10.0f, "%.2f")) {
+                        e->SetScale(scale);
+                        }
+                    vec3 rotation = e->GetRotation();
+                    string sroName = "Rotation" + to_string(e->id);
+                    if (ImGui::DragFloat3(sroName.c_str(), value_ptr(rotation),
+                        0, -360, 360)) {
+                        e->SetRotation(rotation);
+                        }
+                    e->SetTransformMatrix();
                 }
 
             }
             ImGui::End();
         }
+
+        if (ImGui::Begin("Serialize File")) {
+            if (ImGui::BeginListBox("Serialized Meshes")) {
+                int index = 0;
+                //TODO Figure out how to use listboxes 
+                //ImGui::ListBox("Serialized Files", &index, item_getter, DwarfOBJLoader::FilesSerialized.size());
+
+                ImGui::EndListBox();
+            }
+
+
+            ImGui::End();
+        }
+
 
 
         /*ImGui::Text("Change the background color");

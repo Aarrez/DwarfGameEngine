@@ -76,6 +76,10 @@ namespace Dwarf {
         double currentTime;
         double lastTime;
 
+        bool item_getter(void* data, int index, const char** out_text) {
+
+        }
+
         static void framebuffer_size_callback(GLFWwindow* window, int width, int height);
 
     };
