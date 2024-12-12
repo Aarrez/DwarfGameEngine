@@ -8,22 +8,10 @@ using namespace std;
 
 namespace Dwarf {
 
-    struct Entity {
-        string name;
-        string model;
-        string texture;
-        glm::mat4 transform;
-
-        void Translate(glm::vec3 translation) {
-            transform = glm::translate(transform, translation);
-        }
-    };
-
     class DwarfEntityManager {
     private:
         public:
         static void Allocate();
-
 
         static Entity* CreateEntity(const string &name = "Entity");
         static vector<Entity*>* GetEntityList();

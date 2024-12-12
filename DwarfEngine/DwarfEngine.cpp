@@ -35,7 +35,6 @@ namespace Dwarf {
         glfwMakeContextCurrent(window);
         glfwSwapInterval(1);
 
-        /*dwarf_input = std::make_shared<DwarfInput>(window);*/
         if (!gladLoadGLLoader(reinterpret_cast<GLADloadproc>(glfwGetProcAddress))) {
             std::cerr << "Failed to initialize GLAD" << std::endl;
             glfwTerminate();
@@ -73,12 +72,11 @@ namespace Dwarf {
 
 
         camera = make_unique<Camera::DwarfCamera>(shader);
-        /*std::cout << "Current available phys memory" << to_string(Memory::GetPhysicalMemoryAvailable()) << std::endl;*/
-        std::string filePath = "DwarfModels/OBJFiles/bear.obj";
+        std::string filePath = "DwarfModels/OBJFiles/Cube.obj";
         MeshData meshData = DwarfOBJLoader::OBJFileParser(filePath);
-
         DwarfOBJLoader::OBJDataSerializer(filePath, meshData);
-        MeshData data = DwarfOBJLoader::OBJDataDeserializer("bear");
+        std::string s = "Cube";
+        MeshData data = DwarfOBJLoader::OBJDataDeserializer(s);
 
         vector<Vertex> vertex_vector = DwarfOBJLoader::GetVerticesFromData(data);
 
@@ -108,8 +106,6 @@ namespace Dwarf {
 
         dwarfMesh2D->BindOnTextureUnit();
 
-        const float cameraSpeed = deltaTime * 2.5f;
-
 
         glm::mat4 model {glm::mat4(1.0f)};
         glm::mat4 projection {glm::mat4(1.0f)};
@@ -124,15 +120,11 @@ namespace Dwarf {
             model = glm::rotate(model, glm::radians(rad), model_rotation);
         }
 
-        /*camera->RotateCameraWithTime(glfwGetTime(), .1f);*/
 
         shader->SetMatrix4("projection", 1, GL_FALSE, projection);
         camera->MoveCamera(DwarfInput::GetMoveValue(),
             DwarfInput::GetCameraDirection(),
             .1);
-
-        auto temp = DwarfInput::GetCameraDirection();
-        std::cout << temp.x << ", " << temp.y << ", " << temp.z << std::endl;
 
 
         shader->UseShaderProgram();
@@ -148,41 +140,65 @@ namespace Dwarf {
         ImGui_ImplOpenGL3_NewFrame();
         ImGui::NewFrame();
 
+        ImGui::BeginMainMenuBar();
+        if (ImGui::BeginMenu("File")) {
+            ImGui::Checkbox("DemoWindow", &show_demo_window);
+            ImGui::EndMenu();
+        }
+
+        ImGui::EndMainMenuBar();
         if (show_demo_window)
-        {
-            ImGui::Begin("DwarfDemoWindow", &show_demo_window);
+            ImGui::ShowDemoWindow();
 
-            /*for (Entity* e: DwarfEntityManager::GetEntityList()) {
-                if (ImGui::BeginMenu(e->name.c_str())) {
+        if (bool demo_window_Closed = !show_demo_window) {
+            ImGui::Begin("EntityWindow");
 
-                    vec3 pos, _scale;
-                    ImGui::DragFloat3("Position", value_ptr(pos), 1, -10, 10);
-                    ImGui::DragFloat3("Scale", value_ptr(_scale));
+            if (ImGui::Button("Create Entity")) {
+                DwarfEntityManager::CreateEntity();
+            }
+            string buf;
+            ImGui::InputText("Entity Name", &buf);
+            if (ImGui::Button("Destroy Entity")) {
+                DwarfEntityManager::RemoveEntityByName(buf);
+            }
 
-                    ImGui::EndMenu();
+            for (auto & e : *DwarfEntityManager::GetEntityList()) {
+                if (ImGui::CollapsingHeader(e->name.c_str())) {
+                    if (ImGui::BeginChild("E", ImVec2(0,0), ImGuiChildFlags_AutoResizeY)) {
+                        vec3 translation = e->GetPosition();
+                        string posName = "Position" + to_string(e->id);
+                        if (ImGui::DragFloat3(posName.c_str(), value_ptr(translation),
+                            0.0f, -10.0f, 10.0f, "%.2f")) {
+                            e->Translate(translation);
+                            }
+                        vec3 scale = e->GetScale();
+                        string sclName = "Scale" + to_string(e->id);
+                        if (ImGui::DragFloat3(sclName.c_str(), value_ptr(scale),
+                            0.0f, 0.0f, 10.0f, "%.2f")) {
+                            e->SetScale(scale);
+                            }
+                        vec3 rotation = e->GetRotation();
+                        string sroName = "Rotation" + to_string(e->id);
+                        if (ImGui::DragFloat3(sroName.c_str(), value_ptr(rotation),
+                            0, -360, 360)) {
+                            e->SetRotation(rotation);
+                            }
+                        e->SetTransformMatrix();
+
+                        ImGui::EndChild();
+                    }
                 }
-            }*/
 
-
-            /*if (ImGui::BeginMenu("Transfrom")) {
-                ImGui::DragFloat3
-                ("Position", value_ptr(model_position),1.0f,-10.0f, 10.0f);
-                ImGui::DragFloat3
-                ("Rotation axis", value_ptr(model_rotation), 1.0f, 0.0f, 1.0f);
-                ImGui::DragFloat
-                ("Radians", &rad, 1.0f, 0.0f, 360.0f);
-                ImGui::DragFloat3
-                ("Scale", value_ptr(model_scale), .1f, 0.1f, 2.0f);
-                ImGui::EndMenu();
-            }*/
-
-
-            ImGui::Text("Change the background color");
-            ImGui::ColorEdit3("clear color", (float*)&clear_color);
-
-            ImGui::Text("Application avrage %.3f ms/frame (%.1f FPS)", 1000.0f / ImGui::GetIO().Framerate, ImGui::GetIO().Framerate);
+            }
             ImGui::End();
         }
+
+
+        /*ImGui::Text("Change the background color");
+        ImGui::ColorEdit3("clear color", (float*)&clear_color);
+
+        ImGui::Text("Application avrage %.3f ms/frame (%.1f FPS)",
+        1000.0f / ImGui::GetIO().Framerate, ImGui::GetIO().Framerate);*/
 
         ImGui::Render();
         ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());

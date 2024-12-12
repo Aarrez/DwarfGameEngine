@@ -10,24 +10,14 @@
 #include <fstream>
 #include <sstream>
 #include "../DwarfMisc/DwarfPublicStructs.h"
-#include <nlohmann/json.hpp>
-using json = nlohmann::json;
 using namespace std;
 
 namespace Dwarf {
 
-    struct MeshDataSize {
-        size_t VertexCount, VertexIndexCount;
-        size_t TexCordCount, VertexNormalCount;
-        size_t UvsCount, NormalIndexCount;
-
-    };
 
     struct SerializedFile {
         string fileName;
         string binPath;
-        string jsonPath;
-        MeshDataSize meshDataSize;;
     };
     class DwarfOBJLoader{
 

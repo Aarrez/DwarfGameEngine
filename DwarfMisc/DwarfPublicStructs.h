@@ -1,8 +1,63 @@
 #ifndef DWARFPUBLICSTRUCTS_H
 #define DWARFPUBLICSTRUCTS_H
+#define GLM_ENABLE_EXPERIMENTAL
+#include <string>
 #include <vector>
+#include <glm/glm.hpp>
+#include <glm/ext/matrix_transform.hpp>
+#include <glm/gtc/quaternion.hpp>
+#include <glm/gtx/quaternion.hpp>
+
+using namespace std;
 
 namespace Dwarf {
+
+    struct Entity {
+        int id;
+        string name;
+        string model;
+        string texture;
+        glm::mat4 transform;
+
+    private:
+        glm::mat4 translateMatrix {glm::mat4(1.0f)};
+        glm::mat4 scaleMatrix {glm::mat4(1.0f)};
+        glm::mat4 rotateMatrix {glm::mat4(1.0f)};
+        glm::vec3 rotRadians {};
+
+    public:
+        void Translate(glm::vec3 translation) {
+            translateMatrix = glm::translate(glm::mat4(1.0f), translation);
+        }
+        void SetScale(glm::vec3 scale) {
+            scaleMatrix = glm::scale(glm::mat4(1.0f), scale);
+        }
+        void SetRotation(glm::vec3& rotation) {
+            rotRadians = rotation;
+            auto rotQuat = glm::quat(glm::radians(rotation));
+            rotateMatrix = glm::toMat4(rotQuat);
+        }
+        void SetTransformMatrix() {
+            transform = translateMatrix * rotateMatrix * scaleMatrix;
+        }
+        glm::vec3 GetPosition() {
+            glm::vec3 pos = transform[3];
+            return pos;
+        }
+        glm::vec3 GetScale() {
+            glm::vec3 scale;
+            scale.x = glm::length(glm::vec3(transform[0]));
+            scale.y = glm::length(glm::vec3(transform[1]));
+            scale.z = glm::length(glm::vec3(transform[2]));
+            return scale;
+        }
+        glm::vec3 GetRotation() {
+            return rotRadians;
+        }
+
+    };
+
+
     struct Vertex {
         float x, y, z;
     };
@@ -39,12 +94,19 @@ namespace Dwarf {
     };
 
     inline bool MeshData::WriteTo(std::ofstream &file) const {
-        file.write(reinterpret_cast<char*>(vertexes.size()), sizeof(int));
-        file.write(reinterpret_cast<char*>(texCords.size()), sizeof(int));
-        file.write(reinterpret_cast<char*>(vertex_normals.size()), sizeof(int));
-        file.write(reinterpret_cast<char*>(vertex_indexes.size()), sizeof(int));
-        file.write(reinterpret_cast<char*>(uvs_indexes.size()), sizeof(int));
-        file.write(reinterpret_cast<char*>(vertex_normals_indexes.size()), sizeof(int));
+        int v, vt, vn, f, uv, fn;
+        v = vertexes.size();
+        vt = texCords.size();
+        vn = vertex_normals.size();
+        f = vertex_indexes.size();
+        uv = uvs_indexes.size();
+        fn = vertex_normals_indexes.size();
+        file.write(reinterpret_cast<const char*>(&v), sizeof(int));
+        file.write(reinterpret_cast<const char*>(&vt), sizeof(int));
+        file.write(reinterpret_cast<const char*>(&vn), sizeof(int));
+        file.write(reinterpret_cast<const char*>(&f), sizeof(int));
+        file.write(reinterpret_cast<const char*>(&uv), sizeof(int));
+        file.write(reinterpret_cast<const char*>(&fn), sizeof(int));
         for (int i {0}; i < vertexes.size(); i++) {
             file.write(reinterpret_cast<const char*>(&vertexes[i]), sizeof(Vertex));
         }

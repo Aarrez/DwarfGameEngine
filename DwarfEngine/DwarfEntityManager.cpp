@@ -13,13 +13,15 @@ namespace Dwarf{
 
     Entity * DwarfEntityManager::CreateEntity(const string &name) {
         string nameWithIndex = name + std::to_string(entities.size());
-        Entity *entity = new Entity(nameWithIndex);
+        Entity *entity = new Entity();
+        entity->id = entities.size();
+        entity->name = nameWithIndex;
         entity->transform = glm::mat4(1.0f);
         entities.push_back(entity);
         return entity;
     }
 
-    vector<Entity *>* DwarfEntityManager::GetEntityList() {
+    vector<Entity*>* DwarfEntityManager::GetEntityList() {
         return &entities;
     }
 

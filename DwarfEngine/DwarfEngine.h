@@ -7,6 +7,7 @@
 #include "imgui.h"
 #include "imgui_impl_glfw.h"
 #include "imgui_impl_opengl3.h"
+#include <imgui_stdlib.h>
 
 #include "glm/gtx/matrix_decompose.hpp"
 
@@ -47,8 +48,6 @@ namespace Dwarf {
         void Render();
         void Shutdown();
 
-
-
         //Variables
         ImVec4 clear_color = ImVec4(.2, .2, .2, 1.0f);
         GLsizei Width = 800;
@@ -63,8 +62,8 @@ namespace Dwarf {
 
         //Imgui Variables
 
-        bool show_demo_window {true};
-        bool show_another_window {false};
+        bool show_demo_window {false};
+        bool show_another_window {true};
 
         //Transform variables
         vec3 model_position {0, 0, 0};
@@ -72,9 +71,6 @@ namespace Dwarf {
         vec3 model_scale {.5f, .5f, .5f};
         float rad = 45.0f;
         int AmountOfMeshes {5};
-
-
-
 
     private:
         double currentTime;
