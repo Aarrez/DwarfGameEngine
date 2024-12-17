@@ -69,12 +69,10 @@ namespace Dwarf {
         }
         shader = std::make_shared<DwarfShader>();
 
-
-
         camera = make_unique<Camera::DwarfCamera>(shader);
         std::string filePath = "DwarfModels/OBJFiles/Cube.obj";
-        MeshData meshData = DwarfOBJLoader::OBJFileParser(filePath);
-        DwarfOBJLoader::OBJDataSerializer(filePath, meshData);
+        auto meshData = DwarfOBJLoader::OBJFileParser(filePath);
+        DwarfOBJLoader::OBJDataSerializer(filePath, meshData.value());
         std::string s = "Cube";
         MeshData data = DwarfOBJLoader::OBJDataDeserializer(s);
 
@@ -85,7 +83,7 @@ namespace Dwarf {
         dwarfMesh2D->SetTextureUnit();
 
         for (int i = 0; i < AmountOfMeshes; i++) {
-            auto e = DwarfEntityManager::CreateEntity();
+            DwarfEntityManager::CreateEntity();
         }
     }
 
@@ -156,10 +154,10 @@ namespace Dwarf {
             if (ImGui::Button("Create Entity")) {
                 DwarfEntityManager::CreateEntity();
             }
-            string buf;
-            ImGui::InputText("Entity Name", &buf);
+
+            ImGui::InputText("Entity Name", &ent_buf);
             if (ImGui::Button("Destroy Entity")) {
-                DwarfEntityManager::RemoveEntityByName(buf);
+                DwarfEntityManager::RemoveEntityByName(ent_buf);
             }
 
             for (auto & e : *DwarfEntityManager::GetEntityList()) {
@@ -189,26 +187,49 @@ namespace Dwarf {
             ImGui::End();
         }
 
-        if (ImGui::Begin("Serialize File")) {
-            if (ImGui::BeginListBox("Serialized Meshes")) {
-                int index = 0;
-                //TODO Figure out how to use listboxes 
-                //ImGui::ListBox("Serialized Files", &index, item_getter, DwarfOBJLoader::FilesSerialized.size());
+        if (ImGui::Begin("Serialized File")) {
 
+            ImGui::InputText("Path to OBJ File", &file_buf);
+            if (ImGui::Button("Serialize File")) {
+                auto data = DwarfOBJLoader::OBJFileParser(file_buf);
+                if (!data.has_value())
+                    std::cerr << "Not a valid File path: " << file_buf << std::endl;
+                else {
+                    DwarfOBJLoader::OBJDataSerializer(file_buf, data.value());
+                }
+            }
+            if (ImGui::BeginListBox("Meshes")) {
+                for (int i = 0; i < DwarfOBJLoader::FilesSerialized.size(); i++) {
+                    const bool is_selected = selected_int == i;
+                    if (ImGui::Selectable(DwarfOBJLoader::FilesSerialized[i].fileName.c_str(), is_selected)) {
+                        selected_int = i;
+                        selected_path = DwarfOBJLoader::FilesSerialized[i].binPath;
+                    }
+                }
                 ImGui::EndListBox();
             }
 
+            preview_ent = DwarfEntityManager::GetEntityList()->at(comb_selected)->name;
+            if (ImGui::BeginCombo("Entity Select", preview_ent.c_str())) {
+                for (int i = 0; i < DwarfEntityManager::GetEntityList()->size(); i++) {
+                    const bool is_selected = comb_selected == i;
+                    if (ImGui::Selectable(DwarfEntityManager::GetEntityList()->at(i)->name.c_str(), is_selected)) {
+                        comb_selected = i;
+                    }
+                    if (is_selected)
+                        ImGui::SetItemDefaultFocus();
+                }
+                ImGui::EndCombo();
+            }
+
+            if (ImGui::Button("Change Entity Mesh")) {
+                auto ent = DwarfEntityManager::GetEntityList()->at(comb_selected);
+                auto mesh = DwarfOBJLoader::FilesSerialized.at(selected_int);
+                ent->model = mesh;
+            }
 
             ImGui::End();
         }
-
-
-
-        /*ImGui::Text("Change the background color");
-        ImGui::ColorEdit3("clear color", (float*)&clear_color);
-
-        ImGui::Text("Application avrage %.3f ms/frame (%.1f FPS)",
-        1000.0f / ImGui::GetIO().Framerate, ImGui::GetIO().Framerate);*/
 
         ImGui::Render();
         ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());

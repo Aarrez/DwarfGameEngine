@@ -8,17 +8,17 @@
 #include "string"
 #include "vector"
 #include <fstream>
+#include <optional>
 #include <sstream>
+
 #include "../DwarfMisc/DwarfPublicStructs.h"
+#include "../DwarfMisc/PublicEnums.h"
 using namespace std;
 
 namespace Dwarf {
 
 
-    struct SerializedFile {
-        string fileName;
-        string binPath;
-    };
+
     class DwarfOBJLoader{
 
         DwarfOBJLoader() = default;
@@ -28,7 +28,7 @@ namespace Dwarf {
     public:
         static void GetBinaryFiles();
 
-        static MeshData OBJFileParser(const string& filename);
+        static std::optional<MeshData> OBJFileParser(const string& filename);
         static vector<Vertex> GetVerticesFromData(MeshData& data);
 
         static void OBJDataSerializer(string& filepath, MeshData& meshData,

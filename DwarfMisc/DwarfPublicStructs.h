@@ -12,12 +12,19 @@ using namespace std;
 
 namespace Dwarf {
 
+    struct SerializedFile {
+        string fileName;
+        string binPath;
+        bool selected;
+    };
+
     struct Entity {
         int id;
         string name;
-        string model;
+        SerializedFile model;
         string texture;
         glm::mat4 transform;
+        bool selected;
 
     private:
         glm::mat4 translateMatrix {glm::mat4(1.0f)};

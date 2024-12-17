@@ -15,8 +15,6 @@ namespace Dwarf {
 
         static Entity* CreateEntity(const string &name = "Entity");
         static vector<Entity*>* GetEntityList();
-        void SetEntityMesh(Entity* entity, const string& model);
-        /*void SetEntityTexture(shared_ptr<Entity> entity, const string& texture);*/
         static void RemoveEntity(Entity* entity);
         static void RemoveEntityByName(string& name);
         static void RemoveAllEntities();
@@ -27,5 +25,6 @@ namespace Dwarf {
         static DwarfEntityManager* Instance;
         DwarfEntityManager();
         static vector<Entity*> entities;
+
     };
 }

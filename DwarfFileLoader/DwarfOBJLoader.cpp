@@ -18,21 +18,22 @@ namespace Dwarf {
             serializedFile.binPath = defaultBinPath + file;
             FilesSerialized.push_back(serializedFile);
         }
-
     }
 
-    MeshData DwarfOBJLoader::OBJFileParser(const string& filename) {
+    std::optional<MeshData> DwarfOBJLoader::OBJFileParser(const string& filename) {
         vector<Vertex> vertices;
         vector<TexCord> tex_cords;
         std::vector<Vertex> normals;
         vector<Face> vertices_faces;
         vector<Face> uv_faces;
         vector<Face> normal_faces;
+
         std::ifstream file(filename);
         std::string line;
+
         if (!file.is_open()) {
             cerr << "File not found: " << filename << endl;
-            return MeshData();
+            return std::nullopt;
         }
 
         while (std::getline(file, line)) {
@@ -62,7 +63,7 @@ namespace Dwarf {
                 char* token = std::strtok(line.data(), " /f");
                 vector<unsigned int> faceList;
                 while (token != nullptr) {
-                    unsigned int i = std::stoi(token);
+                    unsigned int i = std::stoi(token) - 1;
                     faceList.push_back(i);
                     token = std::strtok(nullptr, " /f");
                     j++;
@@ -85,12 +86,8 @@ namespace Dwarf {
                     uvIndex = Face(0,0,0);
                     normalIndex = Face(0,0, 0);
                 }
-                vertexIndex -= 1;
-                uvIndex -= 1;
-                normalIndex -= 1;
                 vertices_faces.push_back(vertexIndex);
                 uv_faces.push_back(uvIndex);
-
                 normal_faces.push_back(normalIndex);
             }
         }
@@ -179,14 +176,26 @@ namespace Dwarf {
             filename = filename.erase(a);
         }
         //{Filename}
+        filename += ".bin";
+
+
 
         //Default: DwarfModels/BinaryFiles/{newFilename}.bin
-        pathToFile += filename + ".bin";
+        pathToFile += filename;
 
         serialized_file.binPath = pathToFile;
         serialized_file.fileName = filename;
+        bool simFileFound = false;
+        for (auto& file : FilesSerialized) {
+            if (file.fileName == filename) {
+                file = serialized_file;
+                simFileFound = true;
+            }
+        }
+        if (!simFileFound) {
+            FilesSerialized.push_back(serialized_file);
+        }
 
-        FilesSerialized.push_back(serialized_file);
 
         std::ofstream file;
         file.open(pathToFile, std::ios_base::binary | std::ios_base::out);

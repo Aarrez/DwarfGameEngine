@@ -1,4 +1,4 @@
-#include "DwarfTransfrom.h"
+#include "DwarfTransform.h"
 
 void Dwarf::Transform::DwarfTransform::RotateObject(
         glm::mat4 &trans, float radians, glm::vec3 axis) {

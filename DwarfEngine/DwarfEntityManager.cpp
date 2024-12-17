@@ -17,6 +17,7 @@ namespace Dwarf{
         entity->id = entities.size();
         entity->name = nameWithIndex;
         entity->transform = glm::mat4(1.0f);
+        entity->selected = false;
         entities.push_back(entity);
         return entity;
     }

@@ -32,7 +32,7 @@
 #include "DwarfEntityManager.h"
 #include "DwarfCamera.h"
 #include "DwarfInput.h"
-#include "DwarfTransfrom.h"
+#include "DwarfTransform.h"
 #pragma endregion Dwarf-Includes
 
 
@@ -60,7 +60,16 @@ namespace Dwarf {
 
         double deltaTime;
 
-        //Imgui Variables
+        //ImGui ListBox
+        int selected_int;
+        string selected_path;
+
+        string file_buf, ent_buf;
+
+        //ImGui Combobox
+        string preview_ent;
+        int comb_selected = 0;
+
 
         bool show_demo_window {false};
         bool show_another_window {true};
