@@ -16,15 +16,17 @@ namespace Dwarf {
         DwarfIterativeOBJParser() = default;
         vector<Vertex> ParseVertexes(std::ifstream& file, string &prefix);
         vector<TexCord> ParseTexCords(std::ifstream& file);
-        vector<unsigned int> ParseFaces(std::ifstream& file, OBJFaceType* faceType);
+        vector<unsigned int> ParseFaces(std::ifstream& file);
 
         void PrepData(
-            vector<Vertex> vertex, vector<Vertex> vertexNormal,
-            vector<TexCord> vertexUv, vector<unsigned int> faces);
+            const vector<Vertex> &vertex, const vector<Vertex> &vertexNormal,
+            const vector<TexCord> &vertexUv, const vector<unsigned int> &faces);
 
         vector<Vertex> vertex, vertexNormal;
         vector<TexCord> vertexUv;
+
     private:
+        OBJFaceType faceType = OBJFaceType::OnlyFaces;
         vector<Vertex> RearrangeVertices(vector<Vertex> vertices, vector<unsigned int> faces);
         vector<Vertex> RearrangeVerticesNormals(vector<Vertex> vertices, vector<unsigned int> faces);
         vector<TexCord> RearrangeVerticesUvs(vector<TexCord> vertices, vector<unsigned int> faces);

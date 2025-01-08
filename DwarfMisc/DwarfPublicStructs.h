@@ -1,6 +1,7 @@
 #ifndef DWARFPUBLICSTRUCTS_H
 #define DWARFPUBLICSTRUCTS_H
 #define GLM_ENABLE_EXPERIMENTAL
+#include <fstream>
 #include <string>
 #include <vector>
 #include <glm/glm.hpp>

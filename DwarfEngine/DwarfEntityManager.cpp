@@ -26,10 +26,6 @@ namespace Dwarf{
         return &entities;
     }
 
-    void DwarfEntityManager::SetEntityMesh(Entity* entity, const string& model) {
-        entity->model = model;
-    }
-
     void DwarfEntityManager::RemoveEntity(Entity *entity) {
         if (entities.empty()) return;
         auto ToRemove = stable_partition(entities.begin() , entities.end(),

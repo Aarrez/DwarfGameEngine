@@ -75,7 +75,9 @@ namespace Dwarf{
     public:
 
         DwarfMesh2D(std::shared_ptr<DwarfShader> shader,
-            vector<Vertex> vertices);
+            vector<Vertex> vertices,
+            vector<Vertex> normals,
+            vector<TexCord> tex_cords);
 
         void CreateTextures(GLuint &texture, const char* image_name, int color_format);
         void SetTextureUnit();
@@ -88,6 +90,8 @@ namespace Dwarf{
         std::shared_ptr<DwarfShader> dwarfShader;
 
         GLuint vertex_buffer_object{};
+        GLuint normal_buffer_object{};
+        GLuint tex_cord_buffer_object{};
         GLuint vertex_array_object{};
         GLuint element_buffer_object{};
         GLuint texture1 {};

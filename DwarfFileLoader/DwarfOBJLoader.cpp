@@ -121,6 +121,42 @@ namespace Dwarf {
         return ordered_vertices;
     }
 
+    vector<Vertex> DwarfOBJLoader::GetNormalsFromData(MeshData &data) {
+        vector<Vertex> ordered_normals;
+        for (unsigned int i {0}; i < data.vertex_normals_indexes.size(); i++) {
+            Vertex temp1 =
+                data.vertex_normals[data.vertex_normals_indexes[i].x];
+            Vertex temp2 =
+                data.vertex_normals[data.vertex_normals_indexes[i].y];
+            Vertex temp3 =
+                data.vertex_normals[data.vertex_normals_indexes[i].z];
+
+            ordered_normals.push_back(temp1);
+            ordered_normals.push_back(temp2);
+            ordered_normals.push_back(temp3);
+        }
+        return ordered_normals;
+    }
+
+    vector<TexCord> DwarfOBJLoader::GetTexCoordFromData(MeshData &data) {
+        vector<TexCord> ordered_texcord;
+        for (unsigned int i {0}; i < data.uvs_indexes.size(); i++) {
+
+            TexCord temp1 =
+                data.texCords[data.uvs_indexes[i].x];
+            TexCord temp2 =
+                data.texCords[data.uvs_indexes[i].y];
+            TexCord temp3 =
+                data.texCords[data.uvs_indexes[i].z];
+
+            ordered_texcord.push_back(temp1);
+            ordered_texcord.push_back(temp2);
+            ordered_texcord.push_back(temp3);
+        }
+        return ordered_texcord;
+    }
+
+
     MeshData DwarfOBJLoader::OBJDataDeserializer(const string& filename) {
         string fname;
 

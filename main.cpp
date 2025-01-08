@@ -1,7 +1,6 @@
 #include <iostream>
 
 #include "DwarfEngine/DwarfEngine.h"
-#include "DwarfFileLoader/OptimizedOBJLoader.h"
 
 
 int main() {

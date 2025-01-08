@@ -15,6 +15,8 @@
 
 #pragma region Dwarf-Includes
 //DwarfGL
+#include <thread>
+#include <mutex>
 /*#include "../DwarfGL/Mesh/DwarfMesh.h"*/
 #include "../DwarfGL/Mesh/DwarfMesh2D.h"
 #include "../DwarfGL/DwarfShader.h"
@@ -26,13 +28,11 @@
 
 //OBJLoaders
 #include "../DwarfFileLoader/DwarfOBJLoader.h"
-#include "../DwarfFileLoader/OptimizedOBJLoader.h"
 
 //DwarfEngine
 #include "DwarfEntityManager.h"
 #include "DwarfCamera.h"
 #include "DwarfInput.h"
-#include "DwarfTransform.h"
 #pragma endregion Dwarf-Includes
 
 

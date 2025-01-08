@@ -30,6 +30,8 @@ namespace Dwarf {
 
         static std::optional<MeshData> OBJFileParser(const string& filename);
         static vector<Vertex> GetVerticesFromData(MeshData& data);
+        static vector<Vertex> GetNormalsFromData(MeshData& data);
+        static vector<TexCord> GetTexCoordFromData(MeshData& data);
 
         static void OBJDataSerializer(string& filepath, MeshData& meshData,
             const string& binPath = defaultBinPath);

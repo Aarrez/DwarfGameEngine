@@ -156,9 +156,9 @@ namespace Dwarf{
             if(!skip){
                 ModelTexture texture;
                 if(directory.empty())
-                    texture.id = Dwarf::Texture::TextureFromFile(str.C_Str());
+                    texture.id = TextureFromFile(str.C_Str());
                 else
-                    texture.id = Dwarf::Texture::TextureFromFile(str.C_Str(), directory);
+                    texture.id = TextureFromFile(str.C_Str(), directory);
                 texture.type = typeName;
                 texture.path = str.C_Str();
                 textures.push_back(texture);

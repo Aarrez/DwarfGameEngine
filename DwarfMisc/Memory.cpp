@@ -2,18 +2,20 @@
 
 
 namespace Dwarf {
-    DWORD Memory::GetPhysicalMemoryAvailable() {
-        MEMORYSTATUSEX stat;
-        stat.dwLength = sizeof(stat);
-        GlobalMemoryStatusEx(&stat);
-        return stat.ullTotalPhys/(1024*1024);
-    }
+    namespace Memory {
+        DWORD Memory::GetPhysicalMemoryAvailable() {
+            MEMORYSTATUSEX stat;
+            stat.dwLength = sizeof(stat);
+            GlobalMemoryStatusEx(&stat);
+            return stat.ullAvailPhys/(1024*1024);
+        }
 
-    DWORD Memory::GetVirtualMemoryAvailable() {
-        MEMORYSTATUSEX stat;
-        stat.dwLength = sizeof(stat);
-        GlobalMemoryStatusEx(&stat);
-        return stat.ullTotalVirtual/(1024*1024);
-    }
+        DWORD Memory::GetVirtualMemoryAvailable() {
+            MEMORYSTATUSEX stat;
+            stat.dwLength = sizeof(stat);
+            GlobalMemoryStatusEx(&stat);
+            return stat.ullAvailVirtual/(1024*1024);
+        }
 
+    }
 }

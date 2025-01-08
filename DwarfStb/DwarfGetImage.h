@@ -5,14 +5,14 @@
 #include "../DwarfMisc/DwarfPath.h"
 
 
-namespace Dwarf::Image{
+namespace Dwarf{
     class DwarfImage{
     public:
         static unsigned char* GetImage(const char* image_name, int &width, int &height, int &nrChannel);
     };
 }
 
-namespace Dwarf::Texture{
+namespace Dwarf{
     unsigned int TextureFromFile(const char* filename);
 
     unsigned int TextureFromFile(const std::string &filename, const std::string &directory);

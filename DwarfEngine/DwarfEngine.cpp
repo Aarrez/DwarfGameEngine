@@ -1,5 +1,6 @@
 #include "DwarfEngine.h"
 
+#include "../DwarfMisc/Memory.h"
 
 
 namespace Dwarf {
@@ -70,18 +71,20 @@ namespace Dwarf {
         shader = std::make_shared<DwarfShader>();
 
         camera = make_unique<Camera::DwarfCamera>(shader);
-        std::string filePath = "DwarfModels/OBJFiles/Cube.obj";
+        std::string filePath = "DwarfModels/OBJFiles/bear.obj";
         auto meshData = DwarfOBJLoader::OBJFileParser(filePath);
         DwarfOBJLoader::OBJDataSerializer(filePath, meshData.value());
-        std::string s = "Cube";
+        std::string s = "bear";
         MeshData data = DwarfOBJLoader::OBJDataDeserializer(s);
 
         vector<Vertex> vertex_vector = DwarfOBJLoader::GetVerticesFromData(data);
+        vector<Vertex> normal_vector = DwarfOBJLoader::GetNormalsFromData(data);
+        vector<TexCord> texcord_vector = DwarfOBJLoader::GetTexCoordFromData(data);
 
-        dwarfMesh2D = make_unique<DwarfMesh2D>(shader, vertex_vector);
+        dwarfMesh2D = make_unique<DwarfMesh2D>(shader,
+            vertex_vector, normal_vector, texcord_vector);
 
         dwarfMesh2D->SetTextureUnit();
-
         for (int i = 0; i < AmountOfMeshes; i++) {
             DwarfEntityManager::CreateEntity();
         }
@@ -209,6 +212,7 @@ namespace Dwarf {
                 ImGui::EndListBox();
             }
 
+
             preview_ent = DwarfEntityManager::GetEntityList()->at(comb_selected)->name;
             if (ImGui::BeginCombo("Entity Select", preview_ent.c_str())) {
                 for (int i = 0; i < DwarfEntityManager::GetEntityList()->size(); i++) {
@@ -222,14 +226,16 @@ namespace Dwarf {
                 ImGui::EndCombo();
             }
 
+
             if (ImGui::Button("Change Entity Mesh")) {
                 auto ent = DwarfEntityManager::GetEntityList()->at(comb_selected);
                 auto mesh = DwarfOBJLoader::FilesSerialized.at(selected_int);
                 ent->model = mesh;
             }
 
-            ImGui::End();
+
         }
+        ImGui::End();
 
         ImGui::Render();
         ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());

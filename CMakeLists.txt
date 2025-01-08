@@ -45,8 +45,6 @@ add_executable(DwarfGameEngine
         DwarfStb/DwarfGetImage.cpp
         DwarfStb/DwarfGetImage.h
 
-        DwarfEngine/DwarfTransform.cpp
-        DwarfEngine/DwarfTransform.h
         DwarfEngine/DwarfCamera.cpp
         DwarfEngine/DwarfCamera.h
         DwarfGL/Mesh/DwarfMesh2D.cpp
@@ -58,6 +56,8 @@ add_executable(DwarfGameEngine
         DwarfMisc/PublicEnums.h
         DwarfFileLoader/DwarfIterativeOBJParser.cpp
         DwarfFileLoader/DwarfIterativeOBJParser.h
+        DwarfEngine/DwarfThreading.cpp
+        DwarfEngine/DwarfThreading.h
 
 )
 
