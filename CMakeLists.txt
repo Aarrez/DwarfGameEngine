@@ -47,8 +47,8 @@ add_executable(DwarfGameEngine
 
         DwarfEngine/DwarfCamera.cpp
         DwarfEngine/DwarfCamera.h
-        DwarfGL/Mesh/DwarfMesh2D.cpp
-        DwarfGL/Mesh/DwarfMesh2D.h
+        DwarfGL/Mesh/VirtualObject.cpp
+        DwarfGL/Mesh/VirtualObject.h
         DwarfEngine/DwarfEntityManager.cpp
         DwarfEngine/DwarfEntityManager.h
         DwarfFileLoader/DwarfOBJLoader.cpp

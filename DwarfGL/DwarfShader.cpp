@@ -5,12 +5,12 @@
 #include "ShaderProgramCode.h"
 
 
-Dwarf::DwarfShader::DwarfShader() {
+Dwarf::DwarfShader::DwarfShader(const char* vertexShaderPath, const char* fragmentShaderPath) {
     int result;
     char Log[512];
 
-    vertexShader = DwarfGetShader::LoadVertexShader();
-    fragmentShader = DwarfGetShader::LoadFragmentShader();
+    vertexShader = DwarfGetShader::LoadVertexShader(vertexShaderPath);
+    fragmentShader = DwarfGetShader::LoadFragmentShader(fragmentShaderPath);
 
     shaderProgram = glCreateProgram();
 
@@ -27,8 +27,6 @@ Dwarf::DwarfShader::DwarfShader() {
 
     glDeleteShader(vertexShader);
     glDeleteShader(fragmentShader);
-
-
 }
 
 void Dwarf::DwarfShader::SetBool(const char* name, bool value) {

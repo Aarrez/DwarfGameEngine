@@ -18,7 +18,7 @@
 #include <thread>
 #include <mutex>
 /*#include "../DwarfGL/Mesh/DwarfMesh.h"*/
-#include "../DwarfGL/Mesh/DwarfMesh2D.h"
+#include "../DwarfGL/Mesh/VirtualObject.h"
 #include "../DwarfGL/DwarfShader.h"
 #include "../DwarfGL/Mesh/DwarfMesh.h"
 
@@ -53,9 +53,11 @@ namespace Dwarf {
         GLsizei Width = 800;
         GLsizei Height = 600;
         GLFWwindow* window {};
-        std::shared_ptr<DwarfShader> shader {};
 
-        std::unique_ptr<DwarfMesh2D> dwarfMesh2D {};
+        std::shared_ptr<DwarfShader> shader {};
+        std::shared_ptr<DwarfShader> lightShader {};
+
+        std::unique_ptr<VirtualObject> dwarfMesh2D {};
         std::unique_ptr<Camera::DwarfCamera> camera {};
 
         double deltaTime;

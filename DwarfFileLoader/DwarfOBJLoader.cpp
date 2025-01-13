@@ -123,6 +123,9 @@ namespace Dwarf {
 
     vector<Vertex> DwarfOBJLoader::GetNormalsFromData(MeshData &data) {
         vector<Vertex> ordered_normals;
+        if (data.vertex_normals.empty()) {
+            return ordered_normals;
+        }
         for (unsigned int i {0}; i < data.vertex_normals_indexes.size(); i++) {
             Vertex temp1 =
                 data.vertex_normals[data.vertex_normals_indexes[i].x];
@@ -140,6 +143,9 @@ namespace Dwarf {
 
     vector<TexCord> DwarfOBJLoader::GetTexCoordFromData(MeshData &data) {
         vector<TexCord> ordered_texcord;
+        if (data.texCords.empty()) {
+            return ordered_texcord;
+        }
         for (unsigned int i {0}; i < data.uvs_indexes.size(); i++) {
 
             TexCord temp1 =
@@ -161,10 +167,7 @@ namespace Dwarf {
         string fname;
 
         bool foundNam = false;
-        for (SerializedFile data : FilesSerialized) {
-            size_t pos = data.fileName.find('.');
-            if (pos != data.fileName.npos)
-                data.fileName = data.fileName.erase(pos);
+        for (const SerializedFile& data : FilesSerialized) {
             if (data.fileName == filename) {
                 fname = data.binPath;
                 foundNam = true;

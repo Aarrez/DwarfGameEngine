@@ -9,7 +9,7 @@
 namespace Dwarf {
     class DwarfShader {
     public:
-        DwarfShader();
+        DwarfShader(const char* vertexShaderPath, const char* fragmentShaderPath);
 
         void UseShaderProgram(){
             glUseProgram(shaderProgram);
@@ -39,7 +39,6 @@ namespace Dwarf {
                         int num_matrix, int transpose, glm::mat4 &trans);
 
         unsigned int shaderProgram {};
-        //Shaders
     private:
         unsigned int vertexShader{};
         unsigned int fragmentShader{};

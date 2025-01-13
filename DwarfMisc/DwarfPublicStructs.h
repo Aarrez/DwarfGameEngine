@@ -22,7 +22,7 @@ namespace Dwarf {
     struct Entity {
         int id;
         string name;
-        SerializedFile model;
+        SerializedFile fileInfo;
         string texture;
         glm::mat4 transform;
         bool selected;

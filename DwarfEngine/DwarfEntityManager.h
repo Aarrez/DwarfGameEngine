@@ -2,7 +2,7 @@
 #include <string>
 #include <glm/glm.hpp>
 
-#include "../DwarfGL/Mesh/DwarfMesh2D.h"
+#include "../DwarfGL/Mesh/VirtualObject.h"
 
 using namespace std;
 

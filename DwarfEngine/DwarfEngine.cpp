@@ -68,20 +68,26 @@ namespace Dwarf {
         if (ImGui_ImplOpenGL3_Init("#version 330") == false) {
             std::cerr << "Failed to initialize IMGUI Implementation for OpenGL3" << std::endl;
         }
-        shader = std::make_shared<DwarfShader>();
+        shader = std::make_shared<DwarfShader>(
+            "ShaderScripts/VertexShader.glsl",
+            "ShaderScripts/FragmentShader.glsl");
+
+        lightShader = std::make_shared<DwarfShader>(
+            "ShaderScripts/LightingVertexShader.glsl",
+            "ShaderScripts/LightingFragmentShader.glsl");
 
         camera = make_unique<Camera::DwarfCamera>(shader);
         std::string filePath = "DwarfModels/OBJFiles/bear.obj";
         auto meshData = DwarfOBJLoader::OBJFileParser(filePath);
         DwarfOBJLoader::OBJDataSerializer(filePath, meshData.value());
-        std::string s = "bear";
-        MeshData data = DwarfOBJLoader::OBJDataDeserializer(s);
+        MeshData data = DwarfOBJLoader::OBJDataDeserializer(
+            DwarfOBJLoader::FilesSerialized[0].fileName);
 
         vector<Vertex> vertex_vector = DwarfOBJLoader::GetVerticesFromData(data);
         vector<Vertex> normal_vector = DwarfOBJLoader::GetNormalsFromData(data);
         vector<TexCord> texcord_vector = DwarfOBJLoader::GetTexCoordFromData(data);
 
-        dwarfMesh2D = make_unique<DwarfMesh2D>(shader,
+        dwarfMesh2D = make_unique<VirtualObject>(shader,
             vertex_vector, normal_vector, texcord_vector);
 
         dwarfMesh2D->SetTextureUnit();
@@ -110,7 +116,8 @@ namespace Dwarf {
 
         glm::mat4 model {glm::mat4(1.0f)};
         glm::mat4 projection {glm::mat4(1.0f)};
-        projection = glm::perspective(radians(45.0f), static_cast<float>(Width) / Height, 0.1f, 100.0f);
+        projection = glm::perspective(radians(45.0f),
+            static_cast<float>(Width) / Height, 0.1f, 100.0f);
         mat4 view {mat4(1.0f)};
         view = translate(view, glm::vec3(0.0f, 0.0f, -3.0f));
         shader->SetMatrix4("veiw", 1, GL_FALSE, view);
@@ -134,7 +141,7 @@ namespace Dwarf {
 
             shader->SetMatrix4("model", 1, GL_FALSE,
                 i->transform);
-            dwarfMesh2D->Draw(shader);
+            dwarfMesh2D->Draw();
         }
 
         ImGui_ImplGlfw_NewFrame();
@@ -229,8 +236,16 @@ namespace Dwarf {
 
             if (ImGui::Button("Change Entity Mesh")) {
                 auto ent = DwarfEntityManager::GetEntityList()->at(comb_selected);
-                auto mesh = DwarfOBJLoader::FilesSerialized.at(selected_int);
-                ent->model = mesh;
+                auto meshFileInfo = DwarfOBJLoader::FilesSerialized.at(selected_int);
+                auto meshData = DwarfOBJLoader::OBJDataDeserializer(meshFileInfo.fileName);
+
+                vector<Vertex> vertices = DwarfOBJLoader::GetVerticesFromData(meshData);
+                vector<Vertex> normals = DwarfOBJLoader::GetNormalsFromData(meshData);
+                vector<TexCord> texcord = DwarfOBJLoader::GetTexCoordFromData(meshData);
+
+                dwarfMesh2D = make_unique<VirtualObject>(shader, vertices, normals, texcord);
+
+                ent->fileInfo = meshFileInfo;
             }
 
 

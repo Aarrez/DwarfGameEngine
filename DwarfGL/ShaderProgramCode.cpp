@@ -3,9 +3,7 @@
 
 using namespace Dwarf;
 
-std::string DwarfGetShader::ReadShaderFile(const GLchar *pathToFile) {
-    auto path = DwarfPathChange::GetCurrentPath();
-    DwarfPathChange::AppendCurrentPath("ShaderScripts");
+std::string DwarfGetShader::ReadShaderFile(const char *pathToFile) {
     std::ifstream fileStream(pathToFile, std::ios::in);
     std::string content;
     if(!fileStream.is_open()){
@@ -19,15 +17,14 @@ std::string DwarfGetShader::ReadShaderFile(const GLchar *pathToFile) {
         content.append(line + "\n");
     }
     fileStream.close();
-    DwarfPathChange::SetCurrentPath(path);
     return content;
 }
 
-GLuint DwarfGetShader::LoadFragmentShader() {
+GLuint DwarfGetShader::LoadFragmentShader(const char* path) {
 
     int result;
     char Log[512];
-    auto shaderString = ReadShaderFile("FragmentShader.glsl");
+    auto shaderString = ReadShaderFile(path);
     if(shaderString.empty()) return 0;
 
     auto Fragment = shaderString.c_str();
@@ -46,12 +43,12 @@ GLuint DwarfGetShader::LoadFragmentShader() {
     return FragmentShader;
 }
 
-GLuint DwarfGetShader::LoadVertexShader() {
+GLuint DwarfGetShader::LoadVertexShader(const char* path) {
 
     int result;
     char Log[512];
 
-    auto shaderString = ReadShaderFile("VertexShader.glsl");
+    auto shaderString = ReadShaderFile(path);
     auto Vertex = shaderString.c_str();
 
     GLuint VertexShader = glCreateShader(GL_VERTEX_SHADER);

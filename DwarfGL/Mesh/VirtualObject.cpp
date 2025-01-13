@@ -1,41 +1,38 @@
-//
-// Created by Aaron.Marklund on 2024-11-19.
-//
-
-#include "DwarfMesh2D.h"
+#include "VirtualObject.h"
 
 #include <utility>
 
 #include "DwarfMesh.h"
 
 namespace Dwarf {
-    DwarfMesh2D::DwarfMesh2D(std::shared_ptr<DwarfShader> shader,
+    VirtualObject::VirtualObject(std::shared_ptr<DwarfShader> _shader,
         vector<Vertex> vertices,
         vector<Vertex> normals,
         vector<TexCord> tex_cords)
-        :dwarfShader(std::move(shader)), vertices_size(vertices.size()){
+        :vertices_size(vertices.size()), shader(std::move(_shader)){
 
-        glGenBuffers(1, &vertex_buffer_object);
-        glGenBuffers(1, &normal_buffer_object);
-        glGenBuffers(1, &tex_cord_buffer_object);
+        glGenBuffers(1, &VBO);
+        glGenBuffers(1, &NVBO);
+        glGenBuffers(1, &TVBO);
 
-        glGenVertexArrays(1, &vertex_array_object);
-        glGenBuffers(1, &element_buffer_object);
+        glGenVertexArrays(1, &VAO);
+        /*glGenVertexArrays(1, &lightVAO);*/
 
-        //Bind Buffers & Arrays
-        glBindVertexArray(vertex_array_object);
+        glBindVertexArray(VAO);
 
-        glBindBuffer(GL_ARRAY_BUFFER, vertex_buffer_object);
+
+        glBindBuffer(GL_ARRAY_BUFFER, VBO);
         glBufferData(GL_ARRAY_BUFFER,
         vertices.size() * sizeof(Vertex),
                  &vertices[0], GL_STATIC_DRAW);
+
 
         glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE,
         3 * sizeof(float), (void*)0);
         glEnableVertexAttribArray(0);
 
         if (!normals.empty()) {
-            glBindBuffer(GL_ARRAY_BUFFER, normal_buffer_object);
+            glBindBuffer(GL_ARRAY_BUFFER, NVBO);
             glBufferData(GL_ARRAY_BUFFER,
                 normals.size() * sizeof(Vertex),
                 &normals[0], GL_STATIC_DRAW);
@@ -45,7 +42,7 @@ namespace Dwarf {
             glEnableVertexAttribArray(1);
         }
         if (!tex_cords.empty()) {
-            glBindBuffer(GL_ARRAY_BUFFER, tex_cord_buffer_object);
+            glBindBuffer(GL_ARRAY_BUFFER, TVBO);
             glBufferData(GL_ARRAY_BUFFER,
                 tex_cords.size() * sizeof(TexCord),
                 &tex_cords[0], GL_STATIC_DRAW);
@@ -62,22 +59,26 @@ namespace Dwarf {
         stbi_set_flip_vertically_on_load(true);
         CreateTextures(texture2, "awesomeface.png", GL_RGBA);
 
-}
+    }
 
-    void DwarfMesh2D::Draw(std::shared_ptr<DwarfShader> dwarf_shader){
-        glBindVertexArray(vertex_array_object);
+    void VirtualObject::Draw(){
+        glBindVertexArray(VAO);
 
         glDrawArrays(GL_TRIANGLES, 0, vertices_size);
         glBindVertexArray(0);
     }
 
-    DwarfMesh2D::~DwarfMesh2D() {
-        glDeleteVertexArrays(1, &vertex_array_object);
-        glDeleteBuffers(1, &vertex_buffer_object);
+    VirtualObject::~VirtualObject() {
+        glDeleteVertexArrays(1, &VAO);
+
+        glDeleteBuffers(1, &VBO);
+        glDeleteBuffers(1, &NVBO);
+        glDeleteBuffers(1, &TVBO);
+
         glDeleteBuffers(1, &element_buffer_object);
     }
 
-    void DwarfMesh2D::CreateTextures(GLuint &texture, const char *image_name, int color_format) {
+    void VirtualObject::CreateTextures(GLuint &texture, const char *image_name, int color_format) {
         glGenTextures(1, &texture);
         glBindTexture(GL_TEXTURE_2D, texture);
 
@@ -98,13 +99,13 @@ namespace Dwarf {
 
     }
 
-    void DwarfMesh2D::SetTextureUnit() {
-        dwarfShader->UseShaderProgram();
-        dwarfShader->SetInt("texture1", 0);
-        dwarfShader->SetInt("texture2", 1);
+    void VirtualObject::SetTextureUnit() {
+        shader->UseShaderProgram();
+        shader->SetInt("texture1", 0);
+        shader->SetInt("texture2", 1);
     }
 
-    void DwarfMesh2D::BindOnTextureUnit() {
+    void VirtualObject::BindOnTextureUnit() {
         glActiveTexture(GL_TEXTURE0);
         glBindTexture(GL_TEXTURE_2D, texture1);
         glActiveTexture(GL_TEXTURE1);

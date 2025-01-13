@@ -71,10 +71,11 @@ namespace Dwarf{
     };
 
 
-    class DwarfMesh2D{
+    class VirtualObject{
     public:
 
-        DwarfMesh2D(std::shared_ptr<DwarfShader> shader,
+        VirtualObject(
+            std::shared_ptr<DwarfShader> _shader,
             vector<Vertex> vertices,
             vector<Vertex> normals,
             vector<TexCord> tex_cords);
@@ -87,21 +88,25 @@ namespace Dwarf{
 
         size_t texture_count = 0;
 
-        std::shared_ptr<DwarfShader> dwarfShader;
+        std::shared_ptr<DwarfShader> shader;
 
-        GLuint vertex_buffer_object{};
-        GLuint normal_buffer_object{};
-        GLuint tex_cord_buffer_object{};
-        GLuint vertex_array_object{};
+        //Used for models and other stuff that is viable
+        GLuint VBO{};
+        GLuint NVBO{};
+        GLuint TVBO{};
+
+        GLuint lightVAO{};
+        GLuint VAO{};
         GLuint element_buffer_object{};
+
         GLuint texture1 {};
         GLuint texture2 {};
 
         size_t points_count{};
 
-        ~DwarfMesh2D();
+        ~VirtualObject();
 
-        void Draw(std::shared_ptr<DwarfShader> dwarf_shader);
+        void Draw();
     };
 
     /*class Triangle : public Mesh2D::DwarfMesh2D {
