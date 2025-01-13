@@ -21,6 +21,19 @@ namespace Dwarf {
         glBindVertexArray(VAO);
 
 
+       SetVertexBufferObjects(std::move(vertices), std::move(normals), std::move(tex_cords));
+
+
+        CreateTextures(texture1, "container.jpg", GL_RGB);
+        stbi_set_flip_vertically_on_load(true);
+        CreateTextures(texture2, "awesomeface.png", GL_RGBA);
+
+    }
+
+    void VirtualObject::SetVertexBufferObjects(vector<Vertex> vertices, vector<Vertex> normals,
+        vector<TexCord> tex_cords) {
+
+        glBindVertexArray(VAO);
         glBindBuffer(GL_ARRAY_BUFFER, VBO);
         glBufferData(GL_ARRAY_BUFFER,
         vertices.size() * sizeof(Vertex),
@@ -51,14 +64,9 @@ namespace Dwarf {
                 2 * sizeof(float), (void*)0);
             glEnableVertexAttribArray(2);
         }
-
-        glBindVertexArray(0);
-
-
-        CreateTextures(texture1, "container.jpg", GL_RGB);
-        stbi_set_flip_vertically_on_load(true);
-        CreateTextures(texture2, "awesomeface.png", GL_RGBA);
-
+        if (texture1 != 0 && texture2 != 0) {
+            SetTextureUnit();
+        }
     }
 
     void VirtualObject::Draw(){

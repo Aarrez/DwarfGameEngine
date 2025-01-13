@@ -79,12 +79,19 @@ namespace Dwarf{
             vector<Vertex> vertices,
             vector<Vertex> normals,
             vector<TexCord> tex_cords);
-
+        void SetVertexBufferObjects(vector<Vertex> vertices,
+            vector<Vertex> normals, vector<TexCord> tex_cords);
         void CreateTextures(GLuint &texture, const char* image_name, int color_format);
         void SetTextureUnit();
         void BindOnTextureUnit();
 
-        size_t vertices_size;;
+        void Draw();
+
+        ~VirtualObject();
+
+    private:
+
+        size_t vertices_size;
 
         size_t texture_count = 0;
 
@@ -104,9 +111,6 @@ namespace Dwarf{
 
         size_t points_count{};
 
-        ~VirtualObject();
-
-        void Draw();
     };
 
     /*class Triangle : public Mesh2D::DwarfMesh2D {

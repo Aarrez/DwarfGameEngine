@@ -81,7 +81,7 @@ namespace Dwarf {
         auto meshData = DwarfOBJLoader::OBJFileParser(filePath);
         DwarfOBJLoader::OBJDataSerializer(filePath, meshData.value());
         MeshData data = DwarfOBJLoader::OBJDataDeserializer(
-            DwarfOBJLoader::FilesSerialized[0].fileName);
+            DwarfOBJLoader::FilesSerialized[3].fileName);
 
         vector<Vertex> vertex_vector = DwarfOBJLoader::GetVerticesFromData(data);
         vector<Vertex> normal_vector = DwarfOBJLoader::GetNormalsFromData(data);
@@ -243,7 +243,7 @@ namespace Dwarf {
                 vector<Vertex> normals = DwarfOBJLoader::GetNormalsFromData(meshData);
                 vector<TexCord> texcord = DwarfOBJLoader::GetTexCoordFromData(meshData);
 
-                dwarfMesh2D = make_unique<VirtualObject>(shader, vertices, normals, texcord);
+                dwarfMesh2D->SetVertexBufferObjects(vertices, normals, texcord);
 
                 ent->fileInfo = meshFileInfo;
             }
