@@ -1,6 +1,6 @@
 #ifndef MEMORY_H
 #define MEMORY_H
-namespace Dwarf {
+namespace Engine {
     namespace Memory {
 #include <Windows.h>
         DWORD GetPhysicalMemoryAvailable();

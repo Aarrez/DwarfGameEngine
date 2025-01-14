@@ -8,7 +8,7 @@
 
 namespace fs = std::filesystem;
 
-namespace Dwarf {
+namespace Engine {
 
     class DwarfGetShader {
     public:

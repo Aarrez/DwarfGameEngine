@@ -9,7 +9,7 @@
 
 #include "../DwarfMisc/PublicEnums.h"
 
-namespace Dwarf {
+namespace Engine {
     class DwarfIterativeOBJParser {
 
     public:

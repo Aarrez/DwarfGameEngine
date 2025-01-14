@@ -5,7 +5,7 @@
 
 int main() {
 
-    Dwarf::DwarfEngine engine{};
+    Engine::DwarfEngine engine{};
     engine.Init();
     while(!glfwWindowShouldClose(engine.window)) {
         engine.Update();

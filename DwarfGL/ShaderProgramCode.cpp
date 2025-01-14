@@ -1,7 +1,7 @@
 #include "ShaderProgramCode.h"
 
 
-using namespace Dwarf;
+using namespace Engine;
 
 std::string DwarfGetShader::ReadShaderFile(const char *pathToFile) {
     std::ifstream fileStream(pathToFile, std::ios::in);

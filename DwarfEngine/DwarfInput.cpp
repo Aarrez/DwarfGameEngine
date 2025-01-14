@@ -5,7 +5,7 @@
 #include <glm/trigonometric.hpp>
 #include <glm/detail/func_geometric.inl>
 
-namespace Dwarf
+namespace Engine
 {
     DwarfInput* DwarfInput::Instance = nullptr;
     const float DwarfInput::sensitivity = 0.1f;

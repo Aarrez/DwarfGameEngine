@@ -1,7 +1,7 @@
 #ifndef PUBLICENUMS_H
 #define PUBLICENUMS_H
 
-namespace Dwarf {
+namespace Engine {
     enum class OBJLoadingState {
         OpenFile = 0,
         Vertex = 1,

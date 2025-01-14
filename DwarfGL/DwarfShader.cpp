@@ -5,7 +5,7 @@
 #include "ShaderProgramCode.h"
 
 
-Dwarf::DwarfShader::DwarfShader(const char* vertexShaderPath, const char* fragmentShaderPath) {
+Engine::DwarfShader::DwarfShader(const char* vertexShaderPath, const char* fragmentShaderPath) {
     int result;
     char Log[512];
 
@@ -29,27 +29,27 @@ Dwarf::DwarfShader::DwarfShader(const char* vertexShaderPath, const char* fragme
     glDeleteShader(fragmentShader);
 }
 
-void Dwarf::DwarfShader::SetBool(const char* name, bool value) {
+void Engine::DwarfShader::SetBool(const char* name, bool value) {
     glUniform1i(glGetUniformLocation(shaderProgram, name), (int)value);
 }
-void Dwarf::DwarfShader::SetInt(const char*  name, int value) {
+void Engine::DwarfShader::SetInt(const char*  name, int value) {
     glUniform1i(glGetUniformLocation(shaderProgram, name), value);
 }
-void Dwarf::DwarfShader::SetFloat(const char*  name, float value) {
+void Engine::DwarfShader::SetFloat(const char*  name, float value) {
     glUniform1i(glGetUniformLocation(shaderProgram, name), value);
 }
-void Dwarf::DwarfShader::SetVector3(const char* name,
+void Engine::DwarfShader::SetVector3(const char* name,
                                     float value1, float value2, float value3) {
     glUniform3f(glGetUniformLocation(shaderProgram,
                                      name), value1, value2, value3);
 }
-void Dwarf::DwarfShader::SetVector4(const char* name,
+void Engine::DwarfShader::SetVector4(const char* name,
                                     float value1, float value2, float value3, float value4) {
     glUniform4f(glGetUniformLocation(shaderProgram,
                                      name), value1, value2, value3, value4);
 }
 
-void Dwarf::DwarfShader::SetMatrix4(const char *name,
+void Engine::DwarfShader::SetMatrix4(const char *name,
                                     int num_matrix, int transpose, glm::mat4 &value) {
     GLint transformLoc = glGetUniformLocation(shaderProgram, name);
     glUniformMatrix4fv(transformLoc, num_matrix, transpose, glm::value_ptr(value));

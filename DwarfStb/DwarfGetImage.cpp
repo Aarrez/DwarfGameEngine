@@ -1,6 +1,6 @@
 #include "DwarfGetImage.h"
 
-unsigned char *Dwarf::DwarfImage::GetImage(
+unsigned char *Engine::DwarfImage::GetImage(
         const char* image_name, int &width, int &height, int &nrChannel) {
     auto path = DwarfPathChange::GetCurrentPath();
     DwarfPathChange::AppendCurrentPath("DwarfImages");
@@ -9,7 +9,7 @@ unsigned char *Dwarf::DwarfImage::GetImage(
     return data;
 }
 
-unsigned int Dwarf::TextureFromFile(const char *filename) {
+unsigned int Engine::TextureFromFile(const char *filename) {
 
     auto p = DwarfPathChange::GetCurrentPath();
     DwarfPathChange::AppendCurrentPath("DwarfImages");
@@ -47,7 +47,7 @@ unsigned int Dwarf::TextureFromFile(const char *filename) {
     return textureID;
 }
 
-unsigned int Dwarf::TextureFromFile(const std::string &filename, const std::string &directory) {
+unsigned int Engine::TextureFromFile(const std::string &filename, const std::string &directory) {
     auto p = DwarfPathChange::GetCurrentPath();
     DwarfPathChange::SetCurrentPath(directory);
     unsigned int textureID;

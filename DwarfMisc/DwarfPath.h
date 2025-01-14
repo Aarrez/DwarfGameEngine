@@ -4,7 +4,7 @@
 namespace fs = std::filesystem;
 
 
-namespace Dwarf{
+namespace Engine{
     static const fs::path init_path = fs::current_path();
 
     class DwarfPathChange{

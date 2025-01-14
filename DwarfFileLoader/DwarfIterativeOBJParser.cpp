@@ -1,6 +1,6 @@
 #include "DwarfIterativeOBJParser.h"
 
-namespace Dwarf {
+namespace Engine {
     vector<Vertex> DwarfIterativeOBJParser::ParseVertexes(std::ifstream &file, string &prefix) {
         string line;
         vector<Vertex> vertices;

@@ -1,6 +1,6 @@
 #include "DwarfEntityManager.h"
 
-namespace Dwarf{
+namespace Engine{
 
     vector<Entity*> DwarfEntityManager::entities;
     DwarfEntityManager* DwarfEntityManager::Instance;
@@ -11,7 +11,7 @@ namespace Dwarf{
         Instance = new DwarfEntityManager();
     }
 
-    Entity * DwarfEntityManager::CreateEntity(const string &name) {
+    Entity * DwarfEntityManager::CreateEntity(const SerializedFile& file, const string &name) {
         string nameWithIndex = name + std::to_string(entities.size());
         Entity *entity = new Entity();
         entity->id = entities.size();

@@ -1,14 +1,14 @@
-#include "DwarfOBJLoader.h"
+#include "OBJLoader.h"
 
 #include "../DwarfMisc/DwarfPath.h"
 
-namespace Dwarf {
+namespace Engine {
 
-    vector<SerializedFile> DwarfOBJLoader::FilesSerialized;
+    vector<SerializedFile> OBJLoader::FilesSerialized;
     /* DwarfModels/BinaryFiles/ */
-    string DwarfOBJLoader::defaultBinPath = "DwarfModels/BinaryFiles/";
+    string OBJLoader::defaultBinPath = "DwarfModels/BinaryFiles/";
 
-    void DwarfOBJLoader::GetBinaryFiles() {
+    void OBJLoader::GetBinaryFiles() {
         auto binFiles = DwarfPathChange::GetNameFilesInDirectory(defaultBinPath);
         for (auto& file : binFiles) {
             size_t i = file.find(".bin");
@@ -20,7 +20,7 @@ namespace Dwarf {
         }
     }
 
-    std::optional<MeshData> DwarfOBJLoader::OBJFileParser(const string& filename) {
+    std::optional<MeshData> OBJLoader::OBJFileParser(const string& filename) {
         vector<Vertex> vertices;
         vector<TexCord> tex_cords;
         std::vector<Vertex> normals;
@@ -103,7 +103,15 @@ namespace Dwarf {
         return meshData;
     }
 
-    vector<Vertex> DwarfOBJLoader::GetVerticesFromData(MeshData& data) {
+    Mesh OBJLoader::OrderMeshData(MeshData& data) {
+        Mesh mesh;
+        mesh.vertices = GetVerticesFromData(data);
+        mesh.normals = GetNormalsFromData(data);
+        mesh.uvs = GetTexCoordFromData(data);
+        return mesh;
+    }
+
+    vector<Vertex> OBJLoader::GetVerticesFromData(MeshData& data) {
         vector<Vertex> ordered_vertices;
         for (unsigned int i {0}; i < data.vertex_indexes.size(); i++) {
 
@@ -121,7 +129,7 @@ namespace Dwarf {
         return ordered_vertices;
     }
 
-    vector<Vertex> DwarfOBJLoader::GetNormalsFromData(MeshData &data) {
+    vector<Vertex> OBJLoader::GetNormalsFromData(MeshData &data) {
         vector<Vertex> ordered_normals;
         if (data.vertex_normals.empty()) {
             return ordered_normals;
@@ -141,7 +149,7 @@ namespace Dwarf {
         return ordered_normals;
     }
 
-    vector<TexCord> DwarfOBJLoader::GetTexCoordFromData(MeshData &data) {
+    vector<TexCord> OBJLoader::GetTexCoordFromData(MeshData &data) {
         vector<TexCord> ordered_texcord;
         if (data.texCords.empty()) {
             return ordered_texcord;
@@ -162,8 +170,7 @@ namespace Dwarf {
         return ordered_texcord;
     }
 
-
-    MeshData DwarfOBJLoader::OBJDataDeserializer(const string& filename) {
+    Mesh OBJLoader::OBJDataDeserializer(const string& filename) {
         string fname;
 
         bool foundNam = false;
@@ -179,14 +186,15 @@ namespace Dwarf {
             return {};
         }
 
-        MeshData meshData;
+        Mesh mesh;
+        mesh.name = fname;
         std::ifstream file;
         file.open(fname, std::ios_base::binary | std::ios_base::in);
         if (!file.is_open()) {
             cerr << "File not found: " << filename << endl;
             return {};
         }
-        if (!meshData.ReadFrom(file)) {
+        if (!mesh.ReadFrom(file)) {
             cerr << "Failed to read binary file: " << filename << endl;
         }
 
@@ -195,17 +203,17 @@ namespace Dwarf {
             cerr << "Error while writing to binary file" << endl;
             return {};
         }
-        return meshData;
+        return mesh;
     }
 
-    void DwarfOBJLoader::OBJDataSerializer(string& fileNameToCopy, MeshData &meshData, const string& binPath) {
+    SerializedFile OBJLoader::OBJDataSerializer(Mesh &mesh, const string& filePath, const string& binPath) {
         SerializedFile serialized_file;
 
         //"filePath" looks something like this
         //DwarfModels/BinaryFiles/{Filename}.obj
 
         string pathToFile = binPath;
-        string filename = fileNameToCopy;
+        string filename = filePath;
         auto i = filename.find_last_of('/') + 1;
         if (i != filename.npos)
             filename = filename.substr(i);
@@ -216,7 +224,6 @@ namespace Dwarf {
         }
         //{Filename}
         filename += ".bin";
-
 
 
         //Default: DwarfModels/BinaryFiles/{newFilename}.bin
@@ -240,18 +247,18 @@ namespace Dwarf {
         file.open(pathToFile, std::ios_base::binary | std::ios_base::out);
         if (!file.is_open()) {
             cerr << pathToFile << " \n is not a valid path" << endl;
-            return;
         }
 
-        if (!meshData.WriteTo(file)) {
+        if (!mesh.WriteTo(file)) {
             cerr << "Error while writing to binary file" << endl;
-            return;
+            return serialized_file;
         }
 
         file.close();
         if (!file.good()) {
             cerr << "Error while writing to binary file" << endl;
         }
+        return serialized_file;
     }
 
 }

@@ -7,7 +7,7 @@
 
 using namespace glm;
 
-namespace Dwarf::Camera{
+namespace Engine::Camera{
 
 
     class DwarfCamera{

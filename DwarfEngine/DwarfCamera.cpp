@@ -3,7 +3,7 @@
 #include <glad/glad.h>
 #include <GLFW/glfw3.h>
 
-using namespace Dwarf::Camera;
+using namespace Engine::Camera;
 
 DwarfCamera::DwarfCamera(std::shared_ptr<DwarfShader> shader) : shader(shader){
     view = mat4(1.0f);

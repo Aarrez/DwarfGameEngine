@@ -6,7 +6,7 @@
 #define DWARFTHREADING_H
 
 
-namespace Dwarf {
+namespace Engine {
     class DwarfThreading {
 
     };

@@ -6,7 +6,7 @@
 #include <vector>
 #include <glm/vec3.hpp>
 
-namespace Dwarf{
+namespace Engine{
 
     struct MovementValue {
         float horizontal, vertical, forward;

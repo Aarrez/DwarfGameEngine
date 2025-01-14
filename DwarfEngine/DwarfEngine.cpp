@@ -1,9 +1,10 @@
 #include "DwarfEngine.h"
 
+
 #include "../DwarfMisc/Memory.h"
 
 
-namespace Dwarf {
+namespace Engine {
 
     glm::vec3 cubePositions[] = {
         glm::vec3( 0.0f,  0.0f,  0.0f),
@@ -49,7 +50,8 @@ namespace Dwarf {
 
 
     void DwarfEngine::Init() {
-        DwarfOBJLoader::GetBinaryFiles();
+        MeshManager::Allocate();
+        OBJLoader::GetBinaryFiles();
         DwarfInput::Allocate(window);
         DwarfEntityManager::Allocate();
 
@@ -77,22 +79,14 @@ namespace Dwarf {
             "ShaderScripts/LightingFragmentShader.glsl");
 
         camera = make_unique<Camera::DwarfCamera>(shader);
-        std::string filePath = "DwarfModels/OBJFiles/bear.obj";
-        auto meshData = DwarfOBJLoader::OBJFileParser(filePath);
-        DwarfOBJLoader::OBJDataSerializer(filePath, meshData.value());
-        MeshData data = DwarfOBJLoader::OBJDataDeserializer(
-            DwarfOBJLoader::FilesSerialized[3].fileName);
 
-        vector<Vertex> vertex_vector = DwarfOBJLoader::GetVerticesFromData(data);
-        vector<Vertex> normal_vector = DwarfOBJLoader::GetNormalsFromData(data);
-        vector<TexCord> texcord_vector = DwarfOBJLoader::GetTexCoordFromData(data);
-
-        dwarfMesh2D = make_unique<VirtualObject>(shader,
-            vertex_vector, normal_vector, texcord_vector);
+        string s = "bear.bin";
+        auto mesh = MeshManager::Instance()->LoadMesh(s);
+        dwarfMesh2D = make_unique<VirtualObject>(shader, mesh);
 
         dwarfMesh2D->SetTextureUnit();
         for (int i = 0; i < AmountOfMeshes; i++) {
-            DwarfEntityManager::CreateEntity();
+            DwarfEntityManager::CreateEntity(OBJLoader::FilesSerialized[0]);
         }
     }
 
@@ -141,6 +135,7 @@ namespace Dwarf {
 
             shader->SetMatrix4("model", 1, GL_FALSE,
                 i->transform);
+
             dwarfMesh2D->Draw();
         }
 
@@ -162,7 +157,7 @@ namespace Dwarf {
             ImGui::Begin("EntityWindow");
 
             if (ImGui::Button("Create Entity")) {
-                DwarfEntityManager::CreateEntity();
+                DwarfEntityManager::CreateEntity(OBJLoader::FilesSerialized[0]);
             }
 
             ImGui::InputText("Entity Name", &ent_buf);
@@ -201,19 +196,14 @@ namespace Dwarf {
 
             ImGui::InputText("Path to OBJ File", &file_buf);
             if (ImGui::Button("Serialize File")) {
-                auto data = DwarfOBJLoader::OBJFileParser(file_buf);
-                if (!data.has_value())
-                    std::cerr << "Not a valid File path: " << file_buf << std::endl;
-                else {
-                    DwarfOBJLoader::OBJDataSerializer(file_buf, data.value());
-                }
+                MeshManager::Instance()->AddMesh(file_buf);
             }
             if (ImGui::BeginListBox("Meshes")) {
-                for (int i = 0; i < DwarfOBJLoader::FilesSerialized.size(); i++) {
+                for (int i = 0; i < OBJLoader::FilesSerialized.size(); i++) {
                     const bool is_selected = selected_int == i;
-                    if (ImGui::Selectable(DwarfOBJLoader::FilesSerialized[i].fileName.c_str(), is_selected)) {
+                    if (ImGui::Selectable(OBJLoader::FilesSerialized[i].fileName.c_str(), is_selected)) {
                         selected_int = i;
-                        selected_path = DwarfOBJLoader::FilesSerialized[i].binPath;
+                        selected_path = OBJLoader::FilesSerialized[i].binPath;
                     }
                 }
                 ImGui::EndListBox();
@@ -236,19 +226,10 @@ namespace Dwarf {
 
             if (ImGui::Button("Change Entity Mesh")) {
                 auto ent = DwarfEntityManager::GetEntityList()->at(comb_selected);
-                auto meshFileInfo = DwarfOBJLoader::FilesSerialized.at(selected_int);
-                auto meshData = DwarfOBJLoader::OBJDataDeserializer(meshFileInfo.fileName);
-
-                vector<Vertex> vertices = DwarfOBJLoader::GetVerticesFromData(meshData);
-                vector<Vertex> normals = DwarfOBJLoader::GetNormalsFromData(meshData);
-                vector<TexCord> texcord = DwarfOBJLoader::GetTexCoordFromData(meshData);
-
-                dwarfMesh2D->SetVertexBufferObjects(vertices, normals, texcord);
-
-                ent->fileInfo = meshFileInfo;
+                auto meshFileInfo = OBJLoader::FilesSerialized.at(selected_int);
+                auto mesh = MeshManager::Instance()->FindMesh(meshFileInfo.fileName);
+                ent->meshName = mesh->name;
             }
-
-
         }
         ImGui::End();
 
@@ -263,7 +244,6 @@ namespace Dwarf {
         ImGui_ImplGlfw_Shutdown();
         ImGui_ImplOpenGL3_Shutdown();
         ImGui::DestroyContext();
-
     }
 
     DwarfEngine::~DwarfEngine() {

@@ -1,7 +1,3 @@
-//
-// Created by Aaron on 2024-11-26.
-//
-
 #ifndef DWARFOBJLOADER_H
 #define DWARFOBJLOADER_H
 #include "iostream"
@@ -12,30 +8,31 @@
 #include <sstream>
 
 #include "../DwarfMisc/DwarfPublicStructs.h"
+#include "../DwarfGL/Mesh/Mesh.h"
 #include "../DwarfMisc/PublicEnums.h"
 using namespace std;
 
-namespace Dwarf {
+namespace Engine {
+    class OBJLoader{
 
-
-
-    class DwarfOBJLoader{
-
-        DwarfOBJLoader() = default;
-        ~DwarfOBJLoader() = default;
+        OBJLoader() = default;
+        ~OBJLoader() = default;
         static string defaultBinPath;
+
 
     public:
         static void GetBinaryFiles();
 
-        static std::optional<MeshData> OBJFileParser(const string& filename);
         static vector<Vertex> GetVerticesFromData(MeshData& data);
         static vector<Vertex> GetNormalsFromData(MeshData& data);
         static vector<TexCord> GetTexCoordFromData(MeshData& data);
 
-        static void OBJDataSerializer(string& filepath, MeshData& meshData,
+        static std::optional<MeshData> OBJFileParser(const string& filename);
+        static Mesh OrderMeshData(MeshData& data);
+
+        static SerializedFile OBJDataSerializer(Mesh& mesh,const string& filePath,
             const string& binPath = defaultBinPath);
-        static MeshData OBJDataDeserializer(const string& filename);
+        static Mesh OBJDataDeserializer(const string& filename);
 
 
         static vector<SerializedFile> FilesSerialized;

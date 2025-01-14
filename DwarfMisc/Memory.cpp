@@ -1,7 +1,7 @@
 #include "Memory.h"
 
 
-namespace Dwarf {
+namespace Engine {
     namespace Memory {
         DWORD Memory::GetPhysicalMemoryAvailable() {
             MEMORYSTATUSEX stat;

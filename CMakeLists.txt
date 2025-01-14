@@ -28,8 +28,8 @@ add_executable(DwarfGameEngine
         DwarfEngine/DwarfInput.h
 
         #DwarfGL/Mesh2D
-        DwarfGL/Mesh/DwarfMesh.cpp
-        DwarfGL/Mesh/DwarfMesh.h
+        DwarfGL/Mesh/Mesh.cpp
+        DwarfGL/Mesh/Mesh.h
 
         #DwarfMisc
         DwarfMisc/TestCode.cpp
@@ -51,13 +51,15 @@ add_executable(DwarfGameEngine
         DwarfGL/Mesh/VirtualObject.h
         DwarfEngine/DwarfEntityManager.cpp
         DwarfEngine/DwarfEntityManager.h
-        DwarfFileLoader/DwarfOBJLoader.cpp
-        DwarfFileLoader/DwarfOBJLoader.h
+        DwarfFileLoader/OBJLoader.cpp
+        DwarfFileLoader/OBJLoader.h
         DwarfMisc/PublicEnums.h
         DwarfFileLoader/DwarfIterativeOBJParser.cpp
         DwarfFileLoader/DwarfIterativeOBJParser.h
         DwarfEngine/DwarfThreading.cpp
         DwarfEngine/DwarfThreading.h
+        DwarfEngine/MeshManager.cpp
+        DwarfEngine/MeshManager.h
 
 )
 

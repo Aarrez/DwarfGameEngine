@@ -6,7 +6,7 @@
 #include <glm/gtc/matrix_transform.hpp>
 
 
-namespace Dwarf {
+namespace Engine {
     class DwarfShader {
     public:
         DwarfShader(const char* vertexShaderPath, const char* fragmentShaderPath);

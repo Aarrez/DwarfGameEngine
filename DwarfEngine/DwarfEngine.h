@@ -8,6 +8,8 @@
 #include "imgui_impl_glfw.h"
 #include "imgui_impl_opengl3.h"
 #include <imgui_stdlib.h>
+#include <thread>
+#include <mutex>
 
 #include "glm/gtx/matrix_decompose.hpp"
 
@@ -15,19 +17,20 @@
 
 #pragma region Dwarf-Includes
 //DwarfGL
-#include <thread>
-#include <mutex>
+#include "MeshManager.h"
+
 /*#include "../DwarfGL/Mesh/DwarfMesh.h"*/
 #include "../DwarfGL/Mesh/VirtualObject.h"
 #include "../DwarfGL/DwarfShader.h"
-#include "../DwarfGL/Mesh/DwarfMesh.h"
+#include "../DwarfGL/Mesh/Mesh.h"
 
 //DwarfMisc
 #include "../DwarfMisc/DwarfPath.h"
 /*#include "../DwarfMisc/Memory.h"*/
 
+
 //OBJLoaders
-#include "../DwarfFileLoader/DwarfOBJLoader.h"
+#include "../DwarfFileLoader/OBJLoader.h"
 
 //DwarfEngine
 #include "DwarfEntityManager.h"
@@ -36,7 +39,7 @@
 #pragma endregion Dwarf-Includes
 
 
-namespace Dwarf {
+namespace Engine {
 
     class DwarfEngine {
     public:
