@@ -1,6 +1,7 @@
 #include "DwarfEngine.h"
 
 
+#include "TextureManager.h"
 #include "../DwarfMisc/Memory.h"
 
 
@@ -54,6 +55,7 @@ namespace Engine {
         OBJLoader::GetBinaryFiles();
         DwarfInput::Allocate(window);
         DwarfEntityManager::Allocate();
+        TextureManager::Allocate();
 
 
 
@@ -83,11 +85,14 @@ namespace Engine {
 
         string s = "bear.bin";
         auto mesh = MeshManager::Instance()->LoadMesh(s);
-        dwarfMesh2D = make_unique<VirtualObject>(shader, mesh);
+        virtual_object = make_unique<VirtualObject>(shader, mesh);
 
-        dwarfMesh2D->SetTextureUnit();
+        virtual_object->SetTextureUnit();
+        Texture tex {};
+        tex.colorFormat = GL_RGB;
+        tex.filePath = "Images/container.jpg";
         for (int i = 0; i < AmountOfMeshes; i++) {
-            DwarfEntityManager::CreateEntity(OBJLoader::FilesSerialized[0]);
+            DwarfEntityManager::CreateEntity(OBJLoader::FilesSerialized[0], tex);
         }
     }
 
@@ -106,7 +111,7 @@ namespace Engine {
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
         glClearColor(clear_color.x, clear_color.y, clear_color.z, clear_color.w);
 
-        dwarfMesh2D->BindOnTextureUnit();
+        virtual_object->BindOnTextureUnit();
 
 
         glm::mat4 model {glm::mat4(1.0f)};
@@ -136,8 +141,8 @@ namespace Engine {
             shader->SetMatrix4("model", 1, GL_FALSE,
                 i->transform);
             Mesh m = MeshManager::Instance()->FindMesh(i->meshName);
-            dwarfMesh2D->SetVertexBufferObjects(m);
-            dwarfMesh2D->Draw();
+            virtual_object->SetVertexBufferObjects(m);
+            virtual_object->Draw();
         }
 
         ImGui_ImplGlfw_NewFrame();
@@ -158,7 +163,10 @@ namespace Engine {
             ImGui::Begin("EntityWindow");
 
             if (ImGui::Button("Create Entity")) {
-                DwarfEntityManager::CreateEntity(OBJLoader::FilesSerialized[0]);
+                Texture tex {};
+                tex.filePath = "Images/container.jpg";
+                tex.colorFormat = GL_RGBA;
+                DwarfEntityManager::CreateEntity(OBJLoader::FilesSerialized[0], tex);
             }
 
             ImGui::InputText("Entity Name", &ent_buf);

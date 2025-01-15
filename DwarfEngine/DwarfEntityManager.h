@@ -4,17 +4,18 @@
 
 #include "../DwarfGL/Mesh/VirtualObject.h"
 
-using namespace std;
+
 
 namespace Engine {
 
+
     class DwarfEntityManager {
-    private:
         public:
+
         static void Allocate();
 
-        static Entity* CreateEntity(const SerializedFile& file, const string &name = "Entity");
-        static vector<Entity*>* GetEntityList();
+        static Entity* CreateEntity(const SerializedFile& file, const Texture &texture, const string &name = "Entity");
+        static std::vector<Entity*>* GetEntityList();
         static void RemoveEntity(Entity* entity);
         static void RemoveEntityByName(string& name);
         static void RemoveAllEntities();

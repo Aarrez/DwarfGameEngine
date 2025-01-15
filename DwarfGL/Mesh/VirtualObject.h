@@ -13,7 +13,8 @@ namespace Engine{
         VirtualObject(std::shared_ptr<DwarfShader> _shader, const Mesh& mesh);
 
         void SetVertexBufferObjects(const Mesh& mesh);
-        void CreateTextures(GLuint &textureID, const char* image_path, int color_format);
+        void CreateTextures(GLuint &textureID, const Texture &texture);
+        void SetTexture(const Texture& texture);
         void SetTextureUnit();
         void BindOnTextureUnit();
 

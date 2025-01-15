@@ -20,11 +20,16 @@ namespace Engine {
         bool selected;
     };
 
+    struct Texture {
+        const char* filePath;
+        int colorFormat;
+    };
+
     struct Entity {
         int id;
         string name;
         string meshName;
-        string texture;
+        Texture texture;
         glm::mat4 transform;
         bool selected;
 

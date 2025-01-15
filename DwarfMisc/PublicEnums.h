@@ -15,6 +15,22 @@ namespace Engine {
         OnlyFaces = 0,
         AllIndices = 1,
     };
+
+    enum class MessageType {
+        String = 0,
+        Float = 1,
+        LoadMesh = 2,
+        AddMesh = 3,
+    };
+    inline const char* ToString(const MessageType& msg) {
+        switch (msg) {
+            case MessageType::String: return "String";
+            case MessageType::Float: return "Float";
+            case MessageType::LoadMesh: return "LoadMesh";
+            case MessageType::AddMesh: return "AddMesh";
+            default: return "Unknown";
+        }
+    }
 }
 
 #endif //PUBLICENUMS_H

@@ -22,14 +22,16 @@ namespace Engine {
             const vector<Vertex> &vertex, const vector<Vertex> &vertexNormal,
             const vector<TexCord> &vertexUv, const vector<unsigned int> &faces);
 
+        vector<Vertex> RearrangeVertices(vector<Vertex> vertices, vector<unsigned int> faces);
+        vector<Vertex> RearrangeVerticesNormals(vector<Vertex> vertices, vector<unsigned int> faces);
+        vector<TexCord> RearrangeVerticesUvs(vector<TexCord> vertices, vector<unsigned int> faces);
+
         vector<Vertex> vertex, vertexNormal;
         vector<TexCord> vertexUv;
 
     private:
         OBJFaceType faceType = OBJFaceType::OnlyFaces;
-        vector<Vertex> RearrangeVertices(vector<Vertex> vertices, vector<unsigned int> faces);
-        vector<Vertex> RearrangeVerticesNormals(vector<Vertex> vertices, vector<unsigned int> faces);
-        vector<TexCord> RearrangeVerticesUvs(vector<TexCord> vertices, vector<unsigned int> faces);
+
 
     };
 }

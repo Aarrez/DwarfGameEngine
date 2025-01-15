@@ -17,6 +17,29 @@ namespace Engine {
         return instance;
     }
 
+    void MeshManager::Processor(const string& filepath) {
+
+    }
+
+
+    void MeshManager::ProcessMessage(MeshMessage *message) {
+        auto msg = message->mMessage;
+        switch (message->mType) {
+            case MessageType::LoadMesh:
+                LoadMesh(msg);
+                break;
+            case MessageType::AddMesh:
+                AddMesh(msg);
+                break;
+            default:
+                std::cerr <<
+                    "Class can not process message of type: " << ToString(message->mType)<<
+                        std::endl;
+                break;
+        }
+    }
+
+
     Mesh MeshManager::LoadMesh(const std::string &fileName) {
         for (auto& mesh : meshes) {
             if (fileName == mesh.name) {
@@ -30,6 +53,8 @@ namespace Engine {
     }
 
     Mesh MeshManager::AddMesh(const string& filePath) {
+        //TODO start thread and then process the and obj file
+        std::thread t1(&MeshManager::ProcessMessage, this, filePath);
         auto meshData = OBJLoader::OBJFileParser(filePath);
         auto mesh = OBJLoader::OrderMeshData(meshData.value());
         auto file = OBJLoader::OBJDataSerializer(mesh, filePath);

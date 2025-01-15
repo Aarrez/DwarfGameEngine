@@ -14,16 +14,24 @@ namespace Engine {
 
         glBindVertexArray(VAO);
 
-       SetVertexBufferObjects(mesh);
 
-        CreateTextures(texture1, "Images/container.jpg", GL_RGB);
+
+       SetVertexBufferObjects(mesh);
+        Texture t1, t2 {};
+        t1.filePath = "Images/container.jpg";
+        t1.colorFormat = GL_RGB;
+        t2.filePath = "Images/awesomeface.png";
+        t2.colorFormat = GL_RGBA;
+
+        CreateTextures(texture1, t1);
         stbi_set_flip_vertically_on_load(true);
-        CreateTextures(texture2, "Images/awesomeface.png", GL_RGBA);
+        CreateTextures(texture2, t2);
 
     }
 
     void VirtualObject::SetVertexBufferObjects(const Mesh& mesh) {
         vertices_size = mesh.vertices.size();
+
         glBindVertexArray(VAO);
         glBindBuffer(GL_ARRAY_BUFFER, VBO);
         glBufferData(GL_ARRAY_BUFFER,
@@ -61,7 +69,7 @@ namespace Engine {
     }
 
     void VirtualObject::Draw(){
-        glDrawArrays(GL_TRIANGLES, 0, vertices_size);
+        glDrawArrays(GL_TRIANGLES, 0, static_cast<GLsizei>(vertices_size));
         glBindVertexArray(VAO);
     }
 
@@ -75,7 +83,7 @@ namespace Engine {
         glDeleteBuffers(1, &element_buffer_object);
     }
 
-    void VirtualObject::CreateTextures(GLuint &textureID, const char *image_path, int color_format) {
+    void VirtualObject::CreateTextures(GLuint &textureID, const Texture &texture) {
         glGenTextures(1, &textureID);
         glBindTexture(GL_TEXTURE_2D, textureID);
 
@@ -84,16 +92,20 @@ namespace Engine {
 
         glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR);
         glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+
+        SetTexture(texture);
+    }
+
+    void VirtualObject::SetTexture(const Texture& texture) {
         int width, height, nrChannels;
-        auto data = DwarfImage::GetImage(image_path, width, height, nrChannels);
+        auto data = DwarfImage::GetImage(texture.filePath, width, height, nrChannels);
         if(data){
-            glTexImage2D(GL_TEXTURE_2D, 0, color_format, width, height, 0, color_format, GL_UNSIGNED_BYTE, data);
+            glTexImage2D(GL_TEXTURE_2D, 0, texture.colorFormat, width, height, 0, texture.colorFormat, GL_UNSIGNED_BYTE, data);
             glGenerateMipmap(GL_TEXTURE_2D);
         }
         else
             std::cerr << "Failed to load texture" << std::endl;
         stbi_image_free(data);
-
     }
 
     void VirtualObject::SetTextureUnit() {

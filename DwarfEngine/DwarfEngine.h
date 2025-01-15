@@ -60,7 +60,7 @@ namespace Engine {
         std::shared_ptr<DwarfShader> shader {};
         std::shared_ptr<DwarfShader> lightShader {};
 
-        std::unique_ptr<VirtualObject> dwarfMesh2D {};
+        std::unique_ptr<VirtualObject> virtual_object {};
         std::unique_ptr<Camera::DwarfCamera> camera {};
 
         double deltaTime;

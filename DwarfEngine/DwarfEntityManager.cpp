@@ -1,5 +1,7 @@
 #include "DwarfEntityManager.h"
 
+using namespace std;
+
 namespace Engine{
 
     vector<Entity*> DwarfEntityManager::entities;
@@ -11,14 +13,15 @@ namespace Engine{
         Instance = new DwarfEntityManager();
     }
 
-    Entity * DwarfEntityManager::CreateEntity(const SerializedFile& file, const string &name) {
+    Entity * DwarfEntityManager::CreateEntity(const SerializedFile& file, const Texture &texture, const string &name) {
         string nameWithIndex = name + std::to_string(entities.size());
-        Entity *entity = new Entity();
+        auto *entity = new Entity();
         entity->id = entities.size();
         entity->name = nameWithIndex;
         entity->transform = glm::mat4(1.0f);
         entity->selected = false;
         entity->meshName = file.fileName;
+        entity->texture = texture;
         entities.push_back(entity);
         return entity;
     }

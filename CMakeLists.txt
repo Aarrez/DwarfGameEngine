@@ -62,6 +62,12 @@ add_executable(DwarfGameEngine
         DwarfEngine/MeshManager.h
         DwarfEngine/TextureManager.cpp
         DwarfEngine/TextureManager.h
+        Message/Message.cpp
+        Message/Message.h
+        Message/MeshMessage.cpp
+        Message/MeshMessage.h
+        Message/MessageQueue.cpp
+        Message/MessageQueue.h
 
 )
 
