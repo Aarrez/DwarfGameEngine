@@ -56,6 +56,7 @@ namespace Engine {
         DwarfEntityManager::Allocate();
 
 
+
         glEnable(GL_DEPTH_TEST);
         IMGUI_CHECKVERSION();
         ImGui::CreateContext();
@@ -122,7 +123,6 @@ namespace Engine {
             model = glm::rotate(model, glm::radians(rad), model_rotation);
         }
 
-
         shader->SetMatrix4("projection", 1, GL_FALSE, projection);
         camera->MoveCamera(DwarfInput::GetMoveValue(),
             DwarfInput::GetCameraDirection(),
@@ -135,7 +135,8 @@ namespace Engine {
 
             shader->SetMatrix4("model", 1, GL_FALSE,
                 i->transform);
-
+            Mesh m = MeshManager::Instance()->FindMesh(i->meshName);
+            dwarfMesh2D->SetVertexBufferObjects(m);
             dwarfMesh2D->Draw();
         }
 
@@ -209,7 +210,6 @@ namespace Engine {
                 ImGui::EndListBox();
             }
 
-
             preview_ent = DwarfEntityManager::GetEntityList()->at(comb_selected)->name;
             if (ImGui::BeginCombo("Entity Select", preview_ent.c_str())) {
                 for (int i = 0; i < DwarfEntityManager::GetEntityList()->size(); i++) {
@@ -227,11 +227,16 @@ namespace Engine {
             if (ImGui::Button("Change Entity Mesh")) {
                 auto ent = DwarfEntityManager::GetEntityList()->at(comb_selected);
                 auto meshFileInfo = OBJLoader::FilesSerialized.at(selected_int);
-                auto mesh = MeshManager::Instance()->FindMesh(meshFileInfo.fileName);
-                ent->meshName = mesh->name;
+                ent->meshName = MeshManager::Instance()->FindMesh(meshFileInfo.fileName).name;
             }
         }
         ImGui::End();
+
+        if (ImGui::Begin("Entity Change Texture")) {
+            /*if (ImGui::ListBox("Textures"))*/
+        }
+        ImGui::End();
+
 
         ImGui::Render();
         ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());

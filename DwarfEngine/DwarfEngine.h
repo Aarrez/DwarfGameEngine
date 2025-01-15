@@ -53,8 +53,8 @@ namespace Engine {
 
         //Variables
         ImVec4 clear_color = ImVec4(.2, .2, .2, 1.0f);
-        GLsizei Width = 800;
-        GLsizei Height = 600;
+        GLsizei Width = 1200;
+        GLsizei Height = 920;
         GLFWwindow* window {};
 
         std::shared_ptr<DwarfShader> shader {};
@@ -86,13 +86,11 @@ namespace Engine {
         float rad = 45.0f;
         int AmountOfMeshes {5};
 
+        vector<string> textures;
+
     private:
         double currentTime;
         double lastTime;
-
-        bool item_getter(void* data, int index, const char** out_text) {
-
-        }
 
         static void framebuffer_size_callback(GLFWwindow* window, int width, int height);
 

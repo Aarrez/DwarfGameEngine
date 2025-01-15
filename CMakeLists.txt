@@ -56,10 +56,12 @@ add_executable(DwarfGameEngine
         DwarfMisc/PublicEnums.h
         DwarfFileLoader/DwarfIterativeOBJParser.cpp
         DwarfFileLoader/DwarfIterativeOBJParser.h
-        DwarfEngine/DwarfThreading.cpp
-        DwarfEngine/DwarfThreading.h
+        DwarfEngine/EngineThreading.cpp
+        DwarfEngine/EngineThreading.h
         DwarfEngine/MeshManager.cpp
         DwarfEngine/MeshManager.h
+        DwarfEngine/TextureManager.cpp
+        DwarfEngine/TextureManager.h
 
 )
 

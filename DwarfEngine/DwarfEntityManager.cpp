@@ -18,6 +18,7 @@ namespace Engine{
         entity->name = nameWithIndex;
         entity->transform = glm::mat4(1.0f);
         entity->selected = false;
+        entity->meshName = file.fileName;
         entities.push_back(entity);
         return entity;
     }

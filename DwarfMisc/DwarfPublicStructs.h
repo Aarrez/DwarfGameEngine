@@ -63,9 +63,7 @@ namespace Engine {
         glm::vec3 GetRotation() {
             return rotRadians;
         }
-
     };
-
 
     struct Vertex {
         float x, y, z;

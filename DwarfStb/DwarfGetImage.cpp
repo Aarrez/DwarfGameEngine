@@ -2,17 +2,11 @@
 
 unsigned char *Engine::DwarfImage::GetImage(
         const char* image_name, int &width, int &height, int &nrChannel) {
-    auto path = DwarfPathChange::GetCurrentPath();
-    DwarfPathChange::AppendCurrentPath("DwarfImages");
     unsigned char* data = stbi_load(image_name, &width, &height, &nrChannel, 0);
-    DwarfPathChange::SetCurrentPath(path);
     return data;
 }
 
 unsigned int Engine::TextureFromFile(const char *filename) {
-
-    auto p = DwarfPathChange::GetCurrentPath();
-    DwarfPathChange::AppendCurrentPath("DwarfImages");
     unsigned int textureID;
     glGenTextures(1, &textureID);
 
@@ -43,13 +37,10 @@ unsigned int Engine::TextureFromFile(const char *filename) {
     else{
         std::cerr << "Failed to load ModelTexture: " << filename << std::endl;
     }
-    DwarfPathChange::SetCurrentPath(p);
     return textureID;
 }
 
 unsigned int Engine::TextureFromFile(const std::string &filename, const std::string &directory) {
-    auto p = DwarfPathChange::GetCurrentPath();
-    DwarfPathChange::SetCurrentPath(directory);
     unsigned int textureID;
     glGenTextures(1, &textureID);
 
@@ -80,6 +71,5 @@ unsigned int Engine::TextureFromFile(const std::string &filename, const std::str
     else{
         std::cerr << "Failed to load ModelTexture: " << filename << std::endl;
     }
-    DwarfPathChange::SetCurrentPath(p);
     return textureID;
 }

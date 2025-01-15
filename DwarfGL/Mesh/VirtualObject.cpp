@@ -14,13 +14,11 @@ namespace Engine {
 
         glBindVertexArray(VAO);
 
-
        SetVertexBufferObjects(mesh);
 
-
-        CreateTextures(texture1, "container.jpg", GL_RGB);
+        CreateTextures(texture1, "Images/container.jpg", GL_RGB);
         stbi_set_flip_vertically_on_load(true);
-        CreateTextures(texture2, "awesomeface.png", GL_RGBA);
+        CreateTextures(texture2, "Images/awesomeface.png", GL_RGBA);
 
     }
 

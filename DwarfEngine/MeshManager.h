@@ -17,7 +17,7 @@ namespace Engine {
         Mesh LoadMesh(const string& fileName);
         Mesh AddMesh(const string& filePath);
         vector<Mesh>& GetMeshes();
-        Mesh* FindMesh(const string &meshName);
+        Mesh FindMesh(const string &meshName);
     };
 }
 

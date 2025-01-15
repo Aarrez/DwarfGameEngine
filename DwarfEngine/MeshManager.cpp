@@ -18,6 +18,11 @@ namespace Engine {
     }
 
     Mesh MeshManager::LoadMesh(const std::string &fileName) {
+        for (auto& mesh : meshes) {
+            if (fileName == mesh.name) {
+                return mesh;
+            }
+        }
         auto mesh = OBJLoader::OBJDataDeserializer(fileName);
         mesh.name = fileName;
         meshes.push_back(mesh);
@@ -37,12 +42,13 @@ namespace Engine {
         return meshes;
     }
 
-    Mesh* MeshManager::FindMesh(const string &meshName) {
+    Mesh MeshManager::FindMesh(const string &meshName) {
         for (auto& mesh : meshes) {
             if (mesh.name == meshName) {
-                return &mesh;
+                return mesh;
             }
         }
-        return nullptr;
+        auto mesh = LoadMesh(meshName);
+        return mesh;
     }
 }
