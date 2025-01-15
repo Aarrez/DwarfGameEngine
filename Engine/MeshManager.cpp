@@ -1,6 +1,6 @@
 #include "MeshManager.h"
 
-#include "../DwarfFileLoader/OBJLoader.h"
+#include "../FileLoader/OBJLoader.h"
 
 namespace Engine {
     MeshManager* MeshManager::instance = nullptr;

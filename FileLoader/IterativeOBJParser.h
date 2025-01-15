@@ -1,19 +1,19 @@
 #ifndef DWARFITOBJPARSER_H
 #define DWARFITOBJPARSER_H
 
-#include "../DwarfMisc/DwarfPublicStructs.h"
+#include "../Misc/PublicStructs.h"
 #include "fstream"
 #include "sstream"
 #include <vector>
 #include <string>
 
-#include "../DwarfMisc/PublicEnums.h"
+#include "../Misc/PublicEnums.h"
 
 namespace Engine {
-    class DwarfIterativeOBJParser {
+    class IterativeOBJParser {
 
     public:
-        DwarfIterativeOBJParser() = default;
+        IterativeOBJParser() = default;
         vector<Vertex> ParseVertexes(std::ifstream& file, string &prefix);
         vector<TexCord> ParseTexCords(std::ifstream& file);
         vector<unsigned int> ParseFaces(std::ifstream& file);

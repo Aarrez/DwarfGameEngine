@@ -1,8 +1,8 @@
-#include "DwarfEngine.h"
+#include "GameEngine.h"
 
 
 #include "TextureManager.h"
-#include "../DwarfMisc/Memory.h"
+#include "../Misc/Memory.h"
 
 
 namespace Engine {
@@ -19,7 +19,7 @@ namespace Engine {
         glm::vec3( 1.5f,  0.2f, -1.5f),
         glm::vec3(-1.3f,  1.0f, -1.5f)
     };
-    DwarfEngine::DwarfEngine(): window(nullptr) {
+    GameEngine::GameEngine(): window(nullptr) {
         glfwInit();
         glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3);
         glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 3);
@@ -50,11 +50,11 @@ namespace Engine {
     }
 
 
-    void DwarfEngine::Init() {
+    void GameEngine::Init() {
         MeshManager::Allocate();
         OBJLoader::GetBinaryFiles();
-        DwarfInput::Allocate(window);
-        DwarfEntityManager::Allocate();
+        Input::Allocate(window);
+        EntityManager::Allocate();
         TextureManager::Allocate();
 
 
@@ -73,15 +73,15 @@ namespace Engine {
         if (ImGui_ImplOpenGL3_Init("#version 330") == false) {
             std::cerr << "Failed to initialize IMGUI Implementation for OpenGL3" << std::endl;
         }
-        shader = std::make_shared<DwarfShader>(
+        shader = std::make_shared<Shader>(
             "ShaderScripts/VertexShader.glsl",
             "ShaderScripts/FragmentShader.glsl");
 
-        lightShader = std::make_shared<DwarfShader>(
+        lightShader = std::make_shared<Shader>(
             "ShaderScripts/LightingVertexShader.glsl",
             "ShaderScripts/LightingFragmentShader.glsl");
 
-        camera = make_unique<Camera::DwarfCamera>(shader);
+        camera = make_unique<Camera::Camera>(shader);
 
         string s = "bear.bin";
         auto mesh = MeshManager::Instance()->LoadMesh(s);
@@ -92,18 +92,18 @@ namespace Engine {
         tex.colorFormat = GL_RGB;
         tex.filePath = "Images/container.jpg";
         for (int i = 0; i < AmountOfMeshes; i++) {
-            DwarfEntityManager::CreateEntity(OBJLoader::FilesSerialized[0], tex);
+            EntityManager::CreateEntity(OBJLoader::FilesSerialized[0], tex);
         }
     }
 
-    void DwarfEngine::Update() {
+    void GameEngine::Update() {
         currentTime = glfwGetTime();
         deltaTime = currentTime - lastTime;
         lastTime = currentTime;
         glfwPollEvents();
     }
 
-    void DwarfEngine::Render() {
+    void GameEngine::Render() {
 
         glfwGetFramebufferSize(window, &Width, &Height);
         glViewport(0, 0, Width, Height);
@@ -129,14 +129,14 @@ namespace Engine {
         }
 
         shader->SetMatrix4("projection", 1, GL_FALSE, projection);
-        camera->MoveCamera(DwarfInput::GetMoveValue(),
-            DwarfInput::GetCameraDirection(),
+        camera->MoveCamera(Input::GetMoveValue(),
+            Input::GetCameraDirection(),
             .1);
 
 
         shader->UseShaderProgram();
 
-        for (auto & i : *DwarfEntityManager::GetEntityList()) {
+        for (auto & i : *EntityManager::GetEntityList()) {
 
             shader->SetMatrix4("model", 1, GL_FALSE,
                 i->transform);
@@ -166,15 +166,15 @@ namespace Engine {
                 Texture tex {};
                 tex.filePath = "Images/container.jpg";
                 tex.colorFormat = GL_RGBA;
-                DwarfEntityManager::CreateEntity(OBJLoader::FilesSerialized[0], tex);
+                EntityManager::CreateEntity(OBJLoader::FilesSerialized[0], tex);
             }
 
             ImGui::InputText("Entity Name", &ent_buf);
             if (ImGui::Button("Destroy Entity")) {
-                DwarfEntityManager::RemoveEntityByName(ent_buf);
+                EntityManager::RemoveEntityByName(ent_buf);
             }
 
-            for (auto & e : *DwarfEntityManager::GetEntityList()) {
+            for (auto & e : *EntityManager::GetEntityList()) {
                 if (ImGui::CollapsingHeader(e->name.c_str(), ImGuiTreeNodeFlags_None)) {
                     vec3 translation = e->GetPosition();
                     string posName = "Position" + to_string(e->id);
@@ -218,11 +218,11 @@ namespace Engine {
                 ImGui::EndListBox();
             }
 
-            preview_ent = DwarfEntityManager::GetEntityList()->at(comb_selected)->name;
+            preview_ent = EntityManager::GetEntityList()->at(comb_selected)->name;
             if (ImGui::BeginCombo("Entity Select", preview_ent.c_str())) {
-                for (int i = 0; i < DwarfEntityManager::GetEntityList()->size(); i++) {
+                for (int i = 0; i < EntityManager::GetEntityList()->size(); i++) {
                     const bool is_selected = comb_selected == i;
-                    if (ImGui::Selectable(DwarfEntityManager::GetEntityList()->at(i)->name.c_str(), is_selected)) {
+                    if (ImGui::Selectable(EntityManager::GetEntityList()->at(i)->name.c_str(), is_selected)) {
                         comb_selected = i;
                     }
                     if (is_selected)
@@ -233,7 +233,7 @@ namespace Engine {
 
 
             if (ImGui::Button("Change Entity Mesh")) {
-                auto ent = DwarfEntityManager::GetEntityList()->at(comb_selected);
+                auto ent = EntityManager::GetEntityList()->at(comb_selected);
                 auto meshFileInfo = OBJLoader::FilesSerialized.at(selected_int);
                 ent->meshName = MeshManager::Instance()->FindMesh(meshFileInfo.fileName).name;
             }
@@ -253,18 +253,18 @@ namespace Engine {
 
     }
 
-    void DwarfEngine::Shutdown() {
+    void GameEngine::Shutdown() {
         ImGui_ImplGlfw_Shutdown();
         ImGui_ImplOpenGL3_Shutdown();
         ImGui::DestroyContext();
     }
 
-    DwarfEngine::~DwarfEngine() {
+    GameEngine::~GameEngine() {
         glfwDestroyWindow(window);
         glfwTerminate();
     }
 
-    void DwarfEngine::framebuffer_size_callback(GLFWwindow *window, int width, int height) {
+    void GameEngine::framebuffer_size_callback(GLFWwindow *window, int width, int height) {
         glViewport(0, 0, width, height);
     }
 }

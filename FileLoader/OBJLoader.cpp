@@ -1,12 +1,12 @@
 #include "OBJLoader.h"
 
-#include "../DwarfMisc/DwarfPath.h"
+#include "../Misc/Path.h"
 
 namespace Engine {
 
     vector<SerializedFile> OBJLoader::FilesSerialized;
-    /* DwarfModels/BinaryFiles/ */
-    string OBJLoader::defaultBinPath = "DwarfModels/BinaryFiles/";
+    /* Models/BinaryFiles/ */
+    string OBJLoader::defaultBinPath = "Models/BinaryFiles/";
 
     void OBJLoader::GetBinaryFiles() {
         auto binFiles = DwarfPathChange::GetNameFilesInDirectory(defaultBinPath);
@@ -210,7 +210,7 @@ namespace Engine {
         SerializedFile serialized_file;
 
         //"filePath" looks something like this
-        //DwarfModels/BinaryFiles/{Filename}.obj
+        //Models/BinaryFiles/{Filename}.obj
 
         string pathToFile = binPath;
         string filename = filePath;
@@ -226,7 +226,7 @@ namespace Engine {
         filename += ".bin";
 
 
-        //Default: DwarfModels/BinaryFiles/{newFilename}.bin
+        //Default: Models/BinaryFiles/{newFilename}.bin
         pathToFile += filename;
 
         serialized_file.binPath = pathToFile;

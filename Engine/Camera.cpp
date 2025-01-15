@@ -1,11 +1,11 @@
-#include "DwarfCamera.h"
+#include "Camera.h"
 
 #include <glad/glad.h>
 #include <GLFW/glfw3.h>
 
-using namespace Engine::Camera;
+using namespace Engine;
 
-DwarfCamera::DwarfCamera(std::shared_ptr<DwarfShader> shader) : shader(shader){
+Camera::Camera(std::shared_ptr<Shader> shader) : shader(shader){
     view = mat4(1.0f);
     cameraPos = vec3(0,0,3.0f);
     cameraDirection = glm::vec3(0, 0, 0);
@@ -16,7 +16,7 @@ DwarfCamera::DwarfCamera(std::shared_ptr<DwarfShader> shader) : shader(shader){
     view = glm::lookAt(cameraPos, cameraTarget, up);
 }
 
-void DwarfCamera::RotateCameraWithTime(
+void Camera::RotateCameraWithTime(
     double time,
     const float radius,
     const vec3 direction) {
@@ -26,7 +26,7 @@ void DwarfCamera::RotateCameraWithTime(
     view = lookAt(vec3(camX, 0, camY), vec3(0, 0, 0), direction);
 }
 
-void DwarfCamera::MoveCamera(glm::vec3 direction, vec3 _camDirection, float speed) {
+void Camera::MoveCamera(glm::vec3 direction, vec3 _camDirection, float speed) {
 
     cameraPos += direction * speed;
 

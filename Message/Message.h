@@ -3,7 +3,7 @@
 #define MESSAGE_H
 #include <string>
 
-#include "../DwarfMisc/PublicEnums.h"
+#include "../Misc/PublicEnums.h"
 
 namespace Engine {
     class Message {

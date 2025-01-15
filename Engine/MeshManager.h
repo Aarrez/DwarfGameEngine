@@ -1,8 +1,8 @@
 #ifndef MESHMANAGER_H
 #define MESHMANAGER_H
 
-#include "../DwarfMisc/DwarfPublicStructs.h"
-#include "../DwarfGL/Mesh/Mesh.h"
+#include "../Misc/PublicStructs.h"
+#include "../GL/Mesh/Mesh.h"
 #include <iostream>
 
 #include "../Message/MeshMessage.h"

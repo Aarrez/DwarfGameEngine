@@ -2,7 +2,7 @@
 #include "glad/glad.h"
 #include "stb_image.h"
 #include <string>
-#include "../DwarfMisc/DwarfPath.h"
+#include "../Misc/Path.h"
 
 
 namespace Engine{

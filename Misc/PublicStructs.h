@@ -8,7 +8,7 @@
 #include <glm/ext/matrix_transform.hpp>
 #include <glm/gtc/quaternion.hpp>
 #include <glm/gtx/quaternion.hpp>
-#include "../DwarfGL/Mesh/Mesh.h"
+#include "../GL/Mesh/Mesh.h"
 
 using namespace std;
 

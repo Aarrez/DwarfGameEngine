@@ -40,19 +40,19 @@ namespace Engine{
      * I leave it up to the OS to free up the memory instead at the end of the program
      * If I for some ungodly reason decide to develop for mobile this might be a problem
      */
-    class DwarfInput {
+    class Input {
 
 
 
     public:
         static void Allocate(GLFWwindow* window);
-        static DwarfInput& Get();
+        static Input& Get();
         static glm::vec3 GetMoveValue();
         static glm::vec3 GetCameraDirection();
 
 
     private:
-        static DwarfInput* Instance;
+        static Input* Instance;
         static void key_callback(GLFWwindow* window, int key, int scancode, int action, int mods);
         static void mouse_callback(GLFWwindow* window, double xpos, double ypos);
         static void mouse_button_callback(GLFWwindow* window, int button, int action, int mods);
@@ -64,7 +64,7 @@ namespace Engine{
         static const float sensitivity;
         static float yaw, pitch;
         static bool firstMouse, RotateCamera;
-        DwarfInput() = default;
+        Input() = default;
 
 
     };

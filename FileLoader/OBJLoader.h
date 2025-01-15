@@ -7,9 +7,9 @@
 #include <optional>
 #include <sstream>
 
-#include "../DwarfMisc/DwarfPublicStructs.h"
-#include "../DwarfGL/Mesh/Mesh.h"
-#include "../DwarfMisc/PublicEnums.h"
+#include "../Misc/PublicStructs.h"
+#include "../GL/Mesh/Mesh.h"
+#include "../Misc/PublicEnums.h"
 using namespace std;
 
 namespace Engine {

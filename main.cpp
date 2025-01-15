@@ -1,11 +1,11 @@
 #include <iostream>
 
-#include "DwarfEngine/DwarfEngine.h"
+#include "Engine/DwarfEngine.h"
 
 
 int main() {
 
-    Engine::DwarfEngine engine{};
+    Engine::GameEngine engine{};
     engine.Init();
     while(!glfwWindowShouldClose(engine.window)) {
         engine.Update();

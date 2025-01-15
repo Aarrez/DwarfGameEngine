@@ -1,6 +1,6 @@
 #pragma once
 
-#include "../DwarfMisc/DwarfPublicStructs.h"
+#include "../Misc/PublicStructs.h"
 
 namespace Engine {
     struct Face;

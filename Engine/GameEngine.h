@@ -20,31 +20,31 @@
 #include "MeshManager.h"
 
 /*#include "../DwarfGL/Mesh/DwarfMesh.h"*/
-#include "../DwarfGL/Mesh/VirtualObject.h"
-#include "../DwarfGL/DwarfShader.h"
-#include "../DwarfGL/Mesh/Mesh.h"
+#include "../GL/Mesh/VirtualObject.h"
+#include "../GL/Shader.h"
+#include "../GL/Mesh/Mesh.h"
 
 //DwarfMisc
-#include "../DwarfMisc/DwarfPath.h"
+#include "../Misc/Path.h"
 /*#include "../DwarfMisc/Memory.h"*/
 
 
 //OBJLoaders
-#include "../DwarfFileLoader/OBJLoader.h"
+#include "../FileLoader/OBJLoader.h"
 
 //DwarfEngine
-#include "DwarfEntityManager.h"
-#include "DwarfCamera.h"
-#include "DwarfInput.h"
+#include "EntityManager.h"
+#include "Camera.h"
+#include "Input.h"
 #pragma endregion Dwarf-Includes
 
 
 namespace Engine {
 
-    class DwarfEngine {
+    class GameEngine {
     public:
-        DwarfEngine();
-        ~DwarfEngine();
+        GameEngine();
+        ~GameEngine();
 
         void Init();
         void Update();
@@ -57,11 +57,11 @@ namespace Engine {
         GLsizei Height = 920;
         GLFWwindow* window {};
 
-        std::shared_ptr<DwarfShader> shader {};
-        std::shared_ptr<DwarfShader> lightShader {};
+        std::shared_ptr<Shader> shader {};
+        std::shared_ptr<Shader> lightShader {};
 
         std::unique_ptr<VirtualObject> virtual_object {};
-        std::unique_ptr<Camera::DwarfCamera> camera {};
+        std::unique_ptr<Camera::Camera> camera {};
 
         double deltaTime;
 

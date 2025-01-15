@@ -1,4 +1,4 @@
-#include "DwarfGetImage.h"
+#include "GetImage.h"
 
 unsigned char *Engine::DwarfImage::GetImage(
         const char* image_name, int &width, int &height, int &nrChannel) {

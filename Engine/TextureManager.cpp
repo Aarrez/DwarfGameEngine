@@ -1,6 +1,6 @@
 #include "TextureManager.h"
 
-#include "../DwarfMisc/DwarfPath.h"
+#include "../Misc/Path.h"
 
 
 namespace Engine {

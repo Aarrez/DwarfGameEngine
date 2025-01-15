@@ -1,11 +1,11 @@
 #define GLAD_GL_IMPLEMENTATION
 #include <glad/glad.h>
-#include "DwarfShader.h"
+#include "Shader.h"
 #include <iostream>
 #include "ShaderProgramCode.h"
 
 
-Engine::DwarfShader::DwarfShader(const char* vertexShaderPath, const char* fragmentShaderPath) {
+Engine::Shader::Shader(const char* vertexShaderPath, const char* fragmentShaderPath) {
     int result;
     char Log[512];
 
@@ -29,27 +29,27 @@ Engine::DwarfShader::DwarfShader(const char* vertexShaderPath, const char* fragm
     glDeleteShader(fragmentShader);
 }
 
-void Engine::DwarfShader::SetBool(const char* name, bool value) {
+void Engine::Shader::SetBool(const char* name, bool value) {
     glUniform1i(glGetUniformLocation(shaderProgram, name), (int)value);
 }
-void Engine::DwarfShader::SetInt(const char*  name, int value) {
+void Engine::Shader::SetInt(const char*  name, int value) {
     glUniform1i(glGetUniformLocation(shaderProgram, name), value);
 }
-void Engine::DwarfShader::SetFloat(const char*  name, float value) {
+void Engine::Shader::SetFloat(const char*  name, float value) {
     glUniform1i(glGetUniformLocation(shaderProgram, name), value);
 }
-void Engine::DwarfShader::SetVector3(const char* name,
+void Engine::Shader::SetVector3(const char* name,
                                     float value1, float value2, float value3) {
     glUniform3f(glGetUniformLocation(shaderProgram,
                                      name), value1, value2, value3);
 }
-void Engine::DwarfShader::SetVector4(const char* name,
+void Engine::Shader::SetVector4(const char* name,
                                     float value1, float value2, float value3, float value4) {
     glUniform4f(glGetUniformLocation(shaderProgram,
                                      name), value1, value2, value3, value4);
 }
 
-void Engine::DwarfShader::SetMatrix4(const char *name,
+void Engine::Shader::SetMatrix4(const char *name,
                                     int num_matrix, int transpose, glm::mat4 &value) {
     GLint transformLoc = glGetUniformLocation(shaderProgram, name);
     glUniformMatrix4fv(transformLoc, num_matrix, transpose, glm::value_ptr(value));

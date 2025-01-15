@@ -1,16 +1,16 @@
 #pragma once
 #include <glad/glad.h>
 #include <GLFW/glfw3.h>
-#include "../../DwarfStb/DwarfGetImage.h"
+#include "../../Stb/GetImage.h"
 #include <vector>
-#include "../DwarfShader.h"
-#include "../../DwarfFileLoader/OBJLoader.h"
+#include "../Shader.h"
+#include "../../FileLoader/OBJLoader.h"
 
 namespace Engine{
     class VirtualObject{
     public:
 
-        VirtualObject(std::shared_ptr<DwarfShader> _shader, const Mesh& mesh);
+        VirtualObject(std::shared_ptr<Shader> _shader, const Mesh& mesh);
 
         void SetVertexBufferObjects(const Mesh& mesh);
         void CreateTextures(GLuint &textureID, const Texture &texture);
@@ -28,7 +28,7 @@ namespace Engine{
 
         size_t texture_count = 0;
 
-        std::shared_ptr<DwarfShader> shader;
+        std::shared_ptr<Shader> shader;
 
         //Used for models and other stuff that is viable
         GLuint VBO{};

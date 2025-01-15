@@ -4,7 +4,7 @@
 #include <fstream>
 #include "glad/glad.h"
 #include <filesystem>
-#include "../DwarfMisc/DwarfPath.h"
+#include "../Misc/Path.h"
 
 namespace fs = std::filesystem;
 

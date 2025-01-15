@@ -3,16 +3,16 @@
 #include "glm/gtc/matrix_transform.hpp"
 #include <memory>
 
-#include "../DwarfGL/DwarfShader.h"
+#include "../GL/Shader.h"
 
 using namespace glm;
 
-namespace Engine::Camera{
+namespace Engine{
 
 
-    class DwarfCamera{
+    class Camera{
     public:
-        DwarfCamera(std::shared_ptr<DwarfShader> shader);
+        Camera(std::shared_ptr<Shader> shader);
 
         void MoveCamera(glm::vec3 direction, vec3 camDirection, float speed);
 
@@ -30,7 +30,7 @@ namespace Engine::Camera{
         vec3 cameraRight {};
         vec3 cameraUp {};
 
-        std::shared_ptr<DwarfShader> shader {};
+        std::shared_ptr<Shader> shader {};
 
     };
 

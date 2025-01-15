@@ -2,7 +2,7 @@
 #include "Mesh.h"
 
 namespace Engine {
-    VirtualObject::VirtualObject(std::shared_ptr<DwarfShader> _shader,
+    VirtualObject::VirtualObject(std::shared_ptr<Shader> _shader,
         const Mesh& mesh)
         :vertices_size(mesh.vertices.size()), shader(std::move(_shader)){
 

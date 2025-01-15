@@ -7,9 +7,9 @@
 
 
 namespace Engine {
-    class DwarfShader {
+    class Shader {
     public:
-        DwarfShader(const char* vertexShaderPath, const char* fragmentShaderPath);
+        Shader(const char* vertexShaderPath, const char* fragmentShaderPath);
 
         void UseShaderProgram(){
             glUseProgram(shaderProgram);

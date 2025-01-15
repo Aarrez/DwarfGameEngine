@@ -1,4 +1,4 @@
-#include "DwarfInput.h"
+#include "Input.h"
 
 #include <algorithm>
 #include <iostream>
@@ -7,21 +7,21 @@
 
 namespace Engine
 {
-    DwarfInput* DwarfInput::Instance = nullptr;
-    const float DwarfInput::sensitivity = 0.1f;
-    float DwarfInput::lastX, DwarfInput::lastY, DwarfInput::yaw, DwarfInput::pitch = 0.0f;
-    float DwarfInput::offsetX, DwarfInput::offsetY = 0.0f;
-    double DwarfInput::lastMouseX, DwarfInput::lastMouseY = 0.0;
-    bool DwarfInput::firstMouse = true;
-    bool DwarfInput::RotateCamera = false;
-    glm::vec3 DwarfInput::moveValue, DwarfInput::CamDirection, DwarfInput::tempDirection {0, 0, 0};
+    Input* Input::Instance = nullptr;
+    const float Input::sensitivity = 0.1f;
+    float Input::lastX, Input::lastY, Input::yaw, Input::pitch = 0.0f;
+    float Input::offsetX, Input::offsetY = 0.0f;
+    double Input::lastMouseX, Input::lastMouseY = 0.0;
+    bool Input::firstMouse = true;
+    bool Input::RotateCamera = false;
+    glm::vec3 Input::moveValue, Input::CamDirection, Input::tempDirection {0, 0, 0};
 
 
 
-    void DwarfInput::Allocate(GLFWwindow *window) {
+    void Input::Allocate(GLFWwindow *window) {
         assert(Instance == nullptr);
         if (Instance) return;
-        Instance = new DwarfInput();
+        Instance = new Input();
         glfwSetKeyCallback(window, key_callback);
         glfwSetCursorPosCallback(window, mouse_callback);
         glfwSetMouseButtonCallback(window, mouse_button_callback);
@@ -31,21 +31,21 @@ namespace Engine
         lastY = height / 2.0f;
     }
 
-    DwarfInput & DwarfInput::Get() {
+    Input & Input::Get() {
         if (!Instance)
             Allocate(nullptr);
         return *Instance;
     }
 
-    glm::vec3 DwarfInput::GetMoveValue() {
+    glm::vec3 Input::GetMoveValue() {
         return moveValue;
     }
 
-    glm::vec3 DwarfInput::GetCameraDirection() {
+    glm::vec3 Input::GetCameraDirection() {
         return CamDirection;
     }
 
-    void DwarfInput::key_callback(GLFWwindow *window, int key, int scancode, int action, int mods) {
+    void Input::key_callback(GLFWwindow *window, int key, int scancode, int action, int mods) {
         if (action == GLFW_REPEAT) return;
 
         if (key == GLFW_KEY_ESCAPE) {
@@ -54,7 +54,7 @@ namespace Engine
         MoveKeys(key, action);
     }
 
-    void DwarfInput::mouse_callback(GLFWwindow *window, double xpos, double ypos) {
+    void Input::mouse_callback(GLFWwindow *window, double xpos, double ypos) {
         if (!RotateCamera) return;
         if (firstMouse) {
             lastX = xpos;
@@ -79,7 +79,7 @@ namespace Engine
         CamDirection = glm::normalize(tempDirection);
     }
 
-    void DwarfInput::mouse_button_callback(GLFWwindow *window, int button, int action, int mods) {
+    void Input::mouse_button_callback(GLFWwindow *window, int button, int action, int mods) {
         if (button == GLFW_MOUSE_BUTTON_RIGHT && action != GLFW_REPEAT) {
             if (action == GLFW_PRESS) {
                 RotateCamera = true;
@@ -97,7 +97,7 @@ namespace Engine
         }
     }
 
-    void DwarfInput::MoveKeys(const int &key, int &action) {
+    void Input::MoveKeys(const int &key, int &action) {
         if (key == GLFW_KEY_SPACE || key == GLFW_KEY_E) {
             if (moveValue.y == -1) action = 0;
             moveValue = glm::vec3(moveValue.x, action, moveValue.z);

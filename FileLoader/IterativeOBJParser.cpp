@@ -1,7 +1,7 @@
-#include "DwarfIterativeOBJParser.h"
+#include "IterativeOBJParser.h"
 
 namespace Engine {
-    vector<Vertex> DwarfIterativeOBJParser::ParseVertexes(std::ifstream &file, string &prefix) {
+    vector<Vertex> IterativeOBJParser::ParseVertexes(std::ifstream &file, string &prefix) {
         string line;
         vector<Vertex> vertices;
         while (std::getline(file, line)) {
@@ -17,7 +17,7 @@ namespace Engine {
         return vertices;
     }
 
-    vector<TexCord> DwarfIterativeOBJParser::ParseTexCords(std::ifstream &file) {
+    vector<TexCord> IterativeOBJParser::ParseTexCords(std::ifstream &file) {
         string line;
         vector<TexCord> tex_cords;
         while (std::getline(file, line)) {
@@ -33,7 +33,7 @@ namespace Engine {
         return tex_cords;
     }
 
-    vector<unsigned int> DwarfIterativeOBJParser::ParseFaces(std::ifstream &file) {
+    vector<unsigned int> IterativeOBJParser::ParseFaces(std::ifstream &file) {
         vector<unsigned int> faces;
         string line;
         istringstream iss(line);
@@ -71,7 +71,7 @@ namespace Engine {
     }
 
 
-    void DwarfIterativeOBJParser::PrepData(const vector<Vertex> &_vertex, const vector<Vertex> &_vertexNormal,
+    void IterativeOBJParser::PrepData(const vector<Vertex> &_vertex, const vector<Vertex> &_vertexNormal,
                                            const vector<TexCord> &_vertexUv, const vector<unsigned int> &faces) {
         vertex = RearrangeVertices(_vertex, faces);
         if (!_vertexNormal.empty())
@@ -80,7 +80,7 @@ namespace Engine {
             vertexUv = RearrangeVerticesUvs(_vertexUv, faces);
     }
 
-    vector<Vertex> DwarfIterativeOBJParser::RearrangeVertices(
+    vector<Vertex> IterativeOBJParser::RearrangeVertices(
         vector<Vertex> vertices, vector<unsigned int> faces){
         vector<Vertex> temp_vertices;
         if(faceType == OBJFaceType::AllIndices) {
@@ -98,7 +98,7 @@ namespace Engine {
         return temp_vertices;
     }
 
-    vector<Vertex> DwarfIterativeOBJParser::RearrangeVerticesNormals(vector<Vertex> vertices, vector<unsigned int> faces) {
+    vector<Vertex> IterativeOBJParser::RearrangeVerticesNormals(vector<Vertex> vertices, vector<unsigned int> faces) {
         vector<Vertex> temp_vertices;
         for (unsigned int i = 1; i < faces.size(); i += 3) {
             Vertex v = vertices.at(faces.at(i));
@@ -107,7 +107,7 @@ namespace Engine {
         return temp_vertices;
     }
 
-    vector<TexCord> DwarfIterativeOBJParser::RearrangeVerticesUvs(vector<TexCord> vertices, vector<unsigned int> faces) {
+    vector<TexCord> IterativeOBJParser::RearrangeVerticesUvs(vector<TexCord> vertices, vector<unsigned int> faces) {
         vector<TexCord> temp_cords;
         for (unsigned int i = 2; i < faces.size(); i += 3) {
             TexCord c = vertices.at(faces.at(i));

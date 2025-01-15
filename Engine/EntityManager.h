@@ -2,14 +2,14 @@
 #include <string>
 #include <glm/glm.hpp>
 
-#include "../DwarfGL/Mesh/VirtualObject.h"
+#include "../GL/Mesh/VirtualObject.h"
 
 
 
 namespace Engine {
 
 
-    class DwarfEntityManager {
+    class EntityManager {
         public:
 
         static void Allocate();
@@ -23,8 +23,8 @@ namespace Engine {
 
         /*~DwarfEntityManager();*/
     private:
-        static DwarfEntityManager* Instance;
-        DwarfEntityManager();
+        static EntityManager* Instance;
+        EntityManager();
         static vector<Entity*> entities;
 
     };

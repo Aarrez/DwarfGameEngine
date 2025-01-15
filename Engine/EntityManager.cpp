@@ -1,19 +1,19 @@
-#include "DwarfEntityManager.h"
+#include "EntityManager.h"
 
 using namespace std;
 
 namespace Engine{
 
-    vector<Entity*> DwarfEntityManager::entities;
-    DwarfEntityManager* DwarfEntityManager::Instance;
+    vector<Entity*> EntityManager::entities;
+    EntityManager* EntityManager::Instance;
 
-    void DwarfEntityManager::Allocate() {
+    void EntityManager::Allocate() {
         assert(Instance == nullptr);
         if (Instance) return;
-        Instance = new DwarfEntityManager();
+        Instance = new EntityManager();
     }
 
-    Entity * DwarfEntityManager::CreateEntity(const SerializedFile& file, const Texture &texture, const string &name) {
+    Entity * EntityManager::CreateEntity(const SerializedFile& file, const Texture &texture, const string &name) {
         string nameWithIndex = name + std::to_string(entities.size());
         auto *entity = new Entity();
         entity->id = entities.size();
@@ -26,11 +26,11 @@ namespace Engine{
         return entity;
     }
 
-    vector<Entity*>* DwarfEntityManager::GetEntityList() {
+    vector<Entity*>* EntityManager::GetEntityList() {
         return &entities;
     }
 
-    void DwarfEntityManager::RemoveEntity(Entity *entity) {
+    void EntityManager::RemoveEntity(Entity *entity) {
         if (entities.empty()) return;
         auto ToRemove = stable_partition(entities.begin() , entities.end(),
             [entity](Entity *e) {
@@ -44,7 +44,7 @@ namespace Engine{
 
     }
 
-    void DwarfEntityManager::RemoveEntityByName(string &name) {
+    void EntityManager::RemoveEntityByName(string &name) {
         if (entities.empty()) return;
         auto ToRemove = stable_partition(entities.begin() , entities.end(),
             [name](Entity *e) {
@@ -57,7 +57,7 @@ namespace Engine{
         entities.erase(ToRemove);
     }
 
-    void DwarfEntityManager::RemoveAllEntities() {
+    void EntityManager::RemoveAllEntities() {
         for_each(entities.begin(), entities.end(), [](Entity *e) {
             delete e;
             e = nullptr;
@@ -65,7 +65,7 @@ namespace Engine{
         entities.clear();
     }
 
-    DwarfEntityManager::DwarfEntityManager() {
+    EntityManager::EntityManager() {
     }
 
 

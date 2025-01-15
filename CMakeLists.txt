@@ -1,67 +1,59 @@
 cmake_minimum_required(VERSION 3.29)
-project(DwarfGameEngine)
+project(GameEngine)
 
 set(CMAKE_CXX_STANDARD 20)
 
-include_directories(
-        DwarfStb,
-        DwarfGL,
-        DwarfMisc,
-        DwarfEngine,
-        DwarfStb
-)
 
+add_executable(GameEngine
 
-add_executable(DwarfGameEngine
-
-        DwarfStb/stb_image.cpp
+        Stb/stb_image.cpp
 
         #DwarfGL
-        DwarfGL/ShaderProgramCode.h
-        DwarfGL/DwarfShader.cpp
-        DwarfGL/DwarfShader.h
-        DwarfGL/ShaderProgramCode.cpp
+        GL/ShaderProgramCode.h
+        GL/Shader.cpp
+        GL/Shader.h
+        GL/ShaderProgramCode.cpp
 
         #DwarfEngine
-        DwarfEngine/DwarfEngine.cpp
-        DwarfEngine/DwarfInput.cpp
-        DwarfEngine/DwarfInput.h
+        Engine/GameEngine.cpp
+        Engine/Input.cpp
+        Engine/Input.h
 
         #DwarfGL/Mesh2D
-        DwarfGL/Mesh/Mesh.cpp
-        DwarfGL/Mesh/Mesh.h
+        GL/Mesh/Mesh.cpp
+        GL/Mesh/Mesh.h
 
         #DwarfMisc
-        DwarfMisc/TestCode.cpp
-        DwarfMisc/TestCode.h
-        DwarfMisc/DwarfPath.h
-        DwarfMisc/Memory.cpp
-        DwarfMisc/Memory.h
-        DwarfMisc/DwarfPublicStructs.h
+        Misc/TestCode.cpp
+        Misc/TestCode.h
+        Misc/Path.h
+        Misc/Memory.cpp
+        Misc/Memory.h
+        Misc/PublicStructs.h
 
         main.cpp
 
 
-        DwarfStb/DwarfGetImage.cpp
-        DwarfStb/DwarfGetImage.h
+        Stb/GetImage.cpp
+        Stb/GetImage.h
 
-        DwarfEngine/DwarfCamera.cpp
-        DwarfEngine/DwarfCamera.h
-        DwarfGL/Mesh/VirtualObject.cpp
-        DwarfGL/Mesh/VirtualObject.h
-        DwarfEngine/DwarfEntityManager.cpp
-        DwarfEngine/DwarfEntityManager.h
-        DwarfFileLoader/OBJLoader.cpp
-        DwarfFileLoader/OBJLoader.h
-        DwarfMisc/PublicEnums.h
-        DwarfFileLoader/DwarfIterativeOBJParser.cpp
-        DwarfFileLoader/DwarfIterativeOBJParser.h
-        DwarfEngine/EngineThreading.cpp
-        DwarfEngine/EngineThreading.h
-        DwarfEngine/MeshManager.cpp
-        DwarfEngine/MeshManager.h
-        DwarfEngine/TextureManager.cpp
-        DwarfEngine/TextureManager.h
+        Engine/Camera.cpp
+        Engine/Camera.h
+        GL/Mesh/VirtualObject.cpp
+        GL/Mesh/VirtualObject.h
+        Engine/EntityManager.cpp
+        Engine/EntityManager.h
+        FileLoader/OBJLoader.cpp
+        FileLoader/OBJLoader.h
+        Misc/PublicEnums.h
+        FileLoader/IterativeOBJParser.cpp
+        FileLoader/IterativeOBJParser.h
+        Engine/EngineThreading.cpp
+        Engine/EngineThreading.h
+        Engine/MeshManager.cpp
+        Engine/MeshManager.h
+        Engine/TextureManager.cpp
+        Engine/TextureManager.h
         Message/Message.cpp
         Message/Message.h
         Message/MeshMessage.cpp
@@ -73,31 +65,31 @@ add_executable(DwarfGameEngine
 
 
 find_package(assimp CONFIG REQUIRED)
-target_link_libraries(DwarfGameEngine PRIVATE assimp::assimp)
+target_link_libraries(GameEngine PRIVATE assimp::assimp)
 
 find_package(imgui CONFIG REQUIRED)
-target_link_libraries(DwarfGameEngine PRIVATE imgui::imgui)
+target_link_libraries(GameEngine PRIVATE imgui::imgui)
 
 find_package(SDL2 CONFIG REQUIRED)
-target_link_libraries(DwarfGameEngine PRIVATE
+target_link_libraries(GameEngine PRIVATE
         $<TARGET_NAME_IF_EXISTS::SDL2::SDL2main>
         $<IF:$<TARGET_EXISTS:SDL2::SDL2>, SDL2::SDL2, SDL2::SDL2-static>
 )
 
 find_package(SDL2_image CONFIG REQUIRED)
-target_link_libraries(DwarfGameEngine PRIVATE
+target_link_libraries(GameEngine PRIVATE
         $<IF:$<TARGET_EXISTS:SDL2_image::SDL2_image>,
         SDL2_image::SDL2_image,SDL2_image::SDL2_image-static>)
 
 find_package(Stb REQUIRED)
-target_include_directories(DwarfGameEngine PRIVATE ${Stb_INCLUDE_DIR})
+target_include_directories(GameEngine PRIVATE ${Stb_INCLUDE_DIR})
 
 find_package(glad CONFIG REQUIRED)
-target_link_libraries(DwarfGameEngine PRIVATE glad::glad)
+target_link_libraries(GameEngine PRIVATE glad::glad)
 
 find_package(glfw3 CONFIG REQUIRED)
-target_link_libraries(DwarfGameEngine PRIVATE glfw)
+target_link_libraries(GameEngine PRIVATE glfw)
 
 find_package(glm CONFIG REQUIRED)
-target_link_libraries(DwarfGameEngine PRIVATE glm::glm-header-only)
+target_link_libraries(GameEngine PRIVATE glm::glm-header-only)
 
