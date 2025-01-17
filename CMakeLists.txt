@@ -20,8 +20,8 @@ add_executable(GameEngine
         Engine/Input.h
 
         #DwarfGL/Mesh2D
-        GL/Mesh/Mesh.cpp
-        GL/Mesh/Mesh.h
+        GL/Mesh.cpp
+        GL/Mesh.h
 
         #DwarfMisc
         Misc/TestCode.cpp
@@ -39,8 +39,8 @@ add_executable(GameEngine
 
         Engine/Camera.cpp
         Engine/Camera.h
-        GL/Mesh/VirtualObject.cpp
-        GL/Mesh/VirtualObject.h
+        GL/VirtualObject.cpp
+        GL/VirtualObject.h
         Engine/EntityManager.cpp
         Engine/EntityManager.h
         FileLoader/OBJLoader.cpp
@@ -48,8 +48,8 @@ add_executable(GameEngine
         Misc/PublicEnums.h
         FileLoader/IterativeOBJParser.cpp
         FileLoader/IterativeOBJParser.h
-        Engine/EngineThreading.cpp
-        Engine/EngineThreading.h
+        Threads/ThreadManager.cpp
+        Threads/ThreadManager.h
         Engine/MeshManager.cpp
         Engine/MeshManager.h
         Engine/TextureManager.cpp
@@ -60,7 +60,10 @@ add_executable(GameEngine
         Message/MeshMessage.h
         Message/MessageQueue.cpp
         Message/MessageQueue.h
-
+        Threads/ThreadQueue.cpp
+        Threads/ThreadQueue.h
+        Threads/ThreadPool.cpp
+        Threads/ThreadPool.h
 )
 
 

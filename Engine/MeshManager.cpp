@@ -53,8 +53,7 @@ namespace Engine {
     }
 
     Mesh MeshManager::AddMesh(const string& filePath) {
-        //TODO start thread and then process the and obj file
-        std::thread t1(&MeshManager::ProcessMessage, this, filePath);
+
         auto meshData = OBJLoader::OBJFileParser(filePath);
         auto mesh = OBJLoader::OrderMeshData(meshData.value());
         auto file = OBJLoader::OBJDataSerializer(mesh, filePath);

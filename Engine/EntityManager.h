@@ -2,7 +2,7 @@
 #include <string>
 #include <glm/glm.hpp>
 
-#include "../GL/Mesh/VirtualObject.h"
+#include "../GL/VirtualObject.h"
 
 
 

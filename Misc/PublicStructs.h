@@ -2,17 +2,29 @@
 #define DWARFPUBLICSTRUCTS_H
 #define GLM_ENABLE_EXPERIMENTAL
 #include <fstream>
+#include <functional>
 #include <string>
+#include <variant>
 #include <vector>
 #include <glm/glm.hpp>
 #include <glm/ext/matrix_transform.hpp>
 #include <glm/gtc/quaternion.hpp>
 #include <glm/gtx/quaternion.hpp>
-#include "../GL/Mesh/Mesh.h"
+
+#include "PublicEnums.h"
+#include "../GL/Mesh.h"
 
 using namespace std;
 
 namespace Engine {
+    //TODO add more allowed parameters
+    using Param = variant<int, float, std::string>;
+
+    struct Task {
+        TaskType type;
+        std::function<void(std::vector<Param>)> task;
+        std::vector<Param> arguments;
+    };
 
     struct SerializedFile {
         string fileName;

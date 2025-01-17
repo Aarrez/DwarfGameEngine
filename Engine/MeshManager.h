@@ -2,7 +2,7 @@
 #define MESHMANAGER_H
 
 #include "../Misc/PublicStructs.h"
-#include "../GL/Mesh/Mesh.h"
+#include "../GL/Mesh.h"
 #include <iostream>
 
 #include "../Message/MeshMessage.h"
@@ -17,6 +17,7 @@ namespace Engine {
 
         static MeshManager* instance;
         vector<Mesh> meshes;
+
     public:
         static void Allocate();
         static MeshManager* Instance();
@@ -24,6 +25,7 @@ namespace Engine {
         void ProcessMessage(MeshMessage* message);
         Mesh LoadMesh(const string& fileName);
         Mesh AddMesh(const string& filePath);
+
         vector<Mesh>& GetMeshes();
         Mesh FindMesh(const string &meshName);
     };

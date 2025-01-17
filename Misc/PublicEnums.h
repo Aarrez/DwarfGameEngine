@@ -2,6 +2,11 @@
 #define PUBLICENUMS_H
 
 namespace Engine {
+
+    enum class TaskType {
+        Execute = 0,
+        Stop = 1,
+    };
     enum class OBJLoadingState {
         OpenFile = 0,
         Vertex = 1,

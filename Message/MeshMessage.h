@@ -7,7 +7,7 @@
 namespace Engine {
     class MeshMessage : public Message{
     public:
-        explicit MeshMessage(std::string meshName) : Message(MessageType::LoadMesh, meshName) {};
+        explicit MeshMessage(MessageType type ,std::string meshName) : Message(type, meshName) {};
 
     };
 }

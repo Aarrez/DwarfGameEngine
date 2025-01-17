@@ -20,9 +20,9 @@
 #include "MeshManager.h"
 
 /*#include "../DwarfGL/Mesh/DwarfMesh.h"*/
-#include "../GL/Mesh/VirtualObject.h"
+#include "../GL/VirtualObject.h"
 #include "../GL/Shader.h"
-#include "../GL/Mesh/Mesh.h"
+#include "../GL/Mesh.h"
 
 //DwarfMisc
 #include "../Misc/Path.h"
@@ -46,6 +46,8 @@ namespace Engine {
         GameEngine();
         ~GameEngine();
 
+        void Allocate();
+        void InitializeGL();
         void Init();
         void Update();
         void Render();
@@ -61,7 +63,7 @@ namespace Engine {
         std::shared_ptr<Shader> lightShader {};
 
         std::unique_ptr<VirtualObject> virtual_object {};
-        std::unique_ptr<Camera::Camera> camera {};
+        std::unique_ptr<Camera> camera {};
 
         double deltaTime;
 

@@ -8,7 +8,7 @@
 #include <sstream>
 
 #include "../Misc/PublicStructs.h"
-#include "../GL/Mesh/Mesh.h"
+#include "../GL/Mesh.h"
 #include "../Misc/PublicEnums.h"
 using namespace std;
 

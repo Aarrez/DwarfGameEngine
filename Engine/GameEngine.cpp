@@ -3,6 +3,7 @@
 
 #include "TextureManager.h"
 #include "../Misc/Memory.h"
+#include "../Threads/ThreadManager.h"
 
 
 namespace Engine {
@@ -49,16 +50,16 @@ namespace Engine {
         glfwSetFramebufferSizeCallback(window, framebuffer_size_callback);
     }
 
-
-    void GameEngine::Init() {
+    void GameEngine::Allocate() {
         MeshManager::Allocate();
         OBJLoader::GetBinaryFiles();
         Input::Allocate(window);
         EntityManager::Allocate();
         TextureManager::Allocate();
+        ThreadManager::Allocate();
+    }
 
-
-
+    void GameEngine::InitializeGL() {
         glEnable(GL_DEPTH_TEST);
         IMGUI_CHECKVERSION();
         ImGui::CreateContext();
@@ -73,6 +74,12 @@ namespace Engine {
         if (ImGui_ImplOpenGL3_Init("#version 330") == false) {
             std::cerr << "Failed to initialize IMGUI Implementation for OpenGL3" << std::endl;
         }
+
+    }
+
+    void GameEngine::Init() {
+
+
         shader = std::make_shared<Shader>(
             "ShaderScripts/VertexShader.glsl",
             "ShaderScripts/FragmentShader.glsl");
@@ -81,7 +88,7 @@ namespace Engine {
             "ShaderScripts/LightingVertexShader.glsl",
             "ShaderScripts/LightingFragmentShader.glsl");
 
-        camera = make_unique<Camera::Camera>(shader);
+        camera = make_unique<Camera>(shader);
 
         string s = "bear.bin";
         auto mesh = MeshManager::Instance()->LoadMesh(s);
@@ -257,12 +264,15 @@ namespace Engine {
         ImGui_ImplGlfw_Shutdown();
         ImGui_ImplOpenGL3_Shutdown();
         ImGui::DestroyContext();
+        ThreadManager::Instance()->Deallocate();
     }
 
     GameEngine::~GameEngine() {
         glfwDestroyWindow(window);
         glfwTerminate();
     }
+
+
 
     void GameEngine::framebuffer_size_callback(GLFWwindow *window, int width, int height) {
         glViewport(0, 0, width, height);
