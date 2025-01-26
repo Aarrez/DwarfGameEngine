@@ -1,9 +1,11 @@
 #include "MeshManager.h"
 
+#include "ThreadManager.h"
 #include "../FileLoader/OBJLoader.h"
 
 namespace Engine {
     MeshManager* MeshManager::instance = nullptr;
+    vector<Mesh> MeshManager::meshes = vector<Mesh>();
 
     void MeshManager::Allocate() {
         assert(instance == nullptr);
@@ -17,19 +19,14 @@ namespace Engine {
         return instance;
     }
 
-    void MeshManager::Processor(const string& filepath) {
-
-    }
-
-
     void MeshManager::ProcessMessage(MeshMessage *message) {
         auto msg = message->mMessage;
         switch (message->mType) {
             case MessageType::LoadMesh:
-                LoadMesh(msg);
+                ThreadManager::Instance()->QueueTask(&MeshManager::LoadMesh, msg, *this);
                 break;
             case MessageType::AddMesh:
-                AddMesh(msg);
+                ThreadManager::Instance()->QueueTask(&MeshManager::AddMesh, msg, *this);
                 break;
             default:
                 std::cerr <<
@@ -41,19 +38,27 @@ namespace Engine {
 
 
     Mesh MeshManager::LoadMesh(const std::string &fileName) {
-        for (auto& mesh : meshes) {
-            if (fileName == mesh.name) {
+        if (!meshes.empty())
+            for (auto& mesh : meshes)
+                if (fileName == mesh.name)
+                    return mesh;
+
+        for (auto& f : OBJLoader::FilesSerialized) {
+            if (f.fileName == fileName) {
+                auto mesh = OBJLoader::OBJDataDeserializer(fileName);
+                mesh.name = fileName;
+                meshes.push_back(mesh);
                 return mesh;
             }
         }
-        auto mesh = OBJLoader::OBJDataDeserializer(fileName);
-        mesh.name = fileName;
-        meshes.push_back(mesh);
-        return mesh;
+        std::cerr << "File not found: " << fileName << std::endl;
+        return Mesh();
     }
 
     Mesh MeshManager::AddMesh(const string& filePath) {
+        std::cout << "Add Mesh: " << filePath << std::endl;
 
+        return Mesh();
         auto meshData = OBJLoader::OBJFileParser(filePath);
         auto mesh = OBJLoader::OrderMeshData(meshData.value());
         auto file = OBJLoader::OBJDataSerializer(mesh, filePath);

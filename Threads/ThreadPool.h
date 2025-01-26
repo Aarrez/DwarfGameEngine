@@ -12,20 +12,20 @@ namespace Engine {
 
     class ThreadPool {
     public:
-        explicit ThreadPool(std::size_t n_threads);
+        ThreadPool(std::size_t n_threads);
         ~ThreadPool();
-        bool push(Task const& task);
+        bool push(Task task);
         private:
-        ThreadQueue<Task> queue;
+        ThreadQueue<Task> queue {};
         std::vector<std::jthread> threads;
 
     private:
 
-        static auto make_thread_handler(ThreadQueue<Task>& queue) {
+        auto make_thread_handler(ThreadQueue<Task>& queue) {
             return std::jthread{
                 [&queue] {
                     while (true) {
-                        auto const elem = queue.pop();
+                        Task const elem = queue.pop();
                         switch (elem.type) {
                             case TaskType::Execute:
                                 elem.task(elem.arguments);

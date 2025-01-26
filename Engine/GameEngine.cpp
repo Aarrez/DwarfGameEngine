@@ -1,25 +1,10 @@
 #include "GameEngine.h"
 
 
-#include "TextureManager.h"
-#include "../Misc/Memory.h"
-#include "../Threads/ThreadManager.h"
+
 
 
 namespace Engine {
-
-    glm::vec3 cubePositions[] = {
-        glm::vec3( 0.0f,  0.0f,  0.0f),
-        glm::vec3( 2.0f,  5.0f, -15.0f),
-        glm::vec3(-1.5f, -2.2f, -2.5f),
-        glm::vec3(-3.8f, -2.0f, -12.3f),
-        glm::vec3( 2.4f, -0.4f, -3.5f),
-        glm::vec3(-1.7f,  3.0f, -7.5f),
-        glm::vec3( 1.3f, -2.0f, -2.5f),
-        glm::vec3( 1.5f,  2.0f, -2.5f),
-        glm::vec3( 1.5f,  0.2f, -1.5f),
-        glm::vec3(-1.3f,  1.0f, -1.5f)
-    };
     GameEngine::GameEngine(): window(nullptr) {
         glfwInit();
         glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3);
@@ -32,7 +17,7 @@ namespace Engine {
         DwarfPathChange::ChangeCurrentPathToProjectRoot();
         window = glfwCreateWindow(Width, Height, "DwarfEngine", nullptr, nullptr);
         if (window == nullptr) {
-            /*std::cerr << "Failed to create GLFW window" << std::endl;*/
+            std::cerr << "Failed to create GLFW window" << std::endl;
             glfwTerminate();
             return;
         }
@@ -79,7 +64,6 @@ namespace Engine {
 
     void GameEngine::Init() {
 
-
         shader = std::make_shared<Shader>(
             "ShaderScripts/VertexShader.glsl",
             "ShaderScripts/FragmentShader.glsl");
@@ -119,7 +103,6 @@ namespace Engine {
         glClearColor(clear_color.x, clear_color.y, clear_color.z, clear_color.w);
 
         virtual_object->BindOnTextureUnit();
-
 
         glm::mat4 model {glm::mat4(1.0f)};
         glm::mat4 projection {glm::mat4(1.0f)};
@@ -203,7 +186,6 @@ namespace Engine {
                         }
                     e->SetTransformMatrix();
                 }
-
             }
             ImGui::End();
         }
@@ -238,19 +220,23 @@ namespace Engine {
                 ImGui::EndCombo();
             }
 
-
             if (ImGui::Button("Change Entity Mesh")) {
                 auto ent = EntityManager::GetEntityList()->at(comb_selected);
                 auto meshFileInfo = OBJLoader::FilesSerialized.at(selected_int);
                 ent->meshName = MeshManager::Instance()->FindMesh(meshFileInfo.fileName).name;
             }
+            if (ImGui::Button("Load Mesh")) {
+                string s = "Odysseus";
+                MeshMessage msg(MessageType::AddMesh, s);
+                MeshManager::Instance()->ProcessMessage(&msg);
+           }
         }
         ImGui::End();
 
-        if (ImGui::Begin("Entity Change Texture")) {
-            /*if (ImGui::ListBox("Textures"))*/
+        /*if (ImGui::Begin("Entity Change Texture")) {
+            if (ImGui::ListBox("Textures"))
         }
-        ImGui::End();
+        ImGui::End();*/
 
 
         ImGui::Render();
@@ -264,7 +250,6 @@ namespace Engine {
         ImGui_ImplGlfw_Shutdown();
         ImGui_ImplOpenGL3_Shutdown();
         ImGui::DestroyContext();
-        ThreadManager::Instance()->Deallocate();
     }
 
     GameEngine::~GameEngine() {
@@ -272,13 +257,7 @@ namespace Engine {
         glfwTerminate();
     }
 
-
-
     void GameEngine::framebuffer_size_callback(GLFWwindow *window, int width, int height) {
         glViewport(0, 0, width, height);
     }
 }
-
-
-
-

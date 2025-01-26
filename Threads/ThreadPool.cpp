@@ -16,7 +16,7 @@ namespace Engine {
         }
     }
 
-    bool ThreadPool::push(Task const &task) {
+    bool ThreadPool::push(Task task) {
         queue.push(task);
         return true;
     }

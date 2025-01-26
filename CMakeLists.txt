@@ -41,19 +41,19 @@ add_executable(GameEngine
         Engine/Camera.h
         GL/VirtualObject.cpp
         GL/VirtualObject.h
-        Engine/EntityManager.cpp
-        Engine/EntityManager.h
+        Managers/EntityManager.cpp
+        Managers/EntityManager.h
         FileLoader/OBJLoader.cpp
         FileLoader/OBJLoader.h
         Misc/PublicEnums.h
         FileLoader/IterativeOBJParser.cpp
         FileLoader/IterativeOBJParser.h
-        Threads/ThreadManager.cpp
-        Threads/ThreadManager.h
-        Engine/MeshManager.cpp
-        Engine/MeshManager.h
-        Engine/TextureManager.cpp
-        Engine/TextureManager.h
+        Managers/ThreadManager.cpp
+        Managers/ThreadManager.h
+        Managers/MeshManager.cpp
+        Managers/MeshManager.h
+        Managers/TextureManager.cpp
+        Managers/TextureManager.h
         Message/Message.cpp
         Message/Message.h
         Message/MeshMessage.cpp

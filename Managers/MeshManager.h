@@ -16,8 +16,8 @@ namespace Engine {
     class MeshManager {
 
         static MeshManager* instance;
-        vector<Mesh> meshes;
-
+        vector<Mesh> meshes {};
+        std::mutex addMeshMutex;
     public:
         static void Allocate();
         static MeshManager* Instance();

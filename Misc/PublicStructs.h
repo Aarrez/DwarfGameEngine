@@ -17,7 +17,7 @@
 using namespace std;
 
 namespace Engine {
-    //TODO add more allowed parameters
+    //std::variant with the types int, float, string, const string&
     using Param = variant<int, float, std::string>;
 
     struct Task {

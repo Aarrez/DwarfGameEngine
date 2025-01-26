@@ -17,7 +17,7 @@
 
 #pragma region Dwarf-Includes
 //DwarfGL
-#include "MeshManager.h"
+#include "../Managers/MeshManager.h"
 
 /*#include "../DwarfGL/Mesh/DwarfMesh.h"*/
 #include "../GL/VirtualObject.h"
@@ -33,7 +33,10 @@
 #include "../FileLoader/OBJLoader.h"
 
 //DwarfEngine
-#include "EntityManager.h"
+#include "../Managers/EntityManager.h"
+#include "../Managers/TextureManager.h"
+#include "../Misc/Memory.h"
+#include "../Managers/ThreadManager.h"
 #include "Camera.h"
 #include "Input.h"
 #pragma endregion Dwarf-Includes
