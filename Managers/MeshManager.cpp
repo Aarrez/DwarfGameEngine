@@ -1,11 +1,10 @@
 #include "MeshManager.h"
 
 #include "ThreadManager.h"
-#include "../FileLoader/OBJLoader.h"
 
 namespace Engine {
     MeshManager* MeshManager::instance = nullptr;
-    vector<Mesh> MeshManager::meshes = vector<Mesh>();
+    vector<Mesh> MeshManager::meshes {};
 
     void MeshManager::Allocate() {
         assert(instance == nullptr);
@@ -23,14 +22,15 @@ namespace Engine {
         auto msg = message->mMessage;
         switch (message->mType) {
             case MessageType::LoadMesh:
-                ThreadManager::Instance()->QueueTask(&MeshManager::LoadMesh, msg, *this);
+                /*ThreadManager::Instance()->QueueTask(&MeshManager::LoadMesh, msg, *this);*/
                 break;
             case MessageType::AddMesh:
-                ThreadManager::Instance()->QueueTask(&MeshManager::AddMesh, msg, *this);
+                /*ThreadManager::Instance()->QueueTask(&MeshManager::AddMesh, msg, *this);*/
                 break;
             default:
                 std::cerr <<
-                    "Class can not process message of type: " << ToString(message->mType)<<
+                    "Class can not process message of type: " <<
+                        ToString(message->mType) <<
                         std::endl;
                 break;
         }

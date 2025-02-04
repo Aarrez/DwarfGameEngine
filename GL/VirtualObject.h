@@ -1,10 +1,10 @@
-#pragma once
-#include <glad/glad.h>
-#include <GLFW/glfw3.h>
+#ifndef VirtualObject_h
+#define VirtualObject_h
 #include "../Stb/GetImage.h"
 #include <vector>
 #include "Shader.h"
 #include "../FileLoader/OBJLoader.h"
+#include "Mesh.h"
 
 namespace Engine{
     class VirtualObject{
@@ -47,3 +47,4 @@ namespace Engine{
     };
 
 }
+#endif //VirtualObject_h

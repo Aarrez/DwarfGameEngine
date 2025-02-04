@@ -1,5 +1,5 @@
 #include "VirtualObject.h"
-#include "Mesh.h"
+
 
 namespace Engine {
     VirtualObject::VirtualObject(std::shared_ptr<Shader> _shader,

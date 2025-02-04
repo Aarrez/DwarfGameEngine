@@ -1,7 +1,6 @@
 #include "Camera.h"
 
-#include <glad/glad.h>
-#include <GLFW/glfw3.h>
+
 
 using namespace Engine;
 
@@ -16,23 +15,51 @@ Camera::Camera(std::shared_ptr<Shader> shader) : shader(shader){
     view = glm::lookAt(cameraPos, cameraTarget, up);
 }
 
-void Camera::RotateCameraWithTime(
-    double time,
-    const float radius,
-    const vec3 direction) {
 
-    float camX = sin(time) * radius;
-    float camY = cos(time) * radius;
-    view = lookAt(vec3(camX, 0, camY), vec3(0, 0, 0), direction);
+void Camera::MoveCamera(glm::vec3 direction, float speed) {
+    cameraPos += direction * speed;
+    view = lookAt(cameraPos, cameraPos + cameraDirection, cameraUp);
+    shader->SetMatrix4("view", 1, GL_FALSE, view);
 }
 
-void Camera::MoveCamera(glm::vec3 direction, vec3 _camDirection, float speed) {
+void Camera::SetCameraPos(const glm::vec3& pos) {
+    cameraPos = pos;
+}
 
-    cameraPos += direction * speed;
+vec3 Camera::GetCameraPos() {
+    return cameraPos;
+}
 
+void Camera::SetCameraRotation(glm::vec3 rotation) {
+    cameraDirection = rotation;
+}
 
-    view = lookAt(cameraPos, cameraPos + _camDirection, cameraUp);
-    shader->SetMatrix4("view", 1, GL_FALSE, view);
+glm::vec3 Camera::GetCameraRotation() {
+    return cameraDirection;
+}
+
+void Camera::RotateCamera(double Xpos, double Ypos, bool first) {
+    if (first) {
+        lastX = Xpos;
+        lastY = Ypos;
+    }
+    offsetX = Xpos - lastX;
+    offsetY = lastY - Ypos;
+    lastX = Xpos;
+    lastY = Ypos;
+
+    offsetX *= sensitivity;
+    offsetY *= sensitivity;
+    yaw += offsetX;
+    pitch += offsetY;
+
+    if (pitch > 89.0f) pitch = 89.0f;
+    if (pitch < -89.0f) pitch = -89.0f;
+    vec3 tempdir;
+    tempdir.x = cos(glm::radians(yaw)) * cos(glm::radians(pitch));
+    tempdir.y = sin(glm::radians(pitch));
+    tempdir.z = sin(glm::radians(yaw)) * cos(glm::radians(pitch));
+    cameraDirection = glm::normalize(tempdir);
 }
 
 

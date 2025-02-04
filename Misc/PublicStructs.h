@@ -22,8 +22,8 @@ namespace Engine {
 
     struct Task {
         TaskType type;
-        std::function<void(std::vector<Param>)> task;
-        std::vector<Param> arguments;
+        std::function<void(Param)> task;
+        Param arguments;
     };
 
     struct SerializedFile {

@@ -13,7 +13,27 @@ namespace Engine{
         Instance = new EntityManager();
     }
 
-    Entity * EntityManager::CreateEntity(const SerializedFile& file, const Texture &texture, const string &name) {
+    void EntityManager::ProcessMessages(EntityMessage message) {
+        messageQueue.push(message);
+        std::string msg = message.mMessage;
+        switch (message.mType) {
+            case MessageType::CreateEntity:
+                CreateEntity(message.file, message.texture, msg);
+                break;
+            case MessageType::RemoveEntityByName:
+                RemoveEntityByName(msg);
+                break;
+            case MessageType::RemoveAllEntities:
+                RemoveAllEntities();
+                break;
+            default:
+                std::cout << "Entity manager can not process message of type" <<
+                    ToString(message.mType) << std::endl;
+                break;
+        }
+    }
+
+    void EntityManager::CreateEntity(const SerializedFile& file, const Texture &texture, const string &name) {
         string nameWithIndex = name + std::to_string(entities.size());
         auto *entity = new Entity();
         entity->id = entities.size();
@@ -23,38 +43,21 @@ namespace Engine{
         entity->meshName = file.fileName;
         entity->texture = texture;
         entities.push_back(entity);
-        return entity;
     }
 
-    vector<Entity*>* EntityManager::GetEntityList() {
-        return &entities;
+    vector<Entity*>& EntityManager::GetEntityList() {
+        return entities;
     }
 
-    void EntityManager::RemoveEntity(Entity *entity) {
+    void EntityManager::RemoveEntityByName(const string &name) {
         if (entities.empty()) return;
-        auto ToRemove = stable_partition(entities.begin() , entities.end(),
-            [entity](Entity *e) {
-                if (e == entity) {
-                    delete e;
-                    e = nullptr;
-                }
-                return e == entity;
-            });
-        entities.erase(ToRemove);
-
-    }
-
-    void EntityManager::RemoveEntityByName(string &name) {
-        if (entities.empty()) return;
-        auto ToRemove = stable_partition(entities.begin() , entities.end(),
-            [name](Entity *e) {
-                if (name == e->name) {
-                    delete e;
-                    e = nullptr;
-                }
-               return name == e->name;
-            });
-        entities.erase(ToRemove);
+        for (int i = 0; i < entities.size(); i++) {
+            if (entities[i]->name == name) {
+                delete entities[i];
+                entities[i] = nullptr;
+                entities.erase(entities.begin() + i);
+            }
+        }
     }
 
     void EntityManager::RemoveAllEntities() {
@@ -64,13 +67,6 @@ namespace Engine{
         });
         entities.clear();
     }
-
-    EntityManager::EntityManager() {
-    }
-
-
-
-
 }
 
 

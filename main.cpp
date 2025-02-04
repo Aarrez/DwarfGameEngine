@@ -6,6 +6,9 @@
 int main() {
 
     Engine::GameEngine engine{};
+
+    engine.Allocate();
+    engine.InitializeGL();
     engine.Init();
     while(!glfwWindowShouldClose(engine.window)) {
         engine.Update();

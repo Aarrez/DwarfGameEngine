@@ -39,9 +39,9 @@ namespace Engine {
         MeshManager::Allocate();
         OBJLoader::GetBinaryFiles();
         Input::Allocate(window);
-        EntityManager::Allocate();
         TextureManager::Allocate();
         ThreadManager::Allocate();
+        EntityManager::Allocate();
     }
 
     void GameEngine::InitializeGL() {
@@ -59,7 +59,6 @@ namespace Engine {
         if (ImGui_ImplOpenGL3_Init("#version 330") == false) {
             std::cerr << "Failed to initialize IMGUI Implementation for OpenGL3" << std::endl;
         }
-
     }
 
     void GameEngine::Init() {
@@ -73,7 +72,7 @@ namespace Engine {
             "ShaderScripts/LightingFragmentShader.glsl");
 
         camera = make_unique<Camera>(shader);
-
+        Input::SetCameraRef(camera.get());
         string s = "bear.bin";
         auto mesh = MeshManager::Instance()->LoadMesh(s);
         virtual_object = make_unique<VirtualObject>(shader, mesh);
@@ -120,13 +119,12 @@ namespace Engine {
 
         shader->SetMatrix4("projection", 1, GL_FALSE, projection);
         camera->MoveCamera(Input::GetMoveValue(),
-            Input::GetCameraDirection(),
             .1);
 
 
         shader->UseShaderProgram();
 
-        for (auto & i : *EntityManager::GetEntityList()) {
+        for (auto & i : EntityManager::GetEntityList()) {
 
             shader->SetMatrix4("model", 1, GL_FALSE,
                 i->transform);
@@ -152,34 +150,59 @@ namespace Engine {
         if (bool demo_window_Closed = !show_demo_window) {
             ImGui::Begin("EntityWindow");
 
+            if (ImGui::CollapsingHeader("Camera")) {
+                vec3 camPos = camera->GetCameraPos();
+                if (ImGui::DragFloat3("Camera Position", value_ptr(camPos),
+                    0.0f, -100.0f, 100.0f, "%.2f")) {
+                    camera->SetCameraPos(camPos);
+                }
+
+                vec3 camRot = camera->GetCameraRotation();
+                if (ImGui::DragFloat3("Camera Rotation", value_ptr(camRot),
+                    0, -360, 360)) {
+                    camera->SetCameraRotation(camRot);
+                    }
+            }
+
+            ImGui::InputText("Entity Name", &ent_buf);
             if (ImGui::Button("Create Entity")) {
                 Texture tex {};
                 tex.filePath = "Images/container.jpg";
                 tex.colorFormat = GL_RGBA;
-                EntityManager::CreateEntity(OBJLoader::FilesSerialized[0], tex);
+                if (ent_buf == "") ent_buf = "Entity";
+                EntityManager::CreateEntity(OBJLoader::FilesSerialized[0], tex, ent_buf);
             }
-
-            ImGui::InputText("Entity Name", &ent_buf);
+            dest_preview_ent = EntityManager::GetEntityList()[dest_comb_select]->name;
+            if (ImGui::BeginCombo("EntitySelect", dest_preview_ent.c_str())) {
+                for (int i = 0; i < EntityManager::GetEntityList().size(); i++) {
+                    const bool is_selected = dest_comb_select == i;
+                    if (ImGui::Selectable(EntityManager::GetEntityList()[i]->name.c_str(), is_selected)) {
+                        dest_comb_select = i;
+                        ImGui::SetItemDefaultFocus();
+                    }
+                }
+                ImGui::EndCombo();
+            }
             if (ImGui::Button("Destroy Entity")) {
-                EntityManager::RemoveEntityByName(ent_buf);
+                EntityManager::RemoveEntityByName(EntityManager::GetEntityList()[dest_comb_select]->name);
             }
 
-            for (auto & e : *EntityManager::GetEntityList()) {
+            for (auto & e : EntityManager::GetEntityList()) {
                 if (ImGui::CollapsingHeader(e->name.c_str(), ImGuiTreeNodeFlags_None)) {
                     vec3 translation = e->GetPosition();
-                    string posName = "Position" + to_string(e->id);
+                    string posName = "Position##";
                     if (ImGui::DragFloat3(posName.c_str(), value_ptr(translation),
                         0.0f, -10.0f, 10.0f, "%.2f")) {
                         e->Translate(translation);
                         }
                     vec3 scale = e->GetScale();
-                    string sclName = "Scale" + to_string(e->id);
+                    string sclName = "Scale##";
                     if (ImGui::DragFloat3(sclName.c_str(), value_ptr(scale),
                         0.0f, 0.0f, 10.0f, "%.2f")) {
                         e->SetScale(scale);
                         }
                     vec3 rotation = e->GetRotation();
-                    string sroName = "Rotation" + to_string(e->id);
+                    string sroName = "Rotation##";
                     if (ImGui::DragFloat3(sroName.c_str(), value_ptr(rotation),
                         0, -360, 360)) {
                         e->SetRotation(rotation);
@@ -207,11 +230,11 @@ namespace Engine {
                 ImGui::EndListBox();
             }
 
-            preview_ent = EntityManager::GetEntityList()->at(comb_selected)->name;
+            preview_ent = EntityManager::GetEntityList()[comb_selected]->name;
             if (ImGui::BeginCombo("Entity Select", preview_ent.c_str())) {
-                for (int i = 0; i < EntityManager::GetEntityList()->size(); i++) {
+                for (int i = 0; i < EntityManager::GetEntityList().size(); i++) {
                     const bool is_selected = comb_selected == i;
-                    if (ImGui::Selectable(EntityManager::GetEntityList()->at(i)->name.c_str(), is_selected)) {
+                    if (ImGui::Selectable(EntityManager::GetEntityList()[i]->name.c_str(), is_selected)) {
                         comb_selected = i;
                     }
                     if (is_selected)
@@ -221,7 +244,7 @@ namespace Engine {
             }
 
             if (ImGui::Button("Change Entity Mesh")) {
-                auto ent = EntityManager::GetEntityList()->at(comb_selected);
+                auto ent = EntityManager::GetEntityList()[comb_selected];
                 auto meshFileInfo = OBJLoader::FilesSerialized.at(selected_int);
                 ent->meshName = MeshManager::Instance()->FindMesh(meshFileInfo.fileName).name;
             }
@@ -232,12 +255,6 @@ namespace Engine {
            }
         }
         ImGui::End();
-
-        /*if (ImGui::Begin("Entity Change Texture")) {
-            if (ImGui::ListBox("Textures"))
-        }
-        ImGui::End();*/
-
 
         ImGui::Render();
         ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());

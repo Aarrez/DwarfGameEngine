@@ -1,4 +1,5 @@
-#pragma once
+#ifndef GameEngine_h
+#define GameEngine_h
 #define GLM_ENABLE_EXPERIMENTAL
 #include <glad/glad.h>
 #include <GLFW/glfw3.h>
@@ -70,6 +71,10 @@ namespace Engine {
 
         double deltaTime;
 
+        //ImGui Destroy ComboBox
+        string dest_preview_ent;
+        int dest_comb_select = 0;
+
         //ImGui ListBox
         int selected_int;
         string selected_path;
@@ -102,3 +107,4 @@ namespace Engine {
     };
 
 } // Dwarf
+#endif //GameEngine_h

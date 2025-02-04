@@ -1,10 +1,6 @@
 #pragma once
-#include <GLFW/glfw3.h>
-#include <imgui.h>
-#include <imgui_impl_glfw.h>
-#include <string>
-#include <vector>
-#include <glm/vec3.hpp>
+#include "Camera.h"
+#include "GLFW/glfw3.h"
 
 namespace Engine{
 
@@ -41,11 +37,9 @@ namespace Engine{
      * If I for some ungodly reason decide to develop for mobile this might be a problem
      */
     class Input {
-
-
-
     public:
         static void Allocate(GLFWwindow* window);
+        static void SetCameraRef(Camera* camera);
         static Input& Get();
         static glm::vec3 GetMoveValue();
         static glm::vec3 GetCameraDirection();
@@ -53,10 +47,13 @@ namespace Engine{
 
     private:
         static Input* Instance;
+        static Camera* m_camera;
         static void key_callback(GLFWwindow* window, int key, int scancode, int action, int mods);
         static void mouse_callback(GLFWwindow* window, double xpos, double ypos);
         static void mouse_button_callback(GLFWwindow* window, int button, int action, int mods);
         static void MoveKeys(const int &key, int &action);
+
+
         static glm::vec3 CamDirection, tempDirection;
         static glm::vec3 moveValue;
         static float lastX, lastY, offsetX, offsetY;

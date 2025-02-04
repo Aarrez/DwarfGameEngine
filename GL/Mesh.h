@@ -1,4 +1,5 @@
-#pragma once
+#ifndef MESH_H
+#define MESH_H
 
 #include "../Misc/PublicStructs.h"
 
@@ -41,4 +42,4 @@ namespace Engine {
 
 }
 
-
+#endif //MESH_H

@@ -1,5 +1,6 @@
 #ifndef THREADPOOL_H
 #define THREADPOOL_H
+#include <iostream>
 #include <thread>
 #include <vector>
 #include "../Misc/PublicEnums.h"
@@ -21,7 +22,7 @@ namespace Engine {
 
     private:
 
-        auto make_thread_handler(ThreadQueue<Task>& queue) {
+        std::jthread make_thread_handler(ThreadQueue<Task>& queue) {
             return std::jthread{
                 [&queue] {
                     while (true) {

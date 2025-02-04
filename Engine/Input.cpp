@@ -1,13 +1,9 @@
 #include "Input.h"
 
-#include <algorithm>
-#include <iostream>
-#include <glm/trigonometric.hpp>
-#include <glm/detail/func_geometric.inl>
-
 namespace Engine
 {
     Input* Input::Instance = nullptr;
+    Camera* Input::m_camera = nullptr;
     const float Input::sensitivity = 0.1f;
     float Input::lastX, Input::lastY, Input::yaw, Input::pitch = 0.0f;
     float Input::offsetX, Input::offsetY = 0.0f;
@@ -30,6 +26,11 @@ namespace Engine
         lastX = width / 2.0f;
         lastY = height / 2.0f;
     }
+
+    void Input::SetCameraRef(Camera *camera) {
+        m_camera = camera;
+    }
+
 
     Input & Input::Get() {
         if (!Instance)
@@ -59,24 +60,11 @@ namespace Engine
         if (firstMouse) {
             lastX = xpos;
             lastY = ypos;
+            m_camera->RotateCamera(xpos, ypos, firstMouse);
             firstMouse = false;
+            return;
         }
-        offsetX = xpos - lastX;
-        offsetY = lastY - ypos;
-        lastX = xpos;
-        lastY = ypos;
-
-        offsetX *= sensitivity;
-        offsetY *= sensitivity;
-        yaw += offsetX;
-        pitch += offsetY;
-
-        if (pitch > 89.0f) pitch = 89.0f;
-        if (pitch < -89.0f) pitch = -89.0f;
-        tempDirection.x = cos(glm::radians(yaw)) * cos(glm::radians(pitch));
-        tempDirection.y = sin(glm::radians(pitch));
-        tempDirection.z = sin(glm::radians(yaw)) * cos(glm::radians(pitch));
-        CamDirection = glm::normalize(tempDirection);
+        m_camera->RotateCamera(xpos, ypos, firstMouse);
     }
 
     void Input::mouse_button_callback(GLFWwindow *window, int button, int action, int mods) {

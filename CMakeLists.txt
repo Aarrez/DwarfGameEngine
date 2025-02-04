@@ -48,22 +48,20 @@ add_executable(GameEngine
         Misc/PublicEnums.h
         FileLoader/IterativeOBJParser.cpp
         FileLoader/IterativeOBJParser.h
-        Managers/ThreadManager.cpp
-        Managers/ThreadManager.h
         Managers/MeshManager.cpp
         Managers/MeshManager.h
+        Managers/ThreadManager.cpp
+        Managers/ThreadManager.h
         Managers/TextureManager.cpp
         Managers/TextureManager.h
-        Message/Message.cpp
         Message/Message.h
-        Message/MeshMessage.cpp
         Message/MeshMessage.h
-        Message/MessageQueue.cpp
         Message/MessageQueue.h
         Threads/ThreadQueue.cpp
         Threads/ThreadQueue.h
         Threads/ThreadPool.cpp
         Threads/ThreadPool.h
+        Message/EntityMessage.h
 )
 
 

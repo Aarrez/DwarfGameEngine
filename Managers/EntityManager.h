@@ -1,9 +1,11 @@
-#pragma once
+#ifndef EntityManager_h
+#define EntityManager_h
 #include <string>
 #include <glm/glm.hpp>
 
 #include "../GL/VirtualObject.h"
-
+#include "../Message/EntityMessage.h"
+#include "../Message/MessageQueue.h"
 
 
 namespace Engine {
@@ -14,18 +16,19 @@ namespace Engine {
 
         static void Allocate();
 
-        static Entity* CreateEntity(const SerializedFile& file, const Texture &texture, const string &name = "Entity");
-        static std::vector<Entity*>* GetEntityList();
-        static void RemoveEntity(Entity* entity);
-        static void RemoveEntityByName(string& name);
+        void ProcessMessages(EntityMessage message);
+
+        static void CreateEntity(const SerializedFile& file, const Texture &texture, const string &name = "Entity");
+        static std::vector<Entity*>& GetEntityList();
+        static void RemoveEntityByName(const string& name);
         static void RemoveAllEntities();
 
-
-        /*~DwarfEntityManager();*/
     private:
         static EntityManager* Instance;
-        EntityManager();
+        EntityManager() = default;
         static vector<Entity*> entities;
+        MessageQueue<EntityMessage> messageQueue;
 
     };
 }
+#endif //EntityManager_h
