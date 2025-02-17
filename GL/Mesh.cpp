@@ -1,5 +1,6 @@
 #include "Mesh.h"
 
+
 namespace Engine{
     bool MeshData::WriteTo(std::ofstream &file) const {
         int v, vt, vn, f, uv, fn;

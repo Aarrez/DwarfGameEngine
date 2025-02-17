@@ -13,10 +13,9 @@ namespace Engine{
         VirtualObject(std::shared_ptr<Shader> _shader, const Mesh& mesh);
 
         void SetVertexBufferObjects(const Mesh& mesh);
-        void CreateTextures(GLuint &textureID, const Texture &texture);
-        void SetTexture(const Texture& texture);
+        /*void CreateTextures(GLuint &textureID, const Texture &texture);
+        void SetTexture(const Texture& texture);*/
         void SetTextureUnit();
-        void BindOnTextureUnit();
 
         void Draw();
 
@@ -40,7 +39,6 @@ namespace Engine{
         GLuint element_buffer_object{};
 
         GLuint texture1 {};
-        GLuint texture2 {};
 
         size_t points_count{};
 

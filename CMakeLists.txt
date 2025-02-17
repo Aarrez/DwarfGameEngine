@@ -62,6 +62,8 @@ add_executable(GameEngine
         Threads/ThreadPool.cpp
         Threads/ThreadPool.h
         Message/EntityMessage.h
+        Engine/IMGUIClass.cpp
+        Engine/IMGUIClass.h
 )
 
 

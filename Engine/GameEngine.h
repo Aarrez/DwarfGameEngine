@@ -5,16 +5,10 @@
 #include <GLFW/glfw3.h>
 #include <memory>
 #include <iostream>
-#include "imgui.h"
-#include "imgui_impl_glfw.h"
-#include "imgui_impl_opengl3.h"
-#include <imgui_stdlib.h>
 #include <thread>
 #include <mutex>
 
 #include "glm/gtx/matrix_decompose.hpp"
-
-
 
 #pragma region Dwarf-Includes
 //Singelton Managers
@@ -33,13 +27,12 @@
 #include "../Misc/Memory.h"
 /*#include "../DwarfMisc/Memory.h"*/
 
-
 //OBJLoaders
 #include "../FileLoader/OBJLoader.h"
-
-
 #include "Camera.h"
 #include "Input.h"
+#include "IMGUIClass.h"
+
 #pragma endregion Dwarf-Includes
 
 
@@ -70,24 +63,6 @@ namespace Engine {
         std::unique_ptr<Camera> camera {};
 
         double deltaTime;
-
-        //ImGui Destroy ComboBox
-        string dest_preview_ent;
-        int dest_comb_select = 0;
-
-        //ImGui ListBox
-        int selected_int;
-        string selected_path;
-
-        string file_buf, ent_buf;
-
-        //ImGui Combobox
-        string preview_ent;
-        int comb_selected = 0;
-
-
-        bool show_demo_window {false};
-        bool show_another_window {true};
 
         //Transform variables
         vec3 model_position {0, 0, 0};

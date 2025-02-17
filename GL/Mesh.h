@@ -3,6 +3,8 @@
 
 #include "../Misc/PublicStructs.h"
 
+#include <fstream>
+
 namespace Engine {
     struct Face;
     struct TexCord;

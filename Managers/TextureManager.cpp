@@ -15,23 +15,56 @@ namespace Engine {
     std::string s = "Images/";
     auto list = DwarfPathChange::GetNameFilesInDirectory(s);
     imagePathList = list;
+    instance->FillTextureList();
   }
 
   TextureManager *TextureManager::Instance() {
     return instance;
   }
 
-  void TextureManager::AddImage(const std::string& imagePath) {
-    for (auto s : imagePathList) {
-      if (s == imagePath) {
-        std::cout << "Image with path \""<< imagePath <<"\" already exists"<< std::endl;
-        return;
-      }
-    }
-    imagePathList.push_back(imagePath);
+  std::vector<Texture> * TextureManager::GetTextures() {
+    return &textures;
   }
 
-  void TextureManager::LoadTexture(const std::string &imagePath) {
+  void TextureManager::FillTextureList() {
+    for (auto& path : imagePathList) {
+      Texture tempTexture{};
+      tempTexture.colorFormat = GL_RGB;
+      tempTexture.filePath = "Images/" + path;
+      tempTexture.fileName = path;
+      tempTexture.textureID = 0;
+      textures.push_back(tempTexture);
+    }
+  }
 
+  void TextureManager::GenerateTextures() {
+    for (auto& tex : textures) {
+      glGenTextures(1, &tex.textureID);
+      glBindTexture(GL_TEXTURE_2D, tex.textureID);
+      glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_MIRRORED_REPEAT);
+      glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_MIRRORED_REPEAT);
+
+      glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR);
+      glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+
+      int width, height, nrChannels;
+      unsigned char* data =
+        stbi_load(tex.filePath.c_str(),
+          &width, &height, &nrChannels, 0);
+      if (data) {
+        glTexImage2D(GL_TEXTURE_2D, 0, tex.colorFormat,
+          width, height, 0, tex.colorFormat, GL_UNSIGNED_BYTE, data);
+        glGenerateMipmap(GL_TEXTURE_2D);
+      }
+      else {
+        std::cout << "Failed to load texture" << std::endl;
+      }
+      stbi_image_free(data);
+    }
+  }
+
+  void TextureManager::DrawTexture(const Texture &texture, const int id) {
+    glActiveTexture(GL_TEXTURE0 + id);
+    glBindTexture(GL_TEXTURE_2D, texture.textureID);
   }
 }

@@ -1,18 +1,15 @@
 #ifndef DWARFPUBLICSTRUCTS_H
 #define DWARFPUBLICSTRUCTS_H
 #define GLM_ENABLE_EXPERIMENTAL
-#include <fstream>
 #include <functional>
 #include <string>
 #include <variant>
-#include <vector>
 #include <glm/glm.hpp>
 #include <glm/ext/matrix_transform.hpp>
 #include <glm/gtc/quaternion.hpp>
 #include <glm/gtx/quaternion.hpp>
-
 #include "PublicEnums.h"
-#include "../GL/Mesh.h"
+
 
 using namespace std;
 
@@ -33,7 +30,9 @@ namespace Engine {
     };
 
     struct Texture {
-        const char* filePath;
+        string fileName;
+        string filePath;
+        unsigned int textureID;
         int colorFormat;
     };
 
@@ -41,7 +40,7 @@ namespace Engine {
         int id;
         string name;
         string meshName;
-        unsigned char* textureData;
+        Texture texture;
         glm::mat4 transform;
         bool selected;
 

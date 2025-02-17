@@ -15,11 +15,11 @@ namespace Engine {
         glBindVertexArray(VAO);
 
         SetVertexBufferObjects(mesh);
-        Texture t1 {};
+        /*Texture t1 {};
         t1.filePath = "Images/container.jpg";
         t1.colorFormat = GL_RGB;
 
-        CreateTextures(texture1, t1);
+        CreateTextures(texture1, t1);*/
     }
 
     void VirtualObject::SetVertexBufferObjects(const Mesh& mesh) {
@@ -56,12 +56,15 @@ namespace Engine {
                 2 * sizeof(float), (void*)0);
             glEnableVertexAttribArray(2);
         }
-        if (texture1 != 0 && texture2 != 0) {
+        if (texture1 != 0) {
             SetTextureUnit();
         }
     }
 
     void VirtualObject::Draw(){
+        /*glActiveTexture(GL_TEXTURE0);
+        glBindTexture(GL_TEXTURE_2D, texture1);*/
+
         glDrawArrays(GL_TRIANGLES, 0, static_cast<GLsizei>(vertices_size));
         glBindVertexArray(VAO);
     }
@@ -76,7 +79,7 @@ namespace Engine {
         glDeleteBuffers(1, &element_buffer_object);
     }
 
-    void VirtualObject::CreateTextures(GLuint &textureID, const Texture &texture) {
+    /*void VirtualObject::CreateTextures(GLuint &textureID, const Texture &texture) {
         glGenTextures(1, &textureID);
         glBindTexture(GL_TEXTURE_2D, textureID);
 
@@ -86,29 +89,25 @@ namespace Engine {
         glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR);
         glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
 
-        /*SetTexture(texture);*/
+        SetTexture(texture);
     }
 
     void VirtualObject::SetTexture(const Texture& texture) {
         int width, height, nrChannels;
-        auto data = DwarfImage::GetImage(texture.filePath, &width, &height, &nrChannels);
+        auto data = DwarfImage::GetImage(texture.filePath.c_str(), &width, &height, &nrChannels);
         if(data){
-            glTexImage2D(GL_TEXTURE_2D, 0, texture.colorFormat, width, height, 0, texture.colorFormat, GL_UNSIGNED_BYTE, data);
+            glTexImage2D(GL_TEXTURE_2D, 0, texture.colorFormat,
+                width, height, 0, texture.colorFormat, GL_UNSIGNED_BYTE, data);
             glGenerateMipmap(GL_TEXTURE_2D);
         }
         else
             std::cerr << "Failed to load texture" << std::endl;
         stbi_image_free(data);
-    }
+    }*/
 
     void VirtualObject::SetTextureUnit() {
         shader->UseShaderProgram();
         shader->SetInt("texture1", 0);
-    }
-
-    void VirtualObject::BindOnTextureUnit() {
-        glActiveTexture(GL_TEXTURE0);
-        glBindTexture(GL_TEXTURE_2D, texture1);
     }
 }
 

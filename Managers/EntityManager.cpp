@@ -39,10 +39,9 @@ namespace Engine{
         entity->id = entities.size();
         entity->name = nameWithIndex;
         entity->transform = glm::mat4(1.0f);
-
+        entity->texture = texture;
         entity->selected = false;
         entity->meshName = file.fileName;
-        /*entity->texture = texture;*/
         entities.push_back(entity);
     }
 

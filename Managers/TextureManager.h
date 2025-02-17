@@ -1,11 +1,14 @@
 #ifndef TEXTUREMANAGER_H
 #define TEXTUREMANAGER_H
+#include "../Misc/PublicStructs.h"
+#include <glad/glad.h>
 #include <string>
 #include <vector>
 #include <cassert>
 #include <iostream>
+#include <stb_image.h>
 #include "../Misc/Path.h"
-#include "../Misc/PublicStructs.h"
+
 
 
 namespace Engine {
@@ -17,10 +20,10 @@ namespace Engine {
   public:
     static void Allocate();
     static TextureManager* Instance();
-    void AddImage(const std::string& imagePath);
-    void LoadTexture(const std::string& imagePath);
-
-
+    std::vector<Texture>* GetTextures();
+    void FillTextureList();
+    void GenerateTextures();
+    void DrawTexture(const Texture& texture, int id);
 
   };
 }
