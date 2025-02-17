@@ -1,14 +1,16 @@
 #include "Camera.h"
 
+#include <utility>
+
 
 
 using namespace Engine;
 
-Camera::Camera(std::shared_ptr<Shader> shader) : shader(shader){
+Camera::Camera(std::shared_ptr<Shader> shader) : shader(std::move(shader)){
     view = mat4(1.0f);
-    cameraPos = vec3(0,0,3.0f);
-    cameraDirection = glm::vec3(0, 0, 0);
-    cameraDirection = glm::normalize(cameraPos - cameraTarget);
+    cameraPos = vec3(0,0,20.0f);
+    cameraDirection = glm::vec3(0, 0, -1);
+    /*cameraDirection = glm::normalize(cameraPos - cameraTarget);*/
     cameraRight = normalize(cross(up, cameraDirection));
     cameraUp = glm::vec3(0, 1.0f, 0);
     cameraFront =  glm::vec3(0, 0, -1.0f);

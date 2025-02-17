@@ -41,7 +41,7 @@ namespace Engine {
         int id;
         string name;
         string meshName;
-        Texture texture;
+        unsigned char* textureData;
         glm::mat4 transform;
         bool selected;
 

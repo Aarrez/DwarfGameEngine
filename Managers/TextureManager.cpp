@@ -1,6 +1,6 @@
 #include "TextureManager.h"
 
-#include "../Misc/Path.h"
+
 
 
 namespace Engine {
@@ -29,5 +29,9 @@ namespace Engine {
       }
     }
     imagePathList.push_back(imagePath);
+  }
+
+  void TextureManager::LoadTexture(const std::string &imagePath) {
+
   }
 }

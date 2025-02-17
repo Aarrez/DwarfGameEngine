@@ -1,9 +1,5 @@
 #include "GameEngine.h"
 
-
-
-
-
 namespace Engine {
     GameEngine::GameEngine(): window(nullptr) {
         glfwInit();
@@ -74,7 +70,9 @@ namespace Engine {
         camera = make_unique<Camera>(shader);
         Input::SetCameraRef(camera.get());
         string s = "bear.bin";
-        auto mesh = MeshManager::Instance()->LoadMesh(s);
+        MeshMessage mmsg(MessageType::AddMesh, s);
+        MeshManager::ProcessMessage(&mmsg);
+        Mesh mesh = MeshManager::Instance()->FindMesh(s);
         virtual_object = make_unique<VirtualObject>(shader, mesh);
 
         virtual_object->SetTextureUnit();
@@ -82,7 +80,10 @@ namespace Engine {
         tex.colorFormat = GL_RGB;
         tex.filePath = "Images/container.jpg";
         for (int i = 0; i < AmountOfMeshes; i++) {
-            EntityManager::CreateEntity(OBJLoader::FilesSerialized[0], tex);
+            EntityMessage entMsg(MessageType::CreateEntity, "Entity");
+            entMsg.file = OBJLoader::FilesSerialized[0];
+            entMsg.texture = tex;
+            EntityManager::ProcessMessages(entMsg);
         }
     }
 
@@ -159,7 +160,7 @@ namespace Engine {
 
                 vec3 camRot = camera->GetCameraRotation();
                 if (ImGui::DragFloat3("Camera Rotation", value_ptr(camRot),
-                    0, -360, 360)) {
+                    0, -1, 1)) {
                     camera->SetCameraRotation(camRot);
                     }
             }
@@ -168,9 +169,12 @@ namespace Engine {
             if (ImGui::Button("Create Entity")) {
                 Texture tex {};
                 tex.filePath = "Images/container.jpg";
-                tex.colorFormat = GL_RGBA;
+                tex.colorFormat = GL_RGB;
                 if (ent_buf == "") ent_buf = "Entity";
-                EntityManager::CreateEntity(OBJLoader::FilesSerialized[0], tex, ent_buf);
+                EntityMessage msg(MessageType::CreateEntity, ent_buf);
+                msg.texture = tex;
+                msg.file = OBJLoader::FilesSerialized[0];
+                EntityManager::ProcessMessages(msg);
             }
             dest_preview_ent = EntityManager::GetEntityList()[dest_comb_select]->name;
             if (ImGui::BeginCombo("EntitySelect", dest_preview_ent.c_str())) {
@@ -184,7 +188,11 @@ namespace Engine {
                 ImGui::EndCombo();
             }
             if (ImGui::Button("Destroy Entity")) {
-                EntityManager::RemoveEntityByName(EntityManager::GetEntityList()[dest_comb_select]->name);
+                auto entName = EntityManager::GetEntityList()[dest_comb_select]->name;
+                EntityManager::ProcessMessages(EntityMessage(MessageType::RemoveEntityByName, entName));
+                if (dest_comb_select != 0) {
+                    dest_comb_select += -1;
+                }
             }
 
             for (auto & e : EntityManager::GetEntityList()) {
@@ -217,7 +225,8 @@ namespace Engine {
 
             ImGui::InputText("Path to OBJ File", &file_buf);
             if (ImGui::Button("Serialize File")) {
-                MeshManager::Instance()->AddMesh(file_buf);
+                MeshMessage meshmsg(MessageType::AddMesh, file_buf);
+                MeshManager::ProcessMessage(&meshmsg);
             }
             if (ImGui::BeginListBox("Meshes")) {
                 for (int i = 0; i < OBJLoader::FilesSerialized.size(); i++) {
@@ -245,14 +254,9 @@ namespace Engine {
 
             if (ImGui::Button("Change Entity Mesh")) {
                 auto ent = EntityManager::GetEntityList()[comb_selected];
-                auto meshFileInfo = OBJLoader::FilesSerialized.at(selected_int);
+                const auto& meshFileInfo = OBJLoader::FilesSerialized.at(selected_int);
                 ent->meshName = MeshManager::Instance()->FindMesh(meshFileInfo.fileName).name;
             }
-            if (ImGui::Button("Load Mesh")) {
-                string s = "Odysseus";
-                MeshMessage msg(MessageType::AddMesh, s);
-                MeshManager::Instance()->ProcessMessage(&msg);
-           }
         }
         ImGui::End();
 

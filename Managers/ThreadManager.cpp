@@ -21,12 +21,20 @@ namespace Engine {
         return &threadPool;
     }
 
-    /*void ThreadManager::QueueTask(std::function<Mesh(MeshManager &, const string &)>& func,
-        const Param &param,
-        MeshManager &manager,
-        TaskType type) {
+    void ThreadManager::QueueTask(const std::function<void(MeshManager&, const string&)>& func,
+            const Param& param,
+            MeshManager& manager,
+            TaskType type) {
 
-    }*/
+        Task task {type};
+        task.task = [this, &manager, func](Param param) {
+            std::lock_guard<std::mutex> lock(mutex);
+            func(manager, std::get<string>(param));
+
+        };
+        task.arguments = param;
+        threadPool.push(task);
+    }
 }
 
 

@@ -8,7 +8,7 @@
 namespace Engine{
     class DwarfImage{
     public:
-        static unsigned char* GetImage(const char* image_name, int &width, int &height, int &nrChannel);
+        static unsigned char* GetImage(const char* image_name, int* width, int* height, int* nrChannel);
     };
 }
 

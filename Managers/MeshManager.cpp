@@ -1,5 +1,4 @@
 #include "MeshManager.h"
-
 #include "ThreadManager.h"
 
 namespace Engine {
@@ -22,10 +21,10 @@ namespace Engine {
         auto msg = message->mMessage;
         switch (message->mType) {
             case MessageType::LoadMesh:
-                /*ThreadManager::Instance()->QueueTask(&MeshManager::LoadMesh, msg, *this);*/
+                ThreadManager::Instance()->QueueTask(&MeshManager::LoadMesh, msg, *instance);
                 break;
             case MessageType::AddMesh:
-                /*ThreadManager::Instance()->QueueTask(&MeshManager::AddMesh, msg, *this);*/
+                ThreadManager::Instance()->QueueTask(&MeshManager::AddMesh, msg, *instance);
                 break;
             default:
                 std::cerr <<
@@ -37,34 +36,33 @@ namespace Engine {
     }
 
 
-    Mesh MeshManager::LoadMesh(const std::string &fileName) {
+    void MeshManager::LoadMesh(const std::string &fileName) {
         if (!meshes.empty())
             for (auto& mesh : meshes)
                 if (fileName == mesh.name)
-                    return mesh;
+                    return;
 
         for (auto& f : OBJLoader::FilesSerialized) {
             if (f.fileName == fileName) {
                 auto mesh = OBJLoader::OBJDataDeserializer(fileName);
                 mesh.name = fileName;
                 meshes.push_back(mesh);
-                return mesh;
+                return;
             }
         }
         std::cerr << "File not found: " << fileName << std::endl;
-        return Mesh();
     }
 
-    Mesh MeshManager::AddMesh(const string& filePath) {
-        std::cout << "Add Mesh: " << filePath << std::endl;
-
-        return Mesh();
+    void MeshManager::AddMesh(const string& filePath) {
         auto meshData = OBJLoader::OBJFileParser(filePath);
+        if (!meshData.has_value()) {
+            std::cout << "Can't find file: " << filePath << std::endl;
+            return;
+        }
         auto mesh = OBJLoader::OrderMeshData(meshData.value());
         auto file = OBJLoader::OBJDataSerializer(mesh, filePath);
         mesh.name = file.fileName;
         meshes.push_back(mesh);
-        return mesh;
     }
 
     vector<Mesh> &MeshManager::GetMeshes() {
@@ -77,7 +75,13 @@ namespace Engine {
                 return mesh;
             }
         }
-        auto mesh = LoadMesh(meshName);
-        return mesh;
+        LoadMesh(meshName);
+        for (auto& mesh : meshes) {
+            if (mesh.name == meshName) {
+                return mesh;
+            }
+        }
+        std::cerr << "Mesh not found: " << meshName << std::endl;
+        return {};
     }
 }

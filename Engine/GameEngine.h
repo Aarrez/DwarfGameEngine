@@ -17,8 +17,11 @@
 
 
 #pragma region Dwarf-Includes
-//DwarfGL
+//Singelton Managers
+#include "../Managers/ThreadManager.h"
 #include "../Managers/MeshManager.h"
+#include "../Managers/EntityManager.h"
+#include "../Managers/TextureManager.h"
 
 /*#include "../DwarfGL/Mesh/DwarfMesh.h"*/
 #include "../GL/VirtualObject.h"
@@ -27,17 +30,14 @@
 
 //DwarfMisc
 #include "../Misc/Path.h"
+#include "../Misc/Memory.h"
 /*#include "../DwarfMisc/Memory.h"*/
 
 
 //OBJLoaders
 #include "../FileLoader/OBJLoader.h"
 
-//DwarfEngine
-#include "../Managers/EntityManager.h"
-#include "../Managers/TextureManager.h"
-#include "../Misc/Memory.h"
-#include "../Managers/ThreadManager.h"
+
 #include "Camera.h"
 #include "Input.h"
 #pragma endregion Dwarf-Includes

@@ -1,8 +1,8 @@
 #include "GetImage.h"
 
 unsigned char *Engine::DwarfImage::GetImage(
-        const char* image_name, int &width, int &height, int &nrChannel) {
-    unsigned char* data = stbi_load(image_name, &width, &height, &nrChannel, 0);
+        const char* image_name, int* width, int* height, int* nrChannel) {
+    unsigned char* data = stbi_load(image_name, width, height, nrChannel, 0);
     return data;
 }
 

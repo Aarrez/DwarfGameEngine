@@ -17,19 +17,11 @@ namespace Engine {
         static void Allocate();
         static ThreadManager* Instance();
         ThreadPool* GetThreadPool();
-        void QueueTask(std::function<Mesh(MeshManager&, const string&)>& func,
+        void QueueTask(const std::function<void(MeshManager&, const string&)>& func,
             const Param& param,
             MeshManager& manager,
-            TaskType type = TaskType::Execute) {
+            TaskType type = TaskType::Execute);
 
-            Task task {type};
-            task.task = [this, &manager, func](Param param) {
-                std::lock_guard<std::mutex> lock(mutex);
-                func(manager, std::get<string>(param));
-            };
-            task.arguments = param;
-            threadPool.push(task);
-        };
     };
 }
 

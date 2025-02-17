@@ -1,13 +1,11 @@
 #ifndef MESHMANAGER_H
 #define MESHMANAGER_H
-#include "ThreadManager.h"
 #include "../Misc/PublicStructs.h"
 #include "../GL/Mesh.h"
 #include <iostream>
 
 #include "../Message/MeshMessage.h"
 #include "../Message/Message.h"
-
 
 #include "../FileLoader/OBJLoader.h"
 
@@ -17,12 +15,13 @@ namespace Engine {
 
         static MeshManager* instance;
         static vector<Mesh> meshes;
+        void LoadMesh(const string& fileName);
+        void AddMesh(const string& filePath);
+
     public:
         static void Allocate();
         static MeshManager* Instance();
-        void ProcessMessage(MeshMessage* message);
-        Mesh LoadMesh(const string& fileName);
-        Mesh AddMesh(const string& filePath);
+        static void ProcessMessage(MeshMessage* message);
 
         vector<Mesh>& GetMeshes();
         Mesh FindMesh(const string &meshName);

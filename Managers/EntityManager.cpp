@@ -13,8 +13,8 @@ namespace Engine{
         Instance = new EntityManager();
     }
 
-    void EntityManager::ProcessMessages(EntityMessage message) {
-        messageQueue.push(message);
+    void EntityManager::ProcessMessages(const EntityMessage& message) {
+        /*messageQueue.push(message);*/
         std::string msg = message.mMessage;
         switch (message.mType) {
             case MessageType::CreateEntity:
@@ -39,10 +39,14 @@ namespace Engine{
         entity->id = entities.size();
         entity->name = nameWithIndex;
         entity->transform = glm::mat4(1.0f);
+
         entity->selected = false;
         entity->meshName = file.fileName;
-        entity->texture = texture;
+        /*entity->texture = texture;*/
         entities.push_back(entity);
+    }
+
+    void EntityManager::ChangeTexture(Texture &texture) {
     }
 
     vector<Entity*>& EntityManager::GetEntityList() {

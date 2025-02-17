@@ -14,19 +14,12 @@ namespace Engine {
 
         glBindVertexArray(VAO);
 
-
-
-       SetVertexBufferObjects(mesh);
-        Texture t1, t2 {};
+        SetVertexBufferObjects(mesh);
+        Texture t1 {};
         t1.filePath = "Images/container.jpg";
         t1.colorFormat = GL_RGB;
-        t2.filePath = "Images/awesomeface.png";
-        t2.colorFormat = GL_RGBA;
 
         CreateTextures(texture1, t1);
-        stbi_set_flip_vertically_on_load(true);
-        CreateTextures(texture2, t2);
-
     }
 
     void VirtualObject::SetVertexBufferObjects(const Mesh& mesh) {
@@ -93,12 +86,12 @@ namespace Engine {
         glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR);
         glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
 
-        SetTexture(texture);
+        /*SetTexture(texture);*/
     }
 
     void VirtualObject::SetTexture(const Texture& texture) {
         int width, height, nrChannels;
-        auto data = DwarfImage::GetImage(texture.filePath, width, height, nrChannels);
+        auto data = DwarfImage::GetImage(texture.filePath, &width, &height, &nrChannels);
         if(data){
             glTexImage2D(GL_TEXTURE_2D, 0, texture.colorFormat, width, height, 0, texture.colorFormat, GL_UNSIGNED_BYTE, data);
             glGenerateMipmap(GL_TEXTURE_2D);
@@ -111,14 +104,11 @@ namespace Engine {
     void VirtualObject::SetTextureUnit() {
         shader->UseShaderProgram();
         shader->SetInt("texture1", 0);
-        shader->SetInt("texture2", 1);
     }
 
     void VirtualObject::BindOnTextureUnit() {
         glActiveTexture(GL_TEXTURE0);
         glBindTexture(GL_TEXTURE_2D, texture1);
-        glActiveTexture(GL_TEXTURE1);
-        glBindTexture(GL_TEXTURE_2D, texture2);
     }
 }
 
