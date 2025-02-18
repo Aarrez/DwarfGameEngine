@@ -15,16 +15,11 @@ namespace Engine {
         glBindVertexArray(VAO);
 
         SetVertexBufferObjects(mesh);
-        /*Texture t1 {};
-        t1.filePath = "Images/container.jpg";
-        t1.colorFormat = GL_RGB;
-
-        CreateTextures(texture1, t1);*/
     }
 
     void VirtualObject::SetVertexBufferObjects(const Mesh& mesh) {
         vertices_size = mesh.vertices.size();
-
+        BindLightVAO();
         glBindVertexArray(VAO);
         glBindBuffer(GL_ARRAY_BUFFER, VBO);
         glBufferData(GL_ARRAY_BUFFER,
@@ -56,58 +51,37 @@ namespace Engine {
                 2 * sizeof(float), (void*)0);
             glEnableVertexAttribArray(2);
         }
-        if (texture1 != 0) {
-            SetTextureUnit();
-        }
+    }
+
+    void VirtualObject::BindLightVAO() {
+        glGenVertexArrays(1, &lightVAO);
+        glBindVertexArray(lightVAO);
+    }
+
+    void VirtualObject::SetLightUniforms(std::shared_ptr<Shader> lightShader) {
+        lightShader->UseShaderProgram();
+        lightShader->SetVector3("objectColor", 1.0f, 0.5f, 0.31f);
+        lightShader->SetVector3("lightColor", 1.0f, 1.0f, 1.0f);
     }
 
     void VirtualObject::Draw(){
-        /*glActiveTexture(GL_TEXTURE0);
-        glBindTexture(GL_TEXTURE_2D, texture1);*/
-
         glDrawArrays(GL_TRIANGLES, 0, static_cast<GLsizei>(vertices_size));
         glBindVertexArray(VAO);
+        glBindVertexArray(lightVAO);
     }
 
     VirtualObject::~VirtualObject() {
         glDeleteVertexArrays(1, &VAO);
+        glDeleteVertexArrays(1, &lightVAO);
 
         glDeleteBuffers(1, &VBO);
         glDeleteBuffers(1, &NVBO);
         glDeleteBuffers(1, &TVBO);
-
-        glDeleteBuffers(1, &element_buffer_object);
     }
 
-    /*void VirtualObject::CreateTextures(GLuint &textureID, const Texture &texture) {
-        glGenTextures(1, &textureID);
-        glBindTexture(GL_TEXTURE_2D, textureID);
-
-        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_MIRRORED_REPEAT);
-        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_MIRRORED_REPEAT);
-
-        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR);
-        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-
-        SetTexture(texture);
-    }
-
-    void VirtualObject::SetTexture(const Texture& texture) {
-        int width, height, nrChannels;
-        auto data = DwarfImage::GetImage(texture.filePath.c_str(), &width, &height, &nrChannels);
-        if(data){
-            glTexImage2D(GL_TEXTURE_2D, 0, texture.colorFormat,
-                width, height, 0, texture.colorFormat, GL_UNSIGNED_BYTE, data);
-            glGenerateMipmap(GL_TEXTURE_2D);
-        }
-        else
-            std::cerr << "Failed to load texture" << std::endl;
-        stbi_image_free(data);
-    }*/
-
-    void VirtualObject::SetTextureUnit() {
+    void VirtualObject::SetTextureUnit(unsigned int i) {
         shader->UseShaderProgram();
-        shader->SetInt("texture1", 0);
+        shader->SetInt("texture1", i);
     }
 }
 

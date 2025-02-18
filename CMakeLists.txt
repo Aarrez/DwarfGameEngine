@@ -33,7 +33,6 @@ add_executable(GameEngine
 
         main.cpp
 
-
         Stb/GetImage.cpp
         Stb/GetImage.h
 
@@ -65,10 +64,6 @@ add_executable(GameEngine
         Engine/IMGUIClass.cpp
         Engine/IMGUIClass.h
 )
-
-
-find_package(assimp CONFIG REQUIRED)
-target_link_libraries(GameEngine PRIVATE assimp::assimp)
 
 find_package(imgui CONFIG REQUIRED)
 target_link_libraries(GameEngine PRIVATE imgui::imgui)

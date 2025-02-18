@@ -13,9 +13,9 @@ namespace Engine{
         VirtualObject(std::shared_ptr<Shader> _shader, const Mesh& mesh);
 
         void SetVertexBufferObjects(const Mesh& mesh);
-        /*void CreateTextures(GLuint &textureID, const Texture &texture);
-        void SetTexture(const Texture& texture);*/
-        void SetTextureUnit();
+        void BindLightVAO();
+        void SetLightUniforms(std::shared_ptr<Shader> lightShader);
+        void SetTextureUnit(unsigned int i);
 
         void Draw();
 
@@ -36,7 +36,6 @@ namespace Engine{
 
         GLuint lightVAO{};
         GLuint VAO{};
-        GLuint element_buffer_object{};
 
         GLuint texture1 {};
 

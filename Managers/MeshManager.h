@@ -21,7 +21,7 @@ namespace Engine {
     public:
         static void Allocate();
         static MeshManager* Instance();
-        static void ProcessMessage(MeshMessage* message);
+        static void ProcessMessage(MeshMessage& message);
 
         vector<Mesh>& GetMeshes();
         Mesh FindMesh(const string &meshName);

@@ -1,7 +1,10 @@
 #include "IMGUIClass.h"
 
+#include "../Managers/TextureManager.h"
+
 namespace Engine {
 
+#pragma region Variable Declarations
     bool IMGUIClass::showDemoWindow = false;;
 
     string IMGUIClass::entity_buf {};
@@ -12,6 +15,11 @@ namespace Engine {
     int IMGUIClass::model_select_id = 0;
     string IMGUIClass::model_preview_ent {};
     int IMGUIClass::modelCombo_select_id = 0;
+
+    int IMGUIClass::textures_select_id = 0;
+    int IMGUIClass::textureCombo_select_id = 0;
+    string IMGUIClass::texture_preview_ent {};
+#pragma endregion
 
     void IMGUIClass::InitImGui(GLFWwindow* window) {
         IMGUI_CHECKVERSION();
@@ -63,7 +71,7 @@ namespace Engine {
                 Texture tex {};
                 tex.filePath = "Images/container.jpg";
                 tex.colorFormat = GL_RGB;
-                if (entity_buf == "") entity_buf = "Entity";
+                if (entity_buf.empty()) entity_buf = "Entity";
                 EntityMessage msg(MessageType::CreateEntity, entity_buf);
                 msg.texture = tex;
                 msg.file = OBJLoader::FilesSerialized[0];
@@ -177,8 +185,34 @@ namespace Engine {
         if (showDemoWindow) return;
 
         if (ImGui::Begin("Texture Window")) {
-
+            if (ImGui::BeginListBox("Textures List")) {
+                for(int i = 0; i < TextureManager::Instance()->GetTextures().size(); i++) {
+                    const bool isSelected = i == textures_select_id;
+                    if (ImGui::Selectable(
+                        TextureManager::Instance()->GetTextures()[i].fileName.c_str(), isSelected)) {
+                        textures_select_id = i;
+                    }
+                }
+            }
+            ImGui::EndListBox();
+            texture_preview_ent = EntityManager::GetEntityList()[textureCombo_select_id]->name;
+            if (ImGui::BeginCombo("Entity Select", texture_preview_ent.c_str())) {
+                for (int i = 0; i < EntityManager::GetEntityList().size(); i++) {
+                    const bool is_selected = textureCombo_select_id == i;
+                    if (ImGui::Selectable(EntityManager::GetEntityList()[i]->name.c_str(), is_selected)) {
+                        textureCombo_select_id = i;
+                    }
+                    if (is_selected)
+                        ImGui::SetItemDefaultFocus();
+                }
+                ImGui::EndCombo();
+            }
+            if (ImGui::Button("Change Texture")) {
+                auto ent = EntityManager::GetEntityList()[textureCombo_select_id];
+                ent->texture = TextureManager::Instance()->GetTextures()[textures_select_id];
+            }
         }
+
         ImGui::End();
     }
 }

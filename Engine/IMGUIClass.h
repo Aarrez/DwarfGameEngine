@@ -51,6 +51,10 @@ namespace Engine {
         static string model_preview_ent;
         static int modelCombo_select_id;
 
+        static int textures_select_id;
+        static int textureCombo_select_id;
+        static string texture_preview_ent;
+
     };
 }
 

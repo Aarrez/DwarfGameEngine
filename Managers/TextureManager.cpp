@@ -6,14 +6,14 @@
 namespace Engine {
   TextureManager* TextureManager::instance = nullptr;
   std::vector<std::string> TextureManager::imagePathList;
+  std::string TextureManager::defaultTexturePath = "Images/";
 
   void TextureManager::Allocate() {
     assert(instance == nullptr);
     if (instance != nullptr)
       return;
     instance = new TextureManager();
-    std::string s = "Images/";
-    auto list = DwarfPathChange::GetNameFilesInDirectory(s);
+    auto list = DwarfPathChange::GetNameFilesInDirectory(defaultTexturePath);
     imagePathList = list;
     instance->FillTextureList();
   }
@@ -22,8 +22,8 @@ namespace Engine {
     return instance;
   }
 
-  std::vector<Texture> * TextureManager::GetTextures() {
-    return &textures;
+  std::vector<Texture>& TextureManager::GetTextures() {
+    return textures;
   }
 
   void TextureManager::FillTextureList() {
@@ -63,8 +63,8 @@ namespace Engine {
     }
   }
 
-  void TextureManager::DrawTexture(const Texture &texture, const int id) {
-    glActiveTexture(GL_TEXTURE0 + id);
+  void TextureManager::DrawTexture(const Texture &texture) {
+    glActiveTexture(GL_TEXTURE0 + texture.textureID);
     glBindTexture(GL_TEXTURE_2D, texture.textureID);
   }
 }

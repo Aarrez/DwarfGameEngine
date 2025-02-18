@@ -56,7 +56,7 @@ namespace Engine {
         GLsizei Height = 920;
         GLFWwindow* window {};
 
-        std::shared_ptr<Shader> shader {};
+        std::shared_ptr<Shader> mainShader {};
         std::shared_ptr<Shader> lightShader {};
 
         std::unique_ptr<VirtualObject> virtual_object {};

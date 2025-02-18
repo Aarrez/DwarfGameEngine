@@ -17,9 +17,9 @@ namespace Engine {
         return instance;
     }
 
-    void MeshManager::ProcessMessage(MeshMessage *message) {
-        auto msg = message->mMessage;
-        switch (message->mType) {
+    void MeshManager::ProcessMessage(MeshMessage& message) {
+        auto msg = message.mMessage;
+        switch (message.mType) {
             case MessageType::LoadMesh:
                 ThreadManager::Instance()->QueueTask(&MeshManager::LoadMesh, msg, *instance);
                 break;
@@ -29,7 +29,7 @@ namespace Engine {
             default:
                 std::cerr <<
                     "Class can not process message of type: " <<
-                        ToString(message->mType) <<
+                        ToString(message.mType) <<
                         std::endl;
                 break;
         }
@@ -44,7 +44,7 @@ namespace Engine {
 
         for (auto& f : OBJLoader::FilesSerialized) {
             if (f.fileName == fileName) {
-                auto mesh = OBJLoader::OBJDataDeserializer(fileName);
+                auto mesh = OBJLoader::OBJDataDeserializer(f.fileName);
                 mesh.name = fileName;
                 meshes.push_back(mesh);
                 return;

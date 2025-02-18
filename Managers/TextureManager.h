@@ -17,13 +17,14 @@ namespace Engine {
     static TextureManager* instance;
     static std::vector<std::string> imagePathList;
     std::vector<Texture> textures;
+    static std::string defaultTexturePath;
   public:
     static void Allocate();
     static TextureManager* Instance();
-    std::vector<Texture>* GetTextures();
+    std::vector<Texture>& GetTextures();
     void FillTextureList();
     void GenerateTextures();
-    void DrawTexture(const Texture& texture, int id);
+    void DrawTexture(const Texture& texture);
 
   };
 }

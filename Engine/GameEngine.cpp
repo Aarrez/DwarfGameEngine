@@ -47,30 +47,28 @@ namespace Engine {
 
     void GameEngine::Init() {
 
-        shader = std::make_shared<Shader>(
-            "ShaderScripts/VertexShader.glsl",
-            "ShaderScripts/FragmentShader.glsl");
-
+        mainShader = std::make_shared<Shader>(
+            "ShaderScripts/Misc/VertexShader.glsl",
+            "ShaderScripts/Misc/FragmentShader.glsl");
         lightShader = std::make_shared<Shader>(
-            "ShaderScripts/LightingVertexShader.glsl",
-            "ShaderScripts/LightingFragmentShader.glsl");
+            "ShaderScripts/Light/LightingVertexShader.glsl",
+            "ShaderScripts/Light/LightingFragmentShader.glsl");
+
+
         TextureManager::Instance()->GenerateTextures();
-        camera = make_unique<Camera>(shader);
+        camera = make_unique<Camera>(mainShader);
         Input::SetCameraRef(camera.get());
         string s = "bear.bin";
-        MeshMessage mmsg(MessageType::AddMesh, s);
-        MeshManager::ProcessMessage(&mmsg);
+        MeshMessage mMsg(MessageType::AddMesh, s);
+        MeshManager::ProcessMessage(mMsg);
         Mesh mesh = MeshManager::Instance()->FindMesh(s);
-        virtual_object = make_unique<VirtualObject>(shader, mesh);
+        virtual_object = make_unique<VirtualObject>(mainShader, mesh);
 
-        virtual_object->SetTextureUnit();
 
-        for (int i = 0; i < AmountOfMeshes; i++) {
-            EntityMessage entMsg(MessageType::CreateEntity, "Entity");
-            entMsg.file = OBJLoader::FilesSerialized[0];
-            entMsg.texture = TextureManager::Instance()->GetTextures()->at(0);
-            EntityManager::ProcessMessages(entMsg);
-        }
+        EntityMessage entMsg(MessageType::CreateEntity, "Entity");
+        entMsg.file = OBJLoader::FilesSerialized[0];
+        entMsg.texture = TextureManager::Instance()->GetTextures().at(0);
+        EntityManager::ProcessMessages(entMsg);
     }
 
     void GameEngine::Update() {
@@ -88,13 +86,14 @@ namespace Engine {
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
         glClearColor(clear_color.x, clear_color.y, clear_color.z, clear_color.w);
 
+        virtual_object->SetLightUniforms(mainShader);
         glm::mat4 model {glm::mat4(1.0f)};
         glm::mat4 projection {glm::mat4(1.0f)};
         projection = glm::perspective(radians(45.0f),
             static_cast<float>(Width) / Height, 0.1f, 100.0f);
         mat4 view {mat4(1.0f)};
         view = translate(view, glm::vec3(0.0f, 0.0f, -3.0f));
-        shader->SetMatrix4("veiw", 1, GL_FALSE, view);
+        mainShader->SetMatrix4("veiw", 1, GL_FALSE, view);
 
         model = glm::scale(model, model_scale);
         model = glm::translate(model, model_position);
@@ -102,20 +101,25 @@ namespace Engine {
             model = glm::rotate(model, glm::radians(rad), model_rotation);
         }
 
-        shader->SetMatrix4("projection", 1, GL_FALSE, projection);
-        camera->MoveCamera(Input::GetMoveValue(),
-            .1);
+        mainShader->SetMatrix4("projection", 1, GL_FALSE, projection);
+        camera->MoveCamera(Input::GetMoveValue(), 0.1);
+
+        glm::vec3 lightPos(1.2f, 1.0f, 2.0f);
+        glm::mat4 lightModel(1.0f);
+        lightModel = glm::translate(lightModel, lightPos);
+        lightModel = glm::scale(lightModel, glm::vec3(0.2f));
+        lightShader->SetMatrix4("Model", 1, GL_FALSE, lightModel);
 
 
-        shader->UseShaderProgram();
+        mainShader->UseShaderProgram();
 
         for (auto & i : EntityManager::GetEntityList()) {
-
-            shader->SetMatrix4("model", 1, GL_FALSE,
+            mainShader->SetMatrix4("model", 1, GL_FALSE,
                 i->transform);
             Mesh m = MeshManager::Instance()->FindMesh(i->meshName);
             virtual_object->SetVertexBufferObjects(m);
-            TextureManager::Instance()->DrawTexture(i->texture, i->id);
+            TextureManager::Instance()->DrawTexture(i->texture);
+            virtual_object->SetTextureUnit(i->texture.textureID);
             virtual_object->Draw();
         }
 
@@ -123,9 +127,13 @@ namespace Engine {
 
         IMGUIClass::MenuBar();
 
+        IMGUIClass::CameraWindow(*camera);
+
         IMGUIClass::EntityWindow();
 
         IMGUIClass::ModelsWindow();
+
+        IMGUIClass::TexturesWindow();
 
         IMGUIClass::EndUpdateLoop();
 
