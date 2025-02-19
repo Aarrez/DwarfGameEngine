@@ -36,7 +36,7 @@ void Engine::Shader::SetInt(const char*  name, int value) {
     glUniform1i(glGetUniformLocation(shaderProgram, name), value);
 }
 void Engine::Shader::SetFloat(const char*  name, float value) {
-    glUniform1i(glGetUniformLocation(shaderProgram, name), value);
+    glUniform1f(glGetUniformLocation(shaderProgram, name), value);
 }
 void Engine::Shader::SetVector3(const char* name,
                                     float value1, float value2, float value3) {
@@ -49,10 +49,10 @@ void Engine::Shader::SetVector4(const char* name,
                                      name), value1, value2, value3, value4);
 }
 
-void Engine::Shader::SetMatrix4(const char *name,
-                                    int num_matrix, int transpose, glm::mat4 &value) {
+void Engine::Shader::SetMatrix4(const char *name, glm::mat4 &value) {
+
     GLint transformLoc = glGetUniformLocation(shaderProgram, name);
-    glUniformMatrix4fv(transformLoc, num_matrix, transpose, glm::value_ptr(value));
+    glUniformMatrix4fv(transformLoc, 1, GL_FALSE, glm::value_ptr(value));
 
 }
 

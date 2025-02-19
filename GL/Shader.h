@@ -21,8 +21,6 @@ namespace Engine {
             return &fragmentShader;
         }
 
-
-
         //Set misc variables
         void SetBool(const char*  name, bool value);
         void SetInt(const char* name, int value);
@@ -35,8 +33,7 @@ namespace Engine {
                         float value1, float value2, float value3, float value4);
 
         //Set Matrix variables
-        void SetMatrix4(const char* name,
-                        int num_matrix, int transpose, glm::mat4 &trans);
+        void SetMatrix4(const char* name, glm::mat4 &trans);
 
         unsigned int shaderProgram {};
     private:

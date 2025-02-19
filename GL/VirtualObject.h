@@ -14,13 +14,15 @@ namespace Engine{
 
         void SetVertexBufferObjects(const Mesh& mesh);
         void BindLightVAO();
-        void SetLightUniforms(std::shared_ptr<Shader> lightShader);
+        void SetLightUniforms(Shader& lightShader);
         void SetTextureUnit(unsigned int i);
 
-        void Draw();
+        void Draw(GLuint _VAO);
 
         ~VirtualObject();
 
+        GLuint lightVAO{};
+        GLuint VAO{};
     private:
 
         size_t vertices_size;
@@ -34,8 +36,7 @@ namespace Engine{
         GLuint NVBO{};
         GLuint TVBO{};
 
-        GLuint lightVAO{};
-        GLuint VAO{};
+
 
         GLuint texture1 {};
 

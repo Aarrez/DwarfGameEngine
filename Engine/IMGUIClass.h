@@ -38,6 +38,7 @@ namespace Engine {
         static void CameraWindow(Camera& camera);
         static void ModelsWindow();
         static void TexturesWindow();
+        static void LightsWindow();
 
     private:
         static bool showDemoWindow;

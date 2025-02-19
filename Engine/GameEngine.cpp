@@ -1,5 +1,7 @@
 #include "GameEngine.h"
 
+#include "../Managers/LightEntityManager.h"
+
 namespace Engine {
     GameEngine::GameEngine(): window(nullptr) {
         glfwInit();
@@ -32,6 +34,7 @@ namespace Engine {
     }
 
     void GameEngine::Allocate() {
+        LightEntityManager::Allocate();
         MeshManager::Allocate();
         OBJLoader::GetBinaryFiles();
         Input::Allocate(window);
@@ -54,21 +57,19 @@ namespace Engine {
             "ShaderScripts/Light/LightingVertexShader.glsl",
             "ShaderScripts/Light/LightingFragmentShader.glsl");
 
-
         TextureManager::Instance()->GenerateTextures();
         camera = make_unique<Camera>(mainShader);
         Input::SetCameraRef(camera.get());
         string s = "bear.bin";
-        MeshMessage mMsg(MessageType::AddMesh, s);
-        MeshManager::ProcessMessage(mMsg);
         Mesh mesh = MeshManager::Instance()->FindMesh(s);
         virtual_object = make_unique<VirtualObject>(mainShader, mesh);
 
-
         EntityMessage entMsg(MessageType::CreateEntity, "Entity");
-        entMsg.file = OBJLoader::FilesSerialized[0];
-        entMsg.texture = TextureManager::Instance()->GetTextures().at(0);
+        entMsg.file = OBJLoader::FilesSerialized[1];
+        entMsg.texture = TextureManager::Instance()->GetTextures()[0];
         EntityManager::ProcessMessages(entMsg);
+
+        LightEntityManager::Get().CreateLight(LightTypes::PointLight);
     }
 
     void GameEngine::Update() {
@@ -86,42 +87,39 @@ namespace Engine {
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
         glClearColor(clear_color.x, clear_color.y, clear_color.z, clear_color.w);
 
-        virtual_object->SetLightUniforms(mainShader);
-        glm::mat4 model {glm::mat4(1.0f)};
+        //Non-light Objects
+        virtual_object->SetLightUniforms(*mainShader);
         glm::mat4 projection {glm::mat4(1.0f)};
         projection = glm::perspective(radians(45.0f),
             static_cast<float>(Width) / Height, 0.1f, 100.0f);
         mat4 view {mat4(1.0f)};
         view = translate(view, glm::vec3(0.0f, 0.0f, -3.0f));
-        mainShader->SetMatrix4("veiw", 1, GL_FALSE, view);
+        mainShader->SetMatrix4("view", view);
+        mainShader->SetMatrix4("projection", projection);
 
-        model = glm::scale(model, model_scale);
-        model = glm::translate(model, model_position);
-        if (model_rotation != vec3(0.0f)) {
-            model = glm::rotate(model, glm::radians(rad), model_rotation);
-        }
-
-        mainShader->SetMatrix4("projection", 1, GL_FALSE, projection);
         camera->MoveCamera(Input::GetMoveValue(), 0.1);
-
-        glm::vec3 lightPos(1.2f, 1.0f, 2.0f);
-        glm::mat4 lightModel(1.0f);
-        lightModel = glm::translate(lightModel, lightPos);
-        lightModel = glm::scale(lightModel, glm::vec3(0.2f));
-        lightShader->SetMatrix4("Model", 1, GL_FALSE, lightModel);
-
 
         mainShader->UseShaderProgram();
 
         for (auto & i : EntityManager::GetEntityList()) {
-            mainShader->SetMatrix4("model", 1, GL_FALSE,
-                i->transform);
+            mainShader->SetMatrix4("model", i->transform);
             Mesh m = MeshManager::Instance()->FindMesh(i->meshName);
             virtual_object->SetVertexBufferObjects(m);
             TextureManager::Instance()->DrawTexture(i->texture);
             virtual_object->SetTextureUnit(i->texture.textureID);
-            virtual_object->Draw();
+            virtual_object->Draw(virtual_object->VAO);
         }
+
+        for (auto & i : LightEntityManager::Get().GetAllLights()) {
+            //SetVertexBufferObjects here for light objects later
+
+            virtual_object->SetLightUniforms(*lightShader);
+            i->SetModelMatrix(*lightShader);
+            i->SetView(glm::mat4(view));
+            i->SetProjection(glm::mat4(projection));
+            virtual_object->Draw(virtual_object->lightVAO);
+        }
+
 
         IMGUIClass::InitUpdateLoop();
 
@@ -134,6 +132,8 @@ namespace Engine {
         IMGUIClass::ModelsWindow();
 
         IMGUIClass::TexturesWindow();
+
+        IMGUIClass::LightsWindow();
 
         IMGUIClass::EndUpdateLoop();
 

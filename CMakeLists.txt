@@ -63,6 +63,9 @@ add_executable(GameEngine
         Message/EntityMessage.h
         Engine/IMGUIClass.cpp
         Engine/IMGUIClass.h
+        Managers/LightEntityManager.cpp
+        Managers/LightEntityManager.h
+        Misc/LightVariables.h
 )
 
 find_package(imgui CONFIG REQUIRED)

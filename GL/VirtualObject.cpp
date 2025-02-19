@@ -58,16 +58,16 @@ namespace Engine {
         glBindVertexArray(lightVAO);
     }
 
-    void VirtualObject::SetLightUniforms(std::shared_ptr<Shader> lightShader) {
-        lightShader->UseShaderProgram();
-        lightShader->SetVector3("objectColor", 1.0f, 0.5f, 0.31f);
-        lightShader->SetVector3("lightColor", 1.0f, 1.0f, 1.0f);
+    void VirtualObject::SetLightUniforms(Shader& lightShader) {
+        lightShader.UseShaderProgram();
+        lightShader.SetVector3("objectColor", 1.0f, 0.5f, 0.31f);
+        lightShader.SetVector3("lightColor", 1.0f, 1.0f, 1.0f);
     }
 
-    void VirtualObject::Draw(){
+    void VirtualObject::Draw(GLuint _VAO){
+        glBindVertexArray(_VAO);
         glDrawArrays(GL_TRIANGLES, 0, static_cast<GLsizei>(vertices_size));
-        glBindVertexArray(VAO);
-        glBindVertexArray(lightVAO);
+
     }
 
     VirtualObject::~VirtualObject() {

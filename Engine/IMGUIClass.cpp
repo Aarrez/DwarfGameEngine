@@ -1,5 +1,6 @@
 #include "IMGUIClass.h"
 
+#include "../Managers/LightEntityManager.h"
 #include "../Managers/TextureManager.h"
 
 namespace Engine {
@@ -146,7 +147,7 @@ namespace Engine {
             ImGui::InputText("Path to OBJ File", &model_buf);
             if (ImGui::Button("Serialize File")) {
                 MeshMessage meshmsg(MessageType::AddMesh, model_buf);
-                MeshManager::ProcessMessage(&meshmsg);
+                MeshManager::ProcessMessage(meshmsg);
             }
             if (ImGui::BeginListBox("Meshes")) {
                 for (int i = 0; i < OBJLoader::FilesSerialized.size(); i++) {
@@ -212,6 +213,31 @@ namespace Engine {
                 ent->texture = TextureManager::Instance()->GetTextures()[textures_select_id];
             }
         }
+
+        ImGui::End();
+    }
+
+    void IMGUIClass::LightsWindow() {
+        if (showDemoWindow) return;
+        if (ImGui::Begin("Lights Window")) {
+            for (auto& lightEntity : LightEntityManager::Get().GetAllLights()) {
+                ImGui::CollapsingHeader(
+                    lightEntity->name.c_str());
+
+                auto pos = lightEntity->GetPosition();
+                if (ImGui::DragFloat3("Position##", value_ptr(pos),
+                    0.0f, -100, 100)) {
+                    lightEntity->SetPosition(pos);
+                    }
+                auto scale = lightEntity->GetScale();
+                if (ImGui::DragFloat3("Scale##", value_ptr(scale),
+                    0, -10, 10)) {
+                    lightEntity->SetScale(scale);
+                    }
+            }
+
+        }
+
 
         ImGui::End();
     }

@@ -21,7 +21,7 @@ Camera::Camera(std::shared_ptr<Shader> shader) : shader(std::move(shader)){
 void Camera::MoveCamera(glm::vec3 direction, float speed) {
     cameraPos += direction * speed;
     view = lookAt(cameraPos, cameraPos + cameraDirection, cameraUp);
-    shader->SetMatrix4("view", 1, GL_FALSE, view);
+    shader->SetMatrix4("view", view);
 }
 
 void Camera::SetCameraPos(const glm::vec3& pos) {
