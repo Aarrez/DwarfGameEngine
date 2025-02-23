@@ -234,6 +234,7 @@ namespace Engine {
                     0, -10, 10)) {
                     lightEntity->SetScale(scale);
                     }
+                lightEntity->CombineModels();
             }
 
         }

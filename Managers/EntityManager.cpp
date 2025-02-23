@@ -64,7 +64,7 @@ namespace Engine{
     }
 
     void EntityManager::RemoveAllEntities() {
-        for_each(entities.begin(), entities.end(), [](Entity *e) {
+        ranges::for_each(entities.begin(), entities.end(), [](Entity *e) {
             delete e;
             e = nullptr;
         });

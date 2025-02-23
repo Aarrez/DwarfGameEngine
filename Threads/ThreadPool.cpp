@@ -7,12 +7,14 @@ namespace Engine {
         for (std::size_t i = 0; i < n_threads; i++) {
             threads.push_back(make_thread_handler(queue));
         }
+        m_n_threads = n_threads;
     }
 
     ThreadPool::~ThreadPool() {
         Task stop_task {TaskType::Stop, {}, {}};
         for (std::size_t i = 0; i< threads.size(); ++i) {
             push(stop_task);
+
         }
     }
 

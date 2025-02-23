@@ -2,6 +2,7 @@
 #define THREADPOOL_H
 #include <iostream>
 #include <thread>
+
 #include <vector>
 #include "../Misc/PublicEnums.h"
 #include "../Misc/PublicStructs.h"
@@ -18,13 +19,15 @@ namespace Engine {
         bool push(Task task);
         private:
         ThreadQueue<Task> queue {};
-        std::vector<std::jthread> threads;
+        std::vector<std::thread> threads;
+        size_t m_n_threads;
+        void JoinThreads();
 
     private:
 
-        std::jthread make_thread_handler(ThreadQueue<Task>& queue) {
-            return std::jthread{
-                [&queue] {
+        std::thread make_thread_handler(ThreadQueue<Task>& queue) {
+            return std::thread{
+                [&queue, this] {
                     while (true) {
                         Task const elem = queue.pop();
                         switch (elem.type) {
@@ -32,12 +35,24 @@ namespace Engine {
                                 elem.task(elem.arguments);
                             break;
                             case TaskType::Stop:
+                                if (m_n_threads == 0) {
+                                    JoinThreads();
+                                }
+                                m_n_threads--;
                                 return;
                         }
                     }
                 }};
         }
     };
+
+    inline void ThreadPool::JoinThreads() {
+        for (auto& thread : threads) {
+            if (thread.joinable()) {
+                thread.join();
+            }
+        }
+    }
 }
 
 

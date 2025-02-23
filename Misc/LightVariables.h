@@ -26,6 +26,8 @@ namespace Engine {
         std::string name;
     private:
         glm::mat4 model = glm::mat4(1.0f);
+        glm::mat4 posModel = glm::mat4(1.0);
+        glm::mat4 scaleModel = glm::mat4(1.0);
         glm::mat4 view = glm::mat4(1.0f);
         glm::mat4 projection = glm::mat4(1.0f);
     public:
@@ -62,13 +64,16 @@ namespace Engine {
             return scale;
         }
         void Translate(glm::vec3 translation) {
-            model = glm::translate(model, translation);
+            posModel = glm::translate(posModel, translation);
         }
         void SetPosition(glm::vec3 position) {
-            model = glm::translate(glm::mat4(1.0f), position);
+            posModel = glm::translate(glm::mat4(1.0f), position);
         }
         void SetScale(glm::vec3 scale) {
-            model = glm::scale(glm::mat4(1.0f), scale);
+            scaleModel = glm::scale(glm::mat4(1.0f), scale);
+        }
+        void CombineModels() {
+            model = posModel * scaleModel;
         }
 
 

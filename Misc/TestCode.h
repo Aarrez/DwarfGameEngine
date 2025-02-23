@@ -1,7 +1,7 @@
 #pragma once
+#include <iostream>
 
 namespace Engine::Misc{
-
 
     template<typename arrType>
     class Misc{
