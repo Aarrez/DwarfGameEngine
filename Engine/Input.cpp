@@ -57,9 +57,9 @@ namespace Engine
 
     void Input::mouse_callback(GLFWwindow *window, double xpos, double ypos) {
         if (!RotateCamera) return;
+        lastX = xpos;
+        lastY = ypos;
         if (firstMouse) {
-            lastX = xpos;
-            lastY = ypos;
             m_camera->RotateCamera(xpos, ypos, firstMouse);
             firstMouse = false;
             return;

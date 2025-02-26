@@ -13,7 +13,7 @@ namespace Engine {
         return *instance;
     }
 
-    void LightEntityManager::CreateLight(const LightTypes type, const char* name) {
+    LightEntity* LightEntityManager::CreateLight(const LightTypes type, const char* name) {
         auto* entity = new LightEntity();
         entity->type = type;
         entity->id = LightEntities.size();
@@ -23,6 +23,7 @@ namespace Engine {
             entity->name = name;
         }
         LightEntities.push_back(entity);
+        return entity;
     }
 
     void LightEntityManager::DestroyLightByName(const std::string& name) {

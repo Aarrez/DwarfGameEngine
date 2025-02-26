@@ -20,6 +20,18 @@ namespace Engine {
     int IMGUIClass::textures_select_id = 0;
     int IMGUIClass::textureCombo_select_id = 0;
     string IMGUIClass::texture_preview_ent {};
+
+    glm::vec3 IMGUIClass::light_ambient {.2f};
+    glm::vec3 IMGUIClass::light_diffuse {.5f};
+    glm::vec3 IMGUIClass::light_specular {1.0f};
+
+    glm::vec3 IMGUIClass::mat_ambient {1.0f, 0.5f, 0.31f};
+    glm::vec3 IMGUIClass::mat_diffuse {1.0f, 0.5f, 0.31};
+    glm::vec3 IMGUIClass::mat_specular {0.5f};
+
+    vector<float> IMGUIClass::shininess_list  {2.0f, 4.0f, 8.0f, 16.0f, 32.0f, 64.0f, 128.0f, 256.0f};
+    int IMGUIClass::light_Select_Id = 4;
+    float IMGUIClass::shininess = shininess_list[light_Select_Id];
 #pragma endregion
 
     void IMGUIClass::InitImGui(GLFWwindow* window) {
@@ -217,7 +229,7 @@ namespace Engine {
         ImGui::End();
     }
 
-    void IMGUIClass::LightsWindow() {
+    void IMGUIClass::LightsWindow(Shader& shader) {
         if (showDemoWindow) return;
         if (ImGui::Begin("Lights Window")) {
             for (auto& lightEntity : LightEntityManager::Get().GetAllLights()) {
@@ -226,7 +238,7 @@ namespace Engine {
 
                 auto pos = lightEntity->GetPosition();
                 if (ImGui::DragFloat3("Position##", value_ptr(pos),
-                    0.0f, -100, 100)) {
+                    0.0f, -10, 10)) {
                     lightEntity->SetPosition(pos);
                     }
                 auto scale = lightEntity->GetScale();
@@ -235,11 +247,44 @@ namespace Engine {
                     lightEntity->SetScale(scale);
                     }
                 lightEntity->CombineModels();
+
+                ImGui::Dummy({0, 10});
+                ImGui::Text("Light values:");
+                ImGui::ColorEdit3("Ambient##", value_ptr(light_ambient));
+                shader.SetVector3("light.ambient", light_ambient);
+                ImGui::ColorEdit3("Diffuse##", value_ptr(light_diffuse));
+                shader.SetVector3("light.diffuse", light_diffuse);
+                ImGui::ColorEdit3("Specular##", value_ptr(light_specular));
+                shader.SetVector3("light.specular", light_specular);
             }
 
         }
+        ImGui::End();
+    }
 
+    void IMGUIClass::MaterialsWindow(Shader &shader) {
+        if (showDemoWindow) return;
+        if (ImGui::Begin("Materials Window")) {
 
+            ImGui::ColorEdit3("Ambient##", value_ptr(mat_ambient));
+            shader.SetVector3("material.ambient", mat_ambient);
+            ImGui::ColorEdit3("Diffuse##", value_ptr(mat_diffuse));
+            shader.SetVector3("material.diffuse", mat_diffuse);
+            ImGui::ColorEdit3("Specular##", value_ptr(mat_specular));
+            shader.SetVector3("material.specular", mat_specular);
+            if (ImGui::BeginCombo("Shininess", std::to_string(shininess).c_str())) {
+                for (int i = 0; i < shininess_list.size(); i++) {
+                    bool selected = light_Select_Id == i;
+                    if (ImGui::Selectable(std::to_string(shininess_list[i]).c_str(), selected)) {
+                        light_Select_Id = i;
+                        shininess = shininess_list[i];
+                        shader.SetFloat("material.shininess", shininess);
+                    }
+                }
+                ImGui::EndCombo();
+            }
+
+        }
         ImGui::End();
     }
 }

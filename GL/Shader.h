@@ -29,6 +29,7 @@ namespace Engine {
         //Set vector variable
         void SetVector3(const char* name,
                         float value1, float value2, float value3);
+        void SetVector3(const char* name, glm::vec3 value);
         void SetVector4(const char* name,
                         float value1, float value2, float value3, float value4);
 

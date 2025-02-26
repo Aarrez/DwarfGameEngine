@@ -38,7 +38,8 @@ namespace Engine {
         static void CameraWindow(Camera& camera);
         static void ModelsWindow();
         static void TexturesWindow();
-        static void LightsWindow();
+        static void LightsWindow(Shader& shader);
+        static void MaterialsWindow(Shader& shader);
 
     private:
         static bool showDemoWindow;
@@ -55,6 +56,20 @@ namespace Engine {
         static int textures_select_id;
         static int textureCombo_select_id;
         static string texture_preview_ent;
+
+        //Light values
+        static glm::vec3 light_ambient;
+        static glm::vec3 light_diffuse;
+        static glm::vec3 light_specular;
+
+        //Material values
+        static glm::vec3 mat_ambient;
+        static glm::vec3 mat_diffuse;
+        static glm::vec3 mat_specular;
+
+        static vector<float> shininess_list;
+        static int light_Select_Id;
+        static float shininess;
 
     };
 }

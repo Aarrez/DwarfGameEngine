@@ -58,7 +58,7 @@ namespace Engine {
             "ShaderScripts/Light/LightingFragmentShader.glsl");
 
         TextureManager::Instance()->GenerateTextures();
-        camera = make_unique<Camera>(mainShader);
+        camera = make_unique<Camera>();
         Input::SetCameraRef(camera.get());
         string s = "bear.bin";
         Mesh mesh = MeshManager::Instance()->FindMesh(s);
@@ -69,7 +69,9 @@ namespace Engine {
         entMsg.texture = TextureManager::Instance()->GetTextures()[0];
         EntityManager::ProcessMessages(entMsg);
 
-        LightEntityManager::Get().CreateLight(LightTypes::PointLight);
+        auto ent = LightEntityManager::Get().CreateLight(LightTypes::PointLight);
+        ent->SetPosition({3.0f, 2.0f, 2.0f});
+        ent->SetScale({0.5f, 0.5f, 0.5f});
     }
 
     void GameEngine::Update() {
@@ -88,19 +90,23 @@ namespace Engine {
         glClearColor(clear_color.x, clear_color.y, clear_color.z, clear_color.w);
 
         //Non-light Objects
-        virtual_object->SetLightUniforms(*mainShader);
         glm::mat4 projection {glm::mat4(1.0f)};
         projection = glm::perspective(radians(45.0f),
             static_cast<float>(Width) / Height, 0.1f, 100.0f);
         mat4 view {mat4(1.0f)};
         view = translate(view, glm::vec3(0.0f, 0.0f, -3.0f));
-        mainShader->SetMatrix4("view", view);
-        mainShader->SetMatrix4("projection", projection);
-
-        camera->MoveCamera(Input::GetMoveValue(), 0.1);
+        for (auto & i : LightEntityManager::Get().GetAllLights()) {
+            //SetVertexBufferObjects here for light objects later
+            i->SetModelMatrix(*lightShader);
+            mainShader->SetVector3("lightPos", i->GetPosition());
+            mainShader->SetVector3("viewPos", camera->GetCameraPos());
+        }
 
         mainShader->UseShaderProgram();
-
+        mainShader->SetVector3("lightColor", 1.0f, 1.0f, 1.0f);
+        camera->MoveCamera(Input::GetMoveValue(), 0.1, &view);
+        mainShader->SetMatrix4("view", view);
+        mainShader->SetMatrix4("projection", projection);
         for (auto & i : EntityManager::GetEntityList()) {
             mainShader->SetMatrix4("model", i->transform);
             Mesh m = MeshManager::Instance()->FindMesh(i->meshName);
@@ -109,16 +115,16 @@ namespace Engine {
             virtual_object->SetTextureUnit(i->texture.textureID);
             virtual_object->Draw(virtual_object->VAO);
         }
-
+        lightShader->UseShaderProgram();
+        lightShader->SetMatrix4("view", view);
+        lightShader->SetMatrix4("projection", projection);
         for (auto & i : LightEntityManager::Get().GetAllLights()) {
             //SetVertexBufferObjects here for light objects later
-
-            virtual_object->SetLightUniforms(*lightShader);
             i->SetModelMatrix(*lightShader);
-            i->SetView(glm::mat4(view));
-            i->SetProjection(glm::mat4(projection));
             virtual_object->Draw(virtual_object->lightVAO);
         }
+
+        mainShader->UseShaderProgram();
 
 
         IMGUIClass::InitUpdateLoop();
@@ -133,7 +139,9 @@ namespace Engine {
 
         IMGUIClass::TexturesWindow();
 
-        IMGUIClass::LightsWindow();
+        IMGUIClass::LightsWindow(*mainShader);
+
+        IMGUIClass::MaterialsWindow(*mainShader);
 
         IMGUIClass::EndUpdateLoop();
 

@@ -19,13 +19,12 @@ namespace Engine {
 
     void VirtualObject::SetVertexBufferObjects(const Mesh& mesh) {
         vertices_size = mesh.vertices.size();
-        BindLightVAO();
+
         glBindVertexArray(VAO);
         glBindBuffer(GL_ARRAY_BUFFER, VBO);
         glBufferData(GL_ARRAY_BUFFER,
         mesh.vertices.size() * sizeof(Vertex),
                  &mesh.vertices[0], GL_STATIC_DRAW);
-
 
         glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE,
         3 * sizeof(float), (void*)0);
@@ -51,23 +50,23 @@ namespace Engine {
                 2 * sizeof(float), (void*)0);
             glEnableVertexAttribArray(2);
         }
+
+        BindLightVAO();
     }
 
     void VirtualObject::BindLightVAO() {
         glGenVertexArrays(1, &lightVAO);
         glBindVertexArray(lightVAO);
-    }
+        glBindBuffer(GL_ARRAY_BUFFER, VBO);
 
-    void VirtualObject::SetLightUniforms(Shader& lightShader) {
-        lightShader.UseShaderProgram();
-        lightShader.SetVector3("objectColor", 1.0f, 0.5f, 0.31f);
-        lightShader.SetVector3("lightColor", 1.0f, 1.0f, 1.0f);
+        glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE,
+            3 * sizeof(float), (void*)0);
+        glEnableVertexAttribArray(0);
     }
 
     void VirtualObject::Draw(GLuint _VAO){
         glBindVertexArray(_VAO);
         glDrawArrays(GL_TRIANGLES, 0, static_cast<GLsizei>(vertices_size));
-
     }
 
     VirtualObject::~VirtualObject() {

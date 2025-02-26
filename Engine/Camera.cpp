@@ -6,7 +6,7 @@
 
 using namespace Engine;
 
-Camera::Camera(std::shared_ptr<Shader> shader) : shader(std::move(shader)){
+Camera::Camera(){
     view = mat4(1.0f);
     cameraPos = vec3(0,0,20.0f);
     cameraDirection = glm::vec3(0, 0, -1);
@@ -18,10 +18,9 @@ Camera::Camera(std::shared_ptr<Shader> shader) : shader(std::move(shader)){
 }
 
 
-void Camera::MoveCamera(glm::vec3 direction, float speed) {
+void Camera::MoveCamera(glm::vec3 direction, float speed, glm::mat4* view) {
     cameraPos += direction * speed;
-    view = lookAt(cameraPos, cameraPos + cameraDirection, cameraUp);
-    shader->SetMatrix4("view", view);
+    *view = lookAt(cameraPos, cameraPos + cameraDirection, cameraUp);
 }
 
 void Camera::SetCameraPos(const glm::vec3& pos) {

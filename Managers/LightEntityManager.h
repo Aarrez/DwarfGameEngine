@@ -11,7 +11,7 @@ namespace Engine {
         static void Allocate();
         static LightEntityManager& Get();
 
-        void CreateLight(LightTypes type, const char* name = "");
+        LightEntity* CreateLight(LightTypes type, const char* name = "");
         void DestroyLightByName(const std::string& name);
         void DestroyLightByType(LightTypes type);
         void DestroyAllLights();

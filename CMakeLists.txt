@@ -93,7 +93,3 @@ target_link_libraries(GameEngine PRIVATE glfw)
 
 find_package(glm CONFIG REQUIRED)
 target_link_libraries(GameEngine PRIVATE glm::glm-header-only)
-
-find_path(JOSUTTIS_JTHREAD_INCLUDE_DIRS "condition_variable_any2.hpp")
-target_include_directories(GameEngine PRIVATE ${JOSUTTIS_JTHREAD_INCLUDE_DIRS})
-

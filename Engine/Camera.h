@@ -14,15 +14,14 @@ namespace Engine{
 
     class Camera{
     public:
-        Camera(std::shared_ptr<Shader> shader);
+        Camera();
 
-        void MoveCamera(glm::vec3 direction, float speed);
+        void MoveCamera(glm::vec3 direction, float speed, glm::mat4* view);
         void SetCameraPos(const glm::vec3& pos);
         vec3 GetCameraPos();
         void SetCameraRotation(glm::vec3 rotation);
         glm::vec3 GetCameraRotation();
         void RotateCamera(double Xpos, double Ypos, bool first);
-
 
     private:
 
@@ -31,6 +30,7 @@ namespace Engine{
         float lastX{}, lastY{}, offsetX{}, offsetY{};
         float sensitivity = 0.1f;
         float yaw{}, pitch{};
+
         //Other stuff
         mat4 view {};
 
@@ -41,8 +41,6 @@ namespace Engine{
         vec3 cameraFront {};
         vec3 cameraRight {};
         vec3 cameraUp {};
-
-        std::shared_ptr<Shader> shader {};
 
     };
 
