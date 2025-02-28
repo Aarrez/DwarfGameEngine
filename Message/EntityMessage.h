@@ -10,6 +10,7 @@ namespace Engine {
     EntityMessage(const MessageType type, const std::string &msg) : Message(type, msg) {};
     SerializedFile file;
     Texture texture;
+    Texture spec_texture;
 
 
   };

@@ -18,7 +18,7 @@ namespace Engine {
         entity->type = type;
         entity->id = LightEntities.size();
         if (name && !name[0]) {
-            entity->name = ToString(type) + entity->id;
+            entity->name = ToString(type) + std::to_string(entity->id);
         }else {
             entity->name = name;
         }

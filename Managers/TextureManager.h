@@ -12,6 +12,8 @@
 
 
 namespace Engine {
+  class Shader;
+
   class TextureManager {
 
     static TextureManager* instance;
@@ -20,13 +22,15 @@ namespace Engine {
     static std::string defaultTexturePath;
   public:
     static void Allocate();
-    static TextureManager* Instance();
+    static TextureManager* Get();
     std::vector<Texture>& GetTextures();
     void FillTextureList();
-    void GenerateTextures();
+    void StbGenerateTextures();
     void DrawTexture(const Texture& texture);
+    void SetTextureUniform(Shader& shader);
 
   };
+
 }
 
 

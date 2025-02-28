@@ -14,7 +14,6 @@ namespace Engine{
 
         void SetVertexBufferObjects(const Mesh& mesh);
         void BindLightVAO();
-        void SetTextureUnit(unsigned int i);
 
         void Draw(GLuint _VAO);
 

@@ -41,6 +41,7 @@ namespace Engine {
         string name;
         string meshName;
         Texture texture;
+        Texture spec_texture;
         glm::mat4 transform;
         bool selected;
 

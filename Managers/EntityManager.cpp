@@ -1,5 +1,7 @@
 #include "EntityManager.h"
 
+#include "TextureManager.h"
+
 using namespace std;
 
 namespace Engine{
@@ -13,12 +15,23 @@ namespace Engine{
         Instance = new EntityManager();
     }
 
+    EntityManager& EntityManager::Get() {
+        return *Instance;
+    }
+
     void EntityManager::ProcessMessages(const EntityMessage& message) {
         /*messageQueue.push(message);*/
         std::string msg = message.mMessage;
+        Entity* ent;
         switch (message.mType) {
             case MessageType::CreateEntity:
-                CreateEntity(message.file, message.texture, msg);
+                ent = CreateEntity(message.file, msg);
+                if (!message.texture.fileName.empty()) {
+                    ent->texture = message.texture;
+                }
+                if (!message.spec_texture.fileName.empty()) {
+                    ent->spec_texture = message.spec_texture;
+                }
                 break;
             case MessageType::RemoveEntityByName:
                 RemoveEntityByName(msg);
@@ -33,16 +46,16 @@ namespace Engine{
         }
     }
 
-    void EntityManager::CreateEntity(const SerializedFile& file, const Texture &texture, const string &name) {
+    Entity* EntityManager::CreateEntity(const SerializedFile& file, const string &name) {
         string nameWithIndex = name + std::to_string(entities.size());
         auto *entity = new Entity();
         entity->id = entities.size();
         entity->name = nameWithIndex;
         entity->transform = glm::mat4(1.0f);
-        entity->texture = texture;
         entity->selected = false;
         entity->meshName = file.fileName;
         entities.push_back(entity);
+        return entity;
     }
 
     void EntityManager::ChangeTexture(Texture &texture) {

@@ -8,6 +8,8 @@
 #include "glm/glm.hpp"
 #include "glm/gtc/matrix_transform.hpp"
 #include <glm/gtc/type_ptr.hpp>
+#include "../Managers/LightEntityManager.h"
+#include "../Managers/TextureManager.h"
 
 #include "Camera.h"
 #include "../Misc/PublicStructs.h"
@@ -16,6 +18,7 @@
 #include "../Managers/EntityManager.h"
 #include "../Message/MeshMessage.h"
 #include "../Managers/MeshManager.h"
+#include "../Misc/LightVariables.h"
 
 using namespace glm;
 
@@ -54,18 +57,28 @@ namespace Engine {
         static int modelCombo_select_id;
 
         static int textures_select_id;
+        static int spec_texture_select_id;
         static int textureCombo_select_id;
         static string texture_preview_ent;
 
+        //Light creating variables
+        static LightTypes combo_type;
+
         //Light values
         static glm::vec3 light_ambient;
+        static float light_ambient_intensity;
         static glm::vec3 light_diffuse;
+        static float light_diffuse_intensity;
         static glm::vec3 light_specular;
+        static float light_specular_intensity;
 
         //Material values
         static glm::vec3 mat_ambient;
+        static float mat_ambient_intensity;
         static glm::vec3 mat_diffuse;
+        static float mat_diffuse_intensity;
         static glm::vec3 mat_specular;
+        static float mat_specular_intensity;
 
         static vector<float> shininess_list;
         static int light_Select_Id;

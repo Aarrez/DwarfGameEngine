@@ -13,16 +13,16 @@ namespace Engine {
     class EntityManager {
         public:
         static void Allocate();
-        static void ProcessMessages(const EntityMessage& message);
-        static std::vector<Entity*>& GetEntityList();
+        static EntityManager& Get();
+        void ProcessMessages(const EntityMessage& message);
+        std::vector<Entity*>& GetEntityList();
 
     private:
-        static void CreateEntity(const SerializedFile& file,
-            const Texture &texture,
+        Entity* CreateEntity(const SerializedFile& file,
             const string &name = "Entity");
-        static void ChangeTexture(Texture &texture);
-        static void RemoveEntityByName(const string& name);
-        static void RemoveAllEntities();
+        void ChangeTexture(Texture &texture);
+        void RemoveEntityByName(const string& name);
+        void RemoveAllEntities();
         static EntityManager* Instance;
         EntityManager() = default;
         static vector<Entity*> entities;

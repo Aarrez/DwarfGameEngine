@@ -57,7 +57,7 @@ namespace Engine {
             "ShaderScripts/Light/LightingVertexShader.glsl",
             "ShaderScripts/Light/LightingFragmentShader.glsl");
 
-        TextureManager::Instance()->GenerateTextures();
+        TextureManager::Get()->StbGenerateTextures();
         camera = make_unique<Camera>();
         Input::SetCameraRef(camera.get());
         string s = "bear.bin";
@@ -65,9 +65,10 @@ namespace Engine {
         virtual_object = make_unique<VirtualObject>(mainShader, mesh);
 
         EntityMessage entMsg(MessageType::CreateEntity, "Entity");
-        entMsg.file = OBJLoader::FilesSerialized[1];
-        entMsg.texture = TextureManager::Instance()->GetTextures()[0];
-        EntityManager::ProcessMessages(entMsg);
+        entMsg.file = OBJLoader::FilesSerialized[4];
+        entMsg.texture = TextureManager::Get()->GetTextures()[0];
+        entMsg.spec_texture = TextureManager::Get()->GetTextures()[1];
+        EntityManager::Get().ProcessMessages(entMsg);
 
         auto ent = LightEntityManager::Get().CreateLight(LightTypes::PointLight);
         ent->SetPosition({3.0f, 2.0f, 2.0f});
@@ -103,16 +104,16 @@ namespace Engine {
         }
 
         mainShader->UseShaderProgram();
-        mainShader->SetVector3("lightColor", 1.0f, 1.0f, 1.0f);
         camera->MoveCamera(Input::GetMoveValue(), 0.1, &view);
         mainShader->SetMatrix4("view", view);
         mainShader->SetMatrix4("projection", projection);
-        for (auto & i : EntityManager::GetEntityList()) {
+        for (auto & i : EntityManager::Get().GetEntityList()) {
             mainShader->SetMatrix4("model", i->transform);
             Mesh m = MeshManager::Instance()->FindMesh(i->meshName);
             virtual_object->SetVertexBufferObjects(m);
-            TextureManager::Instance()->DrawTexture(i->texture);
-            virtual_object->SetTextureUnit(i->texture.textureID);
+            TextureManager::Get()->SetTextureUniform(*mainShader);
+            TextureManager::Get()->DrawTexture(i->texture);
+            TextureManager::Get()->DrawTexture(i->spec_texture);
             virtual_object->Draw(virtual_object->VAO);
         }
         lightShader->UseShaderProgram();

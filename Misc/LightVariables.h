@@ -35,7 +35,7 @@ namespace Engine {
         [[nodiscard]] const glm::mat4& GetModel() const {
             return model;
         }
-        void SetModelMatrix(Shader lightShader) {
+        void SetModelMatrix(Shader& lightShader) {
             lightShader.SetMatrix4("model", model);
         }
         glm::vec3 GetPosition() {

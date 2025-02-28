@@ -1,6 +1,6 @@
 #include "TextureManager.h"
 
-
+#include "../GL/Shader.h"
 
 
 namespace Engine {
@@ -18,7 +18,7 @@ namespace Engine {
     instance->FillTextureList();
   }
 
-  TextureManager *TextureManager::Instance() {
+  TextureManager *TextureManager::Get() {
     return instance;
   }
 
@@ -29,7 +29,7 @@ namespace Engine {
   void TextureManager::FillTextureList() {
     for (auto& path : imagePathList) {
       Texture tempTexture{};
-      tempTexture.colorFormat = GL_RGB;
+      tempTexture.colorFormat = GL_RGBA;
       tempTexture.filePath = "Images/" + path;
       tempTexture.fileName = path;
       tempTexture.textureID = 0;
@@ -37,22 +37,23 @@ namespace Engine {
     }
   }
 
-  void TextureManager::GenerateTextures() {
+  void TextureManager::StbGenerateTextures() {
     for (auto& tex : textures) {
       glGenTextures(1, &tex.textureID);
       glBindTexture(GL_TEXTURE_2D, tex.textureID);
       glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_MIRRORED_REPEAT);
       glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_MIRRORED_REPEAT);
 
-      glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR);
+      glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
       glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+
 
       int width, height, nrChannels;
       unsigned char* data =
         stbi_load(tex.filePath.c_str(),
           &width, &height, &nrChannels, 0);
       if (data) {
-        glTexImage2D(GL_TEXTURE_2D, 0, tex.colorFormat,
+        glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB,
           width, height, 0, tex.colorFormat, GL_UNSIGNED_BYTE, data);
         glGenerateMipmap(GL_TEXTURE_2D);
       }
@@ -66,5 +67,11 @@ namespace Engine {
   void TextureManager::DrawTexture(const Texture &texture) {
     glActiveTexture(GL_TEXTURE0 + texture.textureID);
     glBindTexture(GL_TEXTURE_2D, texture.textureID);
+  }
+
+  void TextureManager::SetTextureUniform(Shader& shader) {
+    shader.UseShaderProgram();
+    shader.SetInt("material.diffuse", 0);
+    shader.SetInt("material.specular", 1);
   }
 }

@@ -1,7 +1,6 @@
 #include "IMGUIClass.h"
 
-#include "../Managers/LightEntityManager.h"
-#include "../Managers/TextureManager.h"
+
 
 namespace Engine {
 
@@ -18,16 +17,26 @@ namespace Engine {
     int IMGUIClass::modelCombo_select_id = 0;
 
     int IMGUIClass::textures_select_id = 0;
+    int IMGUIClass::spec_texture_select_id = 0;
     int IMGUIClass::textureCombo_select_id = 0;
     string IMGUIClass::texture_preview_ent {};
 
+    LightTypes IMGUIClass::combo_type {LightTypes::PointLight};
+
     glm::vec3 IMGUIClass::light_ambient {.2f};
+    float IMGUIClass::light_ambient_intensity {1.0f};
     glm::vec3 IMGUIClass::light_diffuse {.5f};
+    float IMGUIClass::light_diffuse_intensity {1.0f};
     glm::vec3 IMGUIClass::light_specular {1.0f};
+    float IMGUIClass::light_specular_intensity {1.0f};
 
     glm::vec3 IMGUIClass::mat_ambient {1.0f, 0.5f, 0.31f};
+    float IMGUIClass::mat_ambient_intensity {1.0f};
     glm::vec3 IMGUIClass::mat_diffuse {1.0f, 0.5f, 0.31};
+    float IMGUIClass::mat_diffuse_intensity {1.0f};
     glm::vec3 IMGUIClass::mat_specular {0.5f};
+    float IMGUIClass::mat_specular_intensity {1.0f};
+
 
     vector<float> IMGUIClass::shininess_list  {2.0f, 4.0f, 8.0f, 16.0f, 32.0f, 64.0f, 128.0f, 256.0f};
     int IMGUIClass::light_Select_Id = 4;
@@ -78,7 +87,6 @@ namespace Engine {
         if (showDemoWindow) return;
 
          ImGui::Begin("EntityWindow");
-
             ImGui::InputText("Entity Name", &entity_buf);
             if (ImGui::Button("Create Entity")) {
                 Texture tex {};
@@ -88,13 +96,13 @@ namespace Engine {
                 EntityMessage msg(MessageType::CreateEntity, entity_buf);
                 msg.texture = tex;
                 msg.file = OBJLoader::FilesSerialized[0];
-                EntityManager::ProcessMessages(msg);
+                EntityManager::Get().ProcessMessages(msg);
             }
-            dest_preview_ent = EntityManager::GetEntityList()[dest_comb_select]->name;
+            dest_preview_ent = EntityManager::Get().GetEntityList()[dest_comb_select]->name;
             if (ImGui::BeginCombo("EntitySelect", dest_preview_ent.c_str())) {
-                for (int i = 0; i < EntityManager::GetEntityList().size(); i++) {
+                for (int i = 0; i < EntityManager::Get().GetEntityList().size(); i++) {
                     const bool is_selected = dest_comb_select == i;
-                    if (ImGui::Selectable(EntityManager::GetEntityList()[i]->name.c_str(), is_selected)) {
+                    if (ImGui::Selectable(EntityManager::Get().GetEntityList()[i]->name.c_str(), is_selected)) {
                         dest_comb_select = i;
                         ImGui::SetItemDefaultFocus();
                     }
@@ -102,14 +110,14 @@ namespace Engine {
                 ImGui::EndCombo();
             }
             if (ImGui::Button("Destroy Entity")) {
-                auto entName = EntityManager::GetEntityList()[dest_comb_select]->name;
-                EntityManager::ProcessMessages(EntityMessage(MessageType::RemoveEntityByName, entName));
+                auto entName = EntityManager::Get().GetEntityList()[dest_comb_select]->name;
+                EntityManager::Get().ProcessMessages(EntityMessage(MessageType::RemoveEntityByName, entName));
                 if (dest_comb_select != 0) {
                     dest_comb_select += -1;
                 }
             }
 
-            for (auto & e : EntityManager::GetEntityList()) {
+            for (auto & e : EntityManager::Get().GetEntityList()) {
                 if (ImGui::CollapsingHeader(e->name.c_str(), ImGuiTreeNodeFlags_None)) {
                     vec3 translation = e->GetPosition();
                     string posName = "Position##";
@@ -172,11 +180,11 @@ namespace Engine {
                 ImGui::EndListBox();
             }
 
-            model_preview_ent = EntityManager::GetEntityList()[modelCombo_select_id]->name;
+            model_preview_ent = EntityManager::Get().GetEntityList()[modelCombo_select_id]->name;
             if (ImGui::BeginCombo("Entity Select", model_preview_ent.c_str())) {
-                for (int i = 0; i < EntityManager::GetEntityList().size(); i++) {
+                for (int i = 0; i < EntityManager::Get().GetEntityList().size(); i++) {
                     const bool is_selected = modelCombo_select_id == i;
-                    if (ImGui::Selectable(EntityManager::GetEntityList()[i]->name.c_str(), is_selected)) {
+                    if (ImGui::Selectable(EntityManager::Get().GetEntityList()[i]->name.c_str(), is_selected)) {
                         modelCombo_select_id = i;
                     }
                     if (is_selected)
@@ -186,7 +194,7 @@ namespace Engine {
             }
 
             if (ImGui::Button("Change Entity Mesh")) {
-                auto ent = EntityManager::GetEntityList()[modelCombo_select_id];
+                auto ent = EntityManager::Get().GetEntityList()[modelCombo_select_id];
                 const auto& meshFileInfo = OBJLoader::FilesSerialized.at(model_select_id);
                 ent->meshName = MeshManager::Instance()->FindMesh(meshFileInfo.fileName).name;
             }
@@ -198,21 +206,23 @@ namespace Engine {
         if (showDemoWindow) return;
 
         if (ImGui::Begin("Texture Window")) {
-            if (ImGui::BeginListBox("Textures List")) {
-                for(int i = 0; i < TextureManager::Instance()->GetTextures().size(); i++) {
+            size_t size = TextureManager::Get()->GetTextures().size();
+            if (ImGui::BeginListBox("Textures List", {150, size * 20.0f})) {
+                for(int i = 0; i < size; i++) {
                     const bool isSelected = i == textures_select_id;
                     if (ImGui::Selectable(
-                        TextureManager::Instance()->GetTextures()[i].fileName.c_str(), isSelected)) {
+                        TextureManager::Get()->GetTextures()[i].fileName.c_str(), isSelected)) {
                         textures_select_id = i;
                     }
                 }
             }
             ImGui::EndListBox();
-            texture_preview_ent = EntityManager::GetEntityList()[textureCombo_select_id]->name;
+
+            texture_preview_ent = EntityManager::Get().GetEntityList()[textureCombo_select_id]->name;
             if (ImGui::BeginCombo("Entity Select", texture_preview_ent.c_str())) {
-                for (int i = 0; i < EntityManager::GetEntityList().size(); i++) {
+                for (int i = 0; i < EntityManager::Get().GetEntityList().size(); i++) {
                     const bool is_selected = textureCombo_select_id == i;
-                    if (ImGui::Selectable(EntityManager::GetEntityList()[i]->name.c_str(), is_selected)) {
+                    if (ImGui::Selectable(EntityManager::Get().GetEntityList()[i]->name.c_str(), is_selected)) {
                         textureCombo_select_id = i;
                     }
                     if (is_selected)
@@ -221,8 +231,25 @@ namespace Engine {
                 ImGui::EndCombo();
             }
             if (ImGui::Button("Change Texture")) {
-                auto ent = EntityManager::GetEntityList()[textureCombo_select_id];
-                ent->texture = TextureManager::Instance()->GetTextures()[textures_select_id];
+                auto ent = EntityManager::Get().GetEntityList()[textureCombo_select_id];
+                ent->texture = TextureManager::Get()->GetTextures()[textures_select_id];
+            }
+
+
+            if (ImGui::BeginListBox("Specular Texture List", {150, size * 20.0f})) {
+                for(int i = 0; i < size; i++) {
+                    const bool isSelected = i == spec_texture_select_id;
+                    if (ImGui::Selectable(
+                        TextureManager::Get()->GetTextures()[i].fileName.c_str(), isSelected)) {
+                        spec_texture_select_id = i;
+                        }
+                }
+            }
+            ImGui::EndListBox();
+
+            if (ImGui::Button("Change Specular Texture")) {
+                auto ent = EntityManager::Get().GetEntityList()[textureCombo_select_id];
+                ent->spec_texture = TextureManager::Get()->GetTextures()[spec_texture_select_id];
             }
         }
 
@@ -233,30 +260,60 @@ namespace Engine {
         if (showDemoWindow) return;
         if (ImGui::Begin("Lights Window")) {
             for (auto& lightEntity : LightEntityManager::Get().GetAllLights()) {
-                ImGui::CollapsingHeader(
-                    lightEntity->name.c_str());
-
-                auto pos = lightEntity->GetPosition();
-                if (ImGui::DragFloat3("Position##", value_ptr(pos),
-                    0.0f, -10, 10)) {
-                    lightEntity->SetPosition(pos);
-                    }
-                auto scale = lightEntity->GetScale();
-                if (ImGui::DragFloat3("Scale##", value_ptr(scale),
-                    0, -10, 10)) {
-                    lightEntity->SetScale(scale);
-                    }
+                std::string name = lightEntity->name;
+                if (ImGui::CollapsingHeader(
+                    name.c_str())) {
+                    auto pos = lightEntity->GetPosition();
+                    if (ImGui::DragFloat3("Position##", value_ptr(pos),
+                        0.0f, -10, 10)) {
+                        lightEntity->SetPosition(pos);
+                        }
+                    auto scale = lightEntity->GetScale();
+                    if (ImGui::DragFloat3("Scale##", value_ptr(scale),
+                        0, -10, 10)) {
+                        lightEntity->SetScale(scale);
+                        }
+                }
                 lightEntity->CombineModels();
-
-                ImGui::Dummy({0, 10});
-                ImGui::Text("Light values:");
-                ImGui::ColorEdit3("Ambient##", value_ptr(light_ambient));
-                shader.SetVector3("light.ambient", light_ambient);
-                ImGui::ColorEdit3("Diffuse##", value_ptr(light_diffuse));
-                shader.SetVector3("light.diffuse", light_diffuse);
-                ImGui::ColorEdit3("Specular##", value_ptr(light_specular));
-                shader.SetVector3("light.specular", light_specular);
             }
+            if (ImGui::BeginCombo("LightType", ToString(combo_type))) {
+                bool point_select = combo_type == LightTypes::PointLight;
+                if (ImGui::Selectable(ToString(LightTypes::PointLight), point_select)) {
+                    combo_type = LightTypes::PointLight;
+                }
+                bool spot_select = combo_type == LightTypes::SpotLight;
+                if (ImGui::Selectable(ToString(LightTypes::SpotLight), spot_select)) {
+                    combo_type = LightTypes::SpotLight;
+                }
+                bool dir_select = combo_type == LightTypes::DirectionalLight;
+                if (ImGui::Selectable(ToString(LightTypes::DirectionalLight), dir_select)) {
+                    combo_type = LightTypes::DirectionalLight;
+                }
+                ImGui::EndCombo();
+            }
+            if (ImGui::Button("Create Light")) {
+                LightEntityManager::Get().CreateLight(combo_type);
+            }
+
+
+
+            ImGui::Dummy({0, 10});
+            ImGui::Text("Light values:");
+            ImGui::ColorEdit3("Ambient##", value_ptr(light_ambient));
+            ImGui::DragFloat("AmbientIntensity##", &light_ambient_intensity, 0.1, 1, 5);
+            auto ambient_result = light_ambient_intensity * light_ambient;
+            shader.SetVector3("light.ambient", ambient_result);
+
+            ImGui::ColorEdit3("Diffuse##", value_ptr(light_diffuse));
+            ImGui::DragFloat("DiffuseIntensity##", &light_diffuse_intensity, .1, 1, 5);
+            auto diffuse_result = light_diffuse * light_diffuse_intensity;
+            shader.SetVector3("light.diffuse", diffuse_result);
+
+            ImGui::ColorEdit3("Specular##", value_ptr(light_specular));
+            ImGui::DragFloat("SpecularIntensity##", &light_specular_intensity, .1, 1, 5);
+            auto specular_result = light_specular * light_specular_intensity;
+            shader.SetVector3("light.specular", specular_result);
+
 
         }
         ImGui::End();
@@ -267,21 +324,31 @@ namespace Engine {
         if (ImGui::Begin("Materials Window")) {
 
             ImGui::ColorEdit3("Ambient##", value_ptr(mat_ambient));
-            shader.SetVector3("material.ambient", mat_ambient);
-            ImGui::ColorEdit3("Diffuse##", value_ptr(mat_diffuse));
-            shader.SetVector3("material.diffuse", mat_diffuse);
+            ImGui::DragFloat("AmbientIntensity##", &mat_ambient_intensity, .1, 1, 5);
+            auto ambient_result = mat_ambient_intensity * mat_ambient;
+            shader.SetVector3("material.ambient", ambient_result);
+
+            /*ImGui::ColorEdit3("Diffuse##", value_ptr(mat_diffuse));
+            ImGui::DragFloat("DiffuseIntensity##", &mat_diffuse_intensity, .1, 1, 5);
+            auto diffuse_result = mat_diffuse_intensity * mat_diffuse;
+            shader.SetVector3("material.diffuse", diffuse_result);
+
             ImGui::ColorEdit3("Specular##", value_ptr(mat_specular));
-            shader.SetVector3("material.specular", mat_specular);
+            ImGui::DragFloat("SpecularIntensity##", &mat_specular_intensity,.1, 1,5);
+            auto specular_result = mat_specular_intensity * mat_specular;
+            shader.SetVector3("material.specular", specular_result);*/
+
+            shader.SetFloat("material.shininess", shininess);
             if (ImGui::BeginCombo("Shininess", std::to_string(shininess).c_str())) {
                 for (int i = 0; i < shininess_list.size(); i++) {
                     bool selected = light_Select_Id == i;
                     if (ImGui::Selectable(std::to_string(shininess_list[i]).c_str(), selected)) {
                         light_Select_Id = i;
                         shininess = shininess_list[i];
-                        shader.SetFloat("material.shininess", shininess);
                     }
                 }
                 ImGui::EndCombo();
+
             }
 
         }

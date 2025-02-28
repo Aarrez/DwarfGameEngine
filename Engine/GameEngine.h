@@ -7,7 +7,6 @@
 #include <iostream>
 #include <thread>
 #include <mutex>
-
 #include "glm/gtx/matrix_decompose.hpp"
 
 #pragma region Dwarf-Includes

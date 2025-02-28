@@ -77,11 +77,6 @@ namespace Engine {
         glDeleteBuffers(1, &NVBO);
         glDeleteBuffers(1, &TVBO);
     }
-
-    void VirtualObject::SetTextureUnit(unsigned int i) {
-        shader->UseShaderProgram();
-        shader->SetInt("texture1", i);
-    }
 }
 
 
