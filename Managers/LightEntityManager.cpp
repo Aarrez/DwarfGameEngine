@@ -13,9 +13,9 @@ namespace Engine {
         return *instance;
     }
 
-    LightEntity* LightEntityManager::CreateLight(const LightTypes type, const char* name) {
+    LightEntity* LightEntityManager::CreateLight(LightTypes& type, const char* name) {
         auto* entity = new LightEntity();
-        entity->type = type;
+        entity->ChangeLightType(type);
         entity->id = LightEntities.size();
         if (name && !name[0]) {
             entity->name = ToString(type) + std::to_string(entity->id);
@@ -40,7 +40,7 @@ namespace Engine {
     }
     void LightEntityManager::DestroyLightByType(LightTypes type) {
         for (int i = 0; i < LightEntities.size(); i++) {
-            if (LightEntities.at(i)->type == type) {
+            if (LightEntities.at(i)->GetLightType() == type) {
                 delete (LightEntities.at(i));
                 LightEntities.at(i) = nullptr;
                 LightEntities.erase(LightEntities.begin() + i);

@@ -54,6 +54,7 @@ namespace Engine{
         entity->transform = glm::mat4(1.0f);
         entity->selected = false;
         entity->meshName = file.fileName;
+        entity->shininess = 2.f;
         entities.push_back(entity);
         return entity;
     }

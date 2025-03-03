@@ -21,7 +21,7 @@ namespace Engine {
     int IMGUIClass::textureCombo_select_id = 0;
     string IMGUIClass::texture_preview_ent {};
 
-    LightTypes IMGUIClass::combo_type {LightTypes::PointLight};
+    LightTypes IMGUIClass::combo_type {LightTypes::DirectionalLight};
 
     glm::vec3 IMGUIClass::light_ambient {.2f};
     float IMGUIClass::light_ambient_intensity {1.0f};
@@ -39,8 +39,7 @@ namespace Engine {
 
 
     vector<float> IMGUIClass::shininess_list  {2.0f, 4.0f, 8.0f, 16.0f, 32.0f, 64.0f, 128.0f, 256.0f};
-    int IMGUIClass::light_Select_Id = 4;
-    float IMGUIClass::shininess = shininess_list[light_Select_Id];
+    int IMGUIClass::light_Select_Id = 0;
 #pragma endregion
 
     void IMGUIClass::InitImGui(GLFWwindow* window) {
@@ -77,13 +76,20 @@ namespace Engine {
     }
 
     void IMGUIClass::MenuBar() {
-        if (ImGui::BeginMenu("File")) {
-            ImGui::Checkbox("DemoWindow", &showDemoWindow);
-            ImGui::EndMenu();
+        if (ImGui::BeginMainMenuBar()) {
+            if (ImGui::BeginMenu("File")) {
+                ImGui::Checkbox("DemoWindow", &showDemoWindow);
+                ImGui::Checkbox("Simulate", &run_simulation);
+                ImGui::EndMenu();
+            }
+
+            ImGui::EndMainMenuBar();
         }
+
+
     }
 
-    void IMGUIClass::EntityWindow() {
+    void IMGUIClass::EntityWindow(Shader& shader) {
         if (showDemoWindow) return;
 
          ImGui::Begin("EntityWindow");
@@ -138,7 +144,19 @@ namespace Engine {
                         e->SetRotation(rotation);
                         }
                     e->SetTransformMatrix();
+
+                    if (ImGui::BeginCombo("Shininess", std::to_string(e->shininess).c_str())) {
+                        for (int i = 0; i < shininess_list.size(); i++) {
+                            bool selected = light_Select_Id == i;
+                            if (ImGui::Selectable(std::to_string(shininess_list[i]).c_str(), selected)) {
+                                light_Select_Id = i;
+                                e->shininess = shininess_list[i];
+                            }
+                        }
+                        ImGui::EndCombo();
+                    }
                 }
+                shader.SetFloat("material.shininess", e->shininess);
             }
             ImGui::End();
     }
@@ -261,8 +279,7 @@ namespace Engine {
         if (ImGui::Begin("Lights Window")) {
             for (auto& lightEntity : LightEntityManager::Get().GetAllLights()) {
                 std::string name = lightEntity->name;
-                if (ImGui::CollapsingHeader(
-                    name.c_str())) {
+                if (ImGui::CollapsingHeader(name.c_str(), ImGuiTreeNodeFlags_DefaultOpen)) {
                     auto pos = lightEntity->GetPosition();
                     if (ImGui::DragFloat3("Position##", value_ptr(pos),
                         0.0f, -10, 10)) {
@@ -273,84 +290,61 @@ namespace Engine {
                         0, -10, 10)) {
                         lightEntity->SetScale(scale);
                         }
+                    if (ImGui::BeginCombo("LightType", ToString(combo_type))) {
+                        bool point_select = combo_type == LightTypes::PointLight;
+                        if (ImGui::Selectable(ToString(LightTypes::PointLight), point_select)) {
+                            combo_type = LightTypes::PointLight;
+                        }
+                        bool spot_select = combo_type == LightTypes::SpotLight;
+                        if (ImGui::Selectable(ToString(LightTypes::SpotLight), spot_select)) {
+                            combo_type = LightTypes::SpotLight;
+                        }
+                        bool dir_select = combo_type == LightTypes::DirectionalLight;
+                        if (ImGui::Selectable(ToString(LightTypes::DirectionalLight), dir_select)) {
+                            combo_type = LightTypes::DirectionalLight;
+                        }
+                        ImGui::EndCombo();
+                    }
+                    lightEntity->ChangeLightType(combo_type);
+                    glm::vec3 dir;
+                    switch (combo_type) {
+                        case LightTypes::PointLight:
+                            break;
+                        case LightTypes::SpotLight:
+                            dir = lightEntity->GetLightDirection();
+                            ImGui::DragFloat3("Light Direction##",
+                                value_ptr(dir), 0.1f, -100, 100);
+                            break;
+
+                        case LightTypes::DirectionalLight:
+                            dir = lightEntity->GetLightDirection();
+                            if (ImGui::DragFloat3("Light Direction##",
+                                value_ptr(dir), 0.1f, -100 , 100)) {
+                                lightEntity->SetLightDirection(dir, shader);
+                            }
+                            break;
+                    }
+
+                    ImGui::Dummy({0, 10});
+                    ImGui::Text("Light values:");
+
+                    ImGui::ColorEdit3("Ambient##", value_ptr(light_ambient));
+                    ImGui::DragFloat("AmbientIntensity##", &light_ambient_intensity, 0.1, 1, 5);
+                    auto ambient_result = light_ambient_intensity * light_ambient;
+                    lightEntity->SetAmbient(shader, ambient_result);
+
+                    ImGui::ColorEdit3("Diffuse##", value_ptr(light_diffuse));
+                    ImGui::DragFloat("DiffuseIntensity##", &light_diffuse_intensity, .1, 1, 5);
+                    auto diffuse_result = light_diffuse * light_diffuse_intensity;
+                    lightEntity->SetDiffuse(shader, diffuse_result);
+
+                    ImGui::ColorEdit3("Specular##", value_ptr(light_specular));
+                    ImGui::DragFloat("SpecularIntensity##", &light_specular_intensity, .1, 1, 5);
+                    auto specular_result = light_specular * light_specular_intensity;
+                    lightEntity->SetSpecular(shader, specular_result);
                 }
                 lightEntity->CombineModels();
             }
-            if (ImGui::BeginCombo("LightType", ToString(combo_type))) {
-                bool point_select = combo_type == LightTypes::PointLight;
-                if (ImGui::Selectable(ToString(LightTypes::PointLight), point_select)) {
-                    combo_type = LightTypes::PointLight;
-                }
-                bool spot_select = combo_type == LightTypes::SpotLight;
-                if (ImGui::Selectable(ToString(LightTypes::SpotLight), spot_select)) {
-                    combo_type = LightTypes::SpotLight;
-                }
-                bool dir_select = combo_type == LightTypes::DirectionalLight;
-                if (ImGui::Selectable(ToString(LightTypes::DirectionalLight), dir_select)) {
-                    combo_type = LightTypes::DirectionalLight;
-                }
-                ImGui::EndCombo();
-            }
-            if (ImGui::Button("Create Light")) {
-                LightEntityManager::Get().CreateLight(combo_type);
-            }
-
-
-
-            ImGui::Dummy({0, 10});
-            ImGui::Text("Light values:");
-            ImGui::ColorEdit3("Ambient##", value_ptr(light_ambient));
-            ImGui::DragFloat("AmbientIntensity##", &light_ambient_intensity, 0.1, 1, 5);
-            auto ambient_result = light_ambient_intensity * light_ambient;
-            shader.SetVector3("light.ambient", ambient_result);
-
-            ImGui::ColorEdit3("Diffuse##", value_ptr(light_diffuse));
-            ImGui::DragFloat("DiffuseIntensity##", &light_diffuse_intensity, .1, 1, 5);
-            auto diffuse_result = light_diffuse * light_diffuse_intensity;
-            shader.SetVector3("light.diffuse", diffuse_result);
-
-            ImGui::ColorEdit3("Specular##", value_ptr(light_specular));
-            ImGui::DragFloat("SpecularIntensity##", &light_specular_intensity, .1, 1, 5);
-            auto specular_result = light_specular * light_specular_intensity;
-            shader.SetVector3("light.specular", specular_result);
-
-
-        }
-        ImGui::End();
-    }
-
-    void IMGUIClass::MaterialsWindow(Shader &shader) {
-        if (showDemoWindow) return;
-        if (ImGui::Begin("Materials Window")) {
-
-            ImGui::ColorEdit3("Ambient##", value_ptr(mat_ambient));
-            ImGui::DragFloat("AmbientIntensity##", &mat_ambient_intensity, .1, 1, 5);
-            auto ambient_result = mat_ambient_intensity * mat_ambient;
-            shader.SetVector3("material.ambient", ambient_result);
-
-            /*ImGui::ColorEdit3("Diffuse##", value_ptr(mat_diffuse));
-            ImGui::DragFloat("DiffuseIntensity##", &mat_diffuse_intensity, .1, 1, 5);
-            auto diffuse_result = mat_diffuse_intensity * mat_diffuse;
-            shader.SetVector3("material.diffuse", diffuse_result);
-
-            ImGui::ColorEdit3("Specular##", value_ptr(mat_specular));
-            ImGui::DragFloat("SpecularIntensity##", &mat_specular_intensity,.1, 1,5);
-            auto specular_result = mat_specular_intensity * mat_specular;
-            shader.SetVector3("material.specular", specular_result);*/
-
-            shader.SetFloat("material.shininess", shininess);
-            if (ImGui::BeginCombo("Shininess", std::to_string(shininess).c_str())) {
-                for (int i = 0; i < shininess_list.size(); i++) {
-                    bool selected = light_Select_Id == i;
-                    if (ImGui::Selectable(std::to_string(shininess_list[i]).c_str(), selected)) {
-                        light_Select_Id = i;
-                        shininess = shininess_list[i];
-                    }
-                }
-                ImGui::EndCombo();
-
-            }
-
         }
         ImGui::End();
     }

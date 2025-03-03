@@ -71,7 +71,7 @@ namespace Engine {
 
   void TextureManager::SetTextureUniform(Shader& shader) {
     shader.UseShaderProgram();
-    shader.SetInt("material.diffuse", 0);
-    shader.SetInt("material.specular", 1);
+    shader.SetInt("material.diffuse", 1);
+    shader.SetInt("material.specular", 2);
   }
 }

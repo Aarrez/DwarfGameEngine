@@ -11,12 +11,6 @@ struct Light {
     vec3 specular;
 };
 
-struct DirectionalLight{
-    vec3 direction;
-
-    Light light;
-};
-
 struct PointLight{
     vec3 position;
 
@@ -25,6 +19,12 @@ struct PointLight{
     float constant;
     float linear;
     float quadratic;
+};
+
+struct DirectionalLight{
+    vec3 direction;
+
+    Light light;
 };
 
 struct SpotLight{
@@ -36,10 +36,11 @@ struct SpotLight{
 };
 
 uniform Material material;
-uniform DirectionalLight dirLight;
-uniform PointLight pointLight;
-uniform SpotLight spotLight;
-uniform Light light;
+uniform DirectionalLight directionallight;
+uniform PointLight pointlight;
+uniform SpotLight spotlight;
+
+uniform int lightType;
 
 out vec4 FragColor;
 
@@ -51,26 +52,38 @@ uniform vec3 viewPos;
 uniform vec3 lightPos;
 uniform vec3 lightColor;
 
-
-//Texture stuff
 in vec2 TexCoord;
-uniform sampler2D texture1;
 
 void main() {
+
+    Light light;
+    vec3 lightDir;
+    if(lightType == 0){
+        light = pointlight.light;
+        lightDir = normalize(lightPos - FragPos);
+    }
+    else if(lightType == 1){
+        light = spotlight.light;
+        lightDir = normalize(lightPos - FragPos);
+    }
+    else if(lightType == 2){
+        light = directionallight.light;
+        lightDir = normalize(-directionallight.direction);
+    }
+
     //Ambient
-    vec3 ambient = light.ambient * vec3(texture(material.diffuse, TexCoord));
+    vec3 ambient = light.ambient * texture(material.diffuse, TexCoord).rgb;
 
     //Diffuse
     vec3 norm = normalize(Normal);
-    vec3 lightDir = normalize(lightPos - FragPos);
     float diff = max(dot(norm, lightDir), 0.0);
-    vec3 diffuse = light.diffuse * diff * vec3(texture(material.diffuse, TexCoord));
+    vec3 diffuse = light.diffuse * diff * texture(material.diffuse, TexCoord).rgb;
 
     //Specular
     vec3 viewDir = normalize(viewPos - FragPos);
     vec3 reflectDir = reflect(-lightDir, norm);
     float spec = pow(max(dot(viewDir, reflectDir), 0.0), material.shininess);
-    vec3 specular = light.specular * spec * vec3(texture(material.specular, TexCoord));
+    vec3 specular = light.specular * spec * texture(material.specular, TexCoord).rgb;
 
     FragColor = vec4(ambient + diffuse + specular, 1.0);
 }

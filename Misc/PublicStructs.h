@@ -42,6 +42,7 @@ namespace Engine {
         string meshName;
         Texture texture;
         Texture spec_texture;
+        float shininess;
         glm::mat4 transform;
         bool selected;
 

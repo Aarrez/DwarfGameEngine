@@ -70,7 +70,8 @@ namespace Engine {
         entMsg.spec_texture = TextureManager::Get()->GetTextures()[1];
         EntityManager::Get().ProcessMessages(entMsg);
 
-        auto ent = LightEntityManager::Get().CreateLight(LightTypes::PointLight);
+        LightTypes type {LightTypes::PointLight};
+        auto ent = LightEntityManager::Get().CreateLight(type);
         ent->SetPosition({3.0f, 2.0f, 2.0f});
         ent->SetScale({0.5f, 0.5f, 0.5f});
     }
@@ -101,6 +102,7 @@ namespace Engine {
             i->SetModelMatrix(*lightShader);
             mainShader->SetVector3("lightPos", i->GetPosition());
             mainShader->SetVector3("viewPos", camera->GetCameraPos());
+            mainShader->SetInt("lightType", static_cast<int>(i->GetLightType()));
         }
 
         mainShader->UseShaderProgram();
@@ -112,7 +114,8 @@ namespace Engine {
             Mesh m = MeshManager::Instance()->FindMesh(i->meshName);
             virtual_object->SetVertexBufferObjects(m);
             TextureManager::Get()->SetTextureUniform(*mainShader);
-            TextureManager::Get()->DrawTexture(i->texture);
+            std::cout << i->spec_texture.filePath << std::endl;
+            /*TextureManager::Get()->DrawTexture(i->spec_texture);*/
             TextureManager::Get()->DrawTexture(i->spec_texture);
             virtual_object->Draw(virtual_object->VAO);
         }
@@ -134,15 +137,13 @@ namespace Engine {
 
         IMGUIClass::CameraWindow(*camera);
 
-        IMGUIClass::EntityWindow();
+        IMGUIClass::EntityWindow(*mainShader);
 
         IMGUIClass::ModelsWindow();
 
         IMGUIClass::TexturesWindow();
 
         IMGUIClass::LightsWindow(*mainShader);
-
-        IMGUIClass::MaterialsWindow(*mainShader);
 
         IMGUIClass::EndUpdateLoop();
 

@@ -1,5 +1,6 @@
 #ifndef LIGHTVARIABLES_H
 #define LIGHTVARIABLES_H
+#include <algorithm>
 #include <string>
 #include <glm/glm.hpp>
 
@@ -7,9 +8,9 @@
 
 namespace Engine {
     enum class LightTypes {
-        PointLight,
-        SpotLight,
-        DirectionalLight
+        PointLight = 0,
+        SpotLight = 1,
+        DirectionalLight = 2
     };
     inline const char* ToString(const LightTypes& msg) {
         switch (msg) {
@@ -22,9 +23,13 @@ namespace Engine {
 
     struct LightEntity {
         unsigned int id;
-        LightTypes type;
+
         std::string name;
     private:
+        LightTypes type = LightTypes::PointLight;
+        std::string shader_string = "pointlight.light";
+        std::string lowercase_type = "pointlight";
+        glm::vec3 lightDirection {-0.2f, -1.0f, -0.3f};
         glm::mat4 model = glm::mat4(1.0f);
         glm::mat4 posModel = glm::mat4(1.0);
         glm::mat4 scaleModel = glm::mat4(1.0);
@@ -61,7 +66,41 @@ namespace Engine {
             model = posModel * scaleModel;
         }
 
+        glm::vec3 GetLightDirection() {
+            return lightDirection;
+        }
+        void SetLightDirection(glm::vec3 direction, Shader& shader) {
+            lightDirection = direction;
+            std::string s = lowercase_type + ".direction";
+            shader.SetVector3(s.c_str(), lightDirection);
+        }
 
+        LightTypes GetLightType() {
+            return type;
+        }
+        void ChangeLightType(LightTypes& type) {
+            this->type = type;
+            std::string s = ToString(this->type);
+            std::for_each(s.begin(), s.end(), [](char& c) {
+                c = tolower(c);
+            });
+            lowercase_type = s;
+            s += ".light";
+            shader_string = s;
+        }
+
+        void SetAmbient(Shader& shader, glm::vec3 ambient) {
+            std::string s = shader_string + ".ambient";
+            shader.SetVector3(s.c_str(), ambient);
+        }
+        void SetDiffuse(Shader& shader, glm::vec3 diffuse) {
+            std::string s = shader_string + ".diffuse";
+            shader.SetVector3(s.c_str(), diffuse);
+        }
+        void SetSpecular(Shader& shader, glm::vec3 specular) {
+            std::string s = shader_string + ".diffuse";
+            shader.SetVector3(s.c_str(), specular);
+        }
     };
 
 }

@@ -37,15 +37,16 @@ namespace Engine {
         //Start of UI windows
         static void MenuBar();
 
-        static void EntityWindow();
+        static void EntityWindow(Shader& shader);
         static void CameraWindow(Camera& camera);
         static void ModelsWindow();
         static void TexturesWindow();
         static void LightsWindow(Shader& shader);
-        static void MaterialsWindow(Shader& shader);
 
     private:
         static bool showDemoWindow;
+
+        static bool run_simulation;
 
         static string entity_buf;
         static string dest_preview_ent;
@@ -82,7 +83,6 @@ namespace Engine {
 
         static vector<float> shininess_list;
         static int light_Select_Id;
-        static float shininess;
 
     };
 }
