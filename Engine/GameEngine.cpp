@@ -58,9 +58,9 @@ namespace Engine {
             "ShaderScripts/Light/LightingFragmentShader.glsl");
 
         TextureManager::Get()->StbGenerateTextures();
-        camera = make_unique<Camera>();
+        camera = std::make_unique<Camera>();
         Input::SetCameraRef(camera.get());
-        string s = "bear.bin";
+        std::string s = "TheCube.bin";
         Mesh mesh = MeshManager::Instance()->FindMesh(s);
         virtual_object = make_unique<VirtualObject>(mainShader, mesh);
 
@@ -97,6 +97,7 @@ namespace Engine {
             static_cast<float>(Width) / Height, 0.1f, 100.0f);
         mat4 view {mat4(1.0f)};
         view = translate(view, glm::vec3(0.0f, 0.0f, -3.0f));
+        TextureManager::Get()->SetTextureUniform(*mainShader);
         for (auto & i : LightEntityManager::Get().GetAllLights()) {
             //SetVertexBufferObjects here for light objects later
             i->SetModelMatrix(*lightShader);
@@ -113,9 +114,8 @@ namespace Engine {
             mainShader->SetMatrix4("model", i->transform);
             Mesh m = MeshManager::Instance()->FindMesh(i->meshName);
             virtual_object->SetVertexBufferObjects(m);
-            TextureManager::Get()->SetTextureUniform(*mainShader);
-            std::cout << i->spec_texture.filePath << std::endl;
-            /*TextureManager::Get()->DrawTexture(i->spec_texture);*/
+
+            TextureManager::Get()->DrawTexture(i->texture);
             TextureManager::Get()->DrawTexture(i->spec_texture);
             virtual_object->Draw(virtual_object->VAO);
         }

@@ -19,13 +19,12 @@ namespace Engine {
 
     private:
         Entity* CreateEntity(const SerializedFile& file,
-            const string &name = "Entity");
-        void ChangeTexture(Texture &texture);
-        void RemoveEntityByName(const string& name);
+            const std::string &name = "Entity");
+        void RemoveEntityByName(const std::string& name);
         void RemoveAllEntities();
         static EntityManager* Instance;
         EntityManager() = default;
-        static vector<Entity*> entities;
+        static std::vector<Entity*> entities;
         MessageQueue<EntityMessage> messageQueue;
 
     };

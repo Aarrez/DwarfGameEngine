@@ -1,13 +1,13 @@
 #include "IterativeOBJParser.h"
 
 namespace Engine {
-    vector<Vertex> IterativeOBJParser::ParseVertexes(std::ifstream &file, string &prefix) {
-        string line;
-        vector<Vertex> vertices;
+    std::vector<Vertex> IterativeOBJParser::ParseVertexes(std::ifstream &file, std::string &prefix) {
+        std::string line;
+        std::vector<Vertex> vertices;
         while (std::getline(file, line)) {
-            istringstream iss(line);
+            std::istringstream iss(line);
             Vertex vertex{};
-            string p;
+            std::string p;
             iss >> p;
             if (p == prefix) {
                 iss >> vertex.x >> vertex.y >> vertex.z;
@@ -17,13 +17,13 @@ namespace Engine {
         return vertices;
     }
 
-    vector<TexCord> IterativeOBJParser::ParseTexCords(std::ifstream &file) {
-        string line;
-        vector<TexCord> tex_cords;
+    std::vector<TexCord> IterativeOBJParser::ParseTexCords(std::ifstream &file) {
+        std::string line;
+        std::vector<TexCord> tex_cords;
         while (std::getline(file, line)) {
-            istringstream iss(line);
+            std::istringstream iss(line);
             TexCord cord{};
-            string p;
+            std::string p;
             iss >> p;
             if (p == "vt") {
                 iss >> cord.x >> cord.y;
@@ -33,16 +33,16 @@ namespace Engine {
         return tex_cords;
     }
 
-    vector<unsigned int> IterativeOBJParser::ParseFaces(std::ifstream &file) {
-        vector<unsigned int> faces;
-        string line;
-        istringstream iss(line);
-        string p;
+    std::vector<unsigned int> IterativeOBJParser::ParseFaces(std::ifstream &file) {
+        std::vector<unsigned int> faces;
+        std::string line;
+        std::istringstream iss(line);
+        std::string p;
         OBJFaceType fa = OBJFaceType::OnlyFaces;
         iss >> p;
         while (std::getline(file, line)) {
             if (p == "f") {
-                if (line.find('/') == string::npos) {
+                if (line.find('/') == std::string::npos) {
                     unsigned int i;
                     iss >> i;
                     faces.push_back(i);
@@ -50,10 +50,10 @@ namespace Engine {
                 }
                 fa = OBJFaceType::AllIndices;
                 line = line.substr(line.find(' ') + 1);
-                string token = "0";
+                std::string token = "0";
                 for (int i = 0; line[i] != '\0'; i++) {
                     if (line[i] == '/' || line[i] == ' ') {
-                        unsigned int j = stoi(token);
+                        unsigned int j = std::stoi(token);
                         if (j != 0)
                             j--;
                         faces.push_back(j);
@@ -71,8 +71,8 @@ namespace Engine {
     }
 
 
-    void IterativeOBJParser::PrepData(const vector<Vertex> &_vertex, const vector<Vertex> &_vertexNormal,
-                                           const vector<TexCord> &_vertexUv, const vector<unsigned int> &faces) {
+    void IterativeOBJParser::PrepData(const std::vector<Vertex> &_vertex, const std::vector<Vertex> &_vertexNormal,
+                                           const std::vector<TexCord> &_vertexUv, const std::vector<unsigned int> &faces) {
         vertex = RearrangeVertices(_vertex, faces);
         if (!_vertexNormal.empty())
             vertexNormal = RearrangeVerticesNormals(_vertexNormal, faces);
@@ -80,9 +80,9 @@ namespace Engine {
             vertexUv = RearrangeVerticesUvs(_vertexUv, faces);
     }
 
-    vector<Vertex> IterativeOBJParser::RearrangeVertices(
-        vector<Vertex> vertices, vector<unsigned int> faces){
-        vector<Vertex> temp_vertices;
+    std::vector<Vertex> IterativeOBJParser::RearrangeVertices(
+        std::vector<Vertex> vertices, std::vector<unsigned int> faces){
+        std::vector<Vertex> temp_vertices;
         if(faceType == OBJFaceType::AllIndices) {
             for (unsigned int i = 0; i < faces.size(); i += 3) {
                 Vertex v = vertices.at(faces.at(i));
@@ -98,8 +98,9 @@ namespace Engine {
         return temp_vertices;
     }
 
-    vector<Vertex> IterativeOBJParser::RearrangeVerticesNormals(vector<Vertex> vertices, vector<unsigned int> faces) {
-        vector<Vertex> temp_vertices;
+    std::vector<Vertex> IterativeOBJParser::RearrangeVerticesNormals(
+    std::vector<Vertex> vertices, std::vector<unsigned int> faces) {
+        std::vector<Vertex> temp_vertices;
         for (unsigned int i = 1; i < faces.size(); i += 3) {
             Vertex v = vertices.at(faces.at(i));
             temp_vertices.push_back(v);
@@ -107,8 +108,9 @@ namespace Engine {
         return temp_vertices;
     }
 
-    vector<TexCord> IterativeOBJParser::RearrangeVerticesUvs(vector<TexCord> vertices, vector<unsigned int> faces) {
-        vector<TexCord> temp_cords;
+    std::vector<TexCord> IterativeOBJParser::RearrangeVerticesUvs(
+    std::vector<TexCord> vertices, std::vector<unsigned int> faces) {
+        std::vector<TexCord> temp_cords;
         for (unsigned int i = 2; i < faces.size(); i += 3) {
             TexCord c = vertices.at(faces.at(i));
             temp_cords.push_back(c);

@@ -21,7 +21,7 @@ namespace Engine {
         return &threadPool;
     }
 
-    void ThreadManager::QueueTask(const std::function<void(MeshManager&, const string&)>& func,
+    void ThreadManager::QueueTask(const std::function<void(MeshManager&, const std::string&)>& func,
             const Param& param,
             MeshManager& manager,
             TaskType type) {
@@ -29,7 +29,7 @@ namespace Engine {
         Task task {type};
         task.task = [this, &manager, func](Param param) {
             std::lock_guard<std::mutex> lock(mutex);
-            func(manager, std::get<string>(param));
+            func(manager, std::get<std::string>(param));
 
         };
         task.arguments = param;

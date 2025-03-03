@@ -65,13 +65,13 @@ namespace Engine {
   }
 
   void TextureManager::DrawTexture(const Texture &texture) {
-    glActiveTexture(GL_TEXTURE0 + texture.textureID);
+    glActiveTexture(GL_TEXTURE0 + texture.textureID-1);
     glBindTexture(GL_TEXTURE_2D, texture.textureID);
   }
 
   void TextureManager::SetTextureUniform(Shader& shader) {
     shader.UseShaderProgram();
-    shader.SetInt("material.diffuse", 1);
-    shader.SetInt("material.specular", 2);
+    shader.SetInt("material.diffuse", 0);
+    shader.SetInt("material.specular", 1);
   }
 }

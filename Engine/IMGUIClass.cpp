@@ -5,23 +5,25 @@
 namespace Engine {
 
 #pragma region Variable Declarations
-    bool IMGUIClass::showDemoWindow = false;;
+    bool IMGUIClass::showDemoWindow = false;
+    bool IMGUIClass::run_simulation = false;
 
-    string IMGUIClass::entity_buf {};
-    string IMGUIClass::dest_preview_ent {};
+    std::string IMGUIClass::entity_buf {};
+    std::string IMGUIClass::dest_preview_ent {};
     int IMGUIClass::dest_comb_select = 0;
 
-    string IMGUIClass::model_buf {};
+    std::string IMGUIClass::model_buf {};
     int IMGUIClass::model_select_id = 0;
-    string IMGUIClass::model_preview_ent {};
+    std::string IMGUIClass::model_preview_ent {};
     int IMGUIClass::modelCombo_select_id = 0;
 
     int IMGUIClass::textures_select_id = 0;
     int IMGUIClass::spec_texture_select_id = 0;
     int IMGUIClass::textureCombo_select_id = 0;
-    string IMGUIClass::texture_preview_ent {};
+    std::string IMGUIClass::texture_preview_ent {};
 
     LightTypes IMGUIClass::combo_type {LightTypes::DirectionalLight};
+    LightTypes IMGUIClass::create_combo_type {LightTypes::DirectionalLight};
 
     glm::vec3 IMGUIClass::light_ambient {.2f};
     float IMGUIClass::light_ambient_intensity {1.0f};
@@ -38,9 +40,13 @@ namespace Engine {
     float IMGUIClass::mat_specular_intensity {1.0f};
 
 
-    vector<float> IMGUIClass::shininess_list  {2.0f, 4.0f, 8.0f, 16.0f, 32.0f, 64.0f, 128.0f, 256.0f};
+    std::vector<float> IMGUIClass::shininess_list  {2.0f, 4.0f, 8.0f, 16.0f, 32.0f, 64.0f, 128.0f, 256.0f};
     int IMGUIClass::light_Select_Id = 0;
+
+    std::string IMGUIClass::destroy_name_preview {""};
+    int IMGUIClass::destroy_select_id = 0;
 #pragma endregion
+
 
     void IMGUIClass::InitImGui(GLFWwindow* window) {
         IMGUI_CHECKVERSION();
@@ -82,7 +88,6 @@ namespace Engine {
                 ImGui::Checkbox("Simulate", &run_simulation);
                 ImGui::EndMenu();
             }
-
             ImGui::EndMainMenuBar();
         }
 
@@ -101,44 +106,48 @@ namespace Engine {
                 if (entity_buf.empty()) entity_buf = "Entity";
                 EntityMessage msg(MessageType::CreateEntity, entity_buf);
                 msg.texture = tex;
-                msg.file = OBJLoader::FilesSerialized[0];
+                msg.file = OBJLoader::FilesSerialized[4];
                 EntityManager::Get().ProcessMessages(msg);
             }
-            dest_preview_ent = EntityManager::Get().GetEntityList()[dest_comb_select]->name;
-            if (ImGui::BeginCombo("EntitySelect", dest_preview_ent.c_str())) {
-                for (int i = 0; i < EntityManager::Get().GetEntityList().size(); i++) {
-                    const bool is_selected = dest_comb_select == i;
-                    if (ImGui::Selectable(EntityManager::Get().GetEntityList()[i]->name.c_str(), is_selected)) {
-                        dest_comb_select = i;
-                        ImGui::SetItemDefaultFocus();
+
+            if (!EntityManager::Get().GetEntityList().empty()) {
+                dest_preview_ent = EntityManager::Get().GetEntityList()[dest_comb_select]->name;
+                if (ImGui::BeginCombo("EntitySelect", dest_preview_ent.c_str())) {
+                    for (int i = 0; i < EntityManager::Get().GetEntityList().size(); i++) {
+                        const bool is_selected = dest_comb_select == i;
+                        if (ImGui::Selectable(EntityManager::Get().GetEntityList()[i]->name.c_str(), is_selected)) {
+                            dest_comb_select = i;
+                            ImGui::SetItemDefaultFocus();
+                        }
+                    }
+                    ImGui::EndCombo();
+                }
+                if (ImGui::Button("Destroy Entity")) {
+                    auto entName = EntityManager::Get().GetEntityList()[dest_comb_select]->name;
+                    EntityManager::Get().ProcessMessages(EntityMessage(MessageType::RemoveEntityByName, entName));
+                    if (dest_comb_select != 0) {
+                        dest_comb_select += -1;
                     }
                 }
-                ImGui::EndCombo();
             }
-            if (ImGui::Button("Destroy Entity")) {
-                auto entName = EntityManager::Get().GetEntityList()[dest_comb_select]->name;
-                EntityManager::Get().ProcessMessages(EntityMessage(MessageType::RemoveEntityByName, entName));
-                if (dest_comb_select != 0) {
-                    dest_comb_select += -1;
-                }
-            }
+
 
             for (auto & e : EntityManager::Get().GetEntityList()) {
                 if (ImGui::CollapsingHeader(e->name.c_str(), ImGuiTreeNodeFlags_None)) {
                     vec3 translation = e->GetPosition();
-                    string posName = "Position##";
+                    std::string posName = "Position##";
                     if (ImGui::DragFloat3(posName.c_str(), value_ptr(translation),
                         0.0f, -10.0f, 10.0f, "%.2f")) {
                         e->Translate(translation);
                         }
                     vec3 scale = e->GetScale();
-                    string sclName = "Scale##";
+                    std::string sclName = "Scale##";
                     if (ImGui::DragFloat3(sclName.c_str(), value_ptr(scale),
                         0.0f, 0.0f, 10.0f, "%.2f")) {
                         e->SetScale(scale);
                         }
                     vec3 rotation = e->GetRotation();
-                    string sroName = "Rotation##";
+                    std::string sroName = "Rotation##";
                     if (ImGui::DragFloat3(sroName.c_str(), value_ptr(rotation),
                         0, -360, 360)) {
                         e->SetRotation(rotation);
@@ -279,7 +288,7 @@ namespace Engine {
         if (ImGui::Begin("Lights Window")) {
             for (auto& lightEntity : LightEntityManager::Get().GetAllLights()) {
                 std::string name = lightEntity->name;
-                if (ImGui::CollapsingHeader(name.c_str(), ImGuiTreeNodeFlags_DefaultOpen)) {
+                if (ImGui::CollapsingHeader(name.c_str())) {
                     auto pos = lightEntity->GetPosition();
                     if (ImGui::DragFloat3("Position##", value_ptr(pos),
                         0.0f, -10, 10)) {
@@ -290,37 +299,53 @@ namespace Engine {
                         0, -10, 10)) {
                         lightEntity->SetScale(scale);
                         }
-                    if (ImGui::BeginCombo("LightType", ToString(combo_type))) {
+                    if (ImGui::BeginCombo("LightType##", ToCString(combo_type))) {
                         bool point_select = combo_type == LightTypes::PointLight;
-                        if (ImGui::Selectable(ToString(LightTypes::PointLight), point_select)) {
+                        if (ImGui::Selectable(ToCString(LightTypes::PointLight), point_select)) {
                             combo_type = LightTypes::PointLight;
                         }
                         bool spot_select = combo_type == LightTypes::SpotLight;
-                        if (ImGui::Selectable(ToString(LightTypes::SpotLight), spot_select)) {
+                        if (ImGui::Selectable(ToCString(LightTypes::SpotLight), spot_select)) {
                             combo_type = LightTypes::SpotLight;
                         }
                         bool dir_select = combo_type == LightTypes::DirectionalLight;
-                        if (ImGui::Selectable(ToString(LightTypes::DirectionalLight), dir_select)) {
+                        if (ImGui::Selectable(ToCString(LightTypes::DirectionalLight), dir_select)) {
                             combo_type = LightTypes::DirectionalLight;
                         }
                         ImGui::EndCombo();
                     }
                     lightEntity->ChangeLightType(combo_type);
                     glm::vec3 dir;
+                    float c, l, q, cutOff;
                     switch (combo_type) {
                         case LightTypes::PointLight:
+                            c = lightEntity->GetConstant();
+                            lightEntity->SetConstant(shader, c);
+
+                            l = lightEntity->GetLinear();
+                            lightEntity->SetLinear(shader, l);
+
+                            q = lightEntity->GetQuadratic();
+                            lightEntity->SetQuadratic(shader, q);
+
                             break;
                         case LightTypes::SpotLight:
-                            dir = lightEntity->GetLightDirection();
+                            dir = lightEntity->GetDirectionalLightDirection();
                             ImGui::DragFloat3("Light Direction##",
-                                value_ptr(dir), 0.1f, -100, 100);
+                                value_ptr(dir), 0.1f, -1, 1);
+                            lightEntity->SetDirectionalLightDirection(shader, dir);
+
+                            cutOff = lightEntity->GetCutOff();
+                            ImGui::DragFloat("Light Cutoff##", &cutOff,
+                                0.5, 0, 180);
+                            lightEntity->SetCutOff(shader, cutOff);
                             break;
 
                         case LightTypes::DirectionalLight:
-                            dir = lightEntity->GetLightDirection();
+                            dir = lightEntity->GetDirectionalLightDirection();
                             if (ImGui::DragFloat3("Light Direction##",
                                 value_ptr(dir), 0.1f, -100 , 100)) {
-                                lightEntity->SetLightDirection(dir, shader);
+                                lightEntity->SetDirectionalLightDirection(shader, dir);
                             }
                             break;
                     }
@@ -345,6 +370,47 @@ namespace Engine {
                 }
                 lightEntity->CombineModels();
             }
+            ImGui::Dummy({0, 10});
+            ImGui::Text("Light Entity Create and Destroy");
+            if (ImGui::BeginCombo("LightType##", ToCString(create_combo_type))) {
+                bool point_select = create_combo_type == LightTypes::PointLight;
+                if (ImGui::Selectable(ToCString(LightTypes::PointLight), point_select)) {
+                    create_combo_type = LightTypes::PointLight;
+                }
+                bool spot_select = create_combo_type == LightTypes::SpotLight;
+                if (ImGui::Selectable(ToCString(LightTypes::SpotLight), spot_select)) {
+                    create_combo_type = LightTypes::SpotLight;
+                }
+                bool dir_select = create_combo_type == LightTypes::DirectionalLight;
+                if (ImGui::Selectable(ToCString(LightTypes::DirectionalLight), dir_select)) {
+                    create_combo_type = LightTypes::DirectionalLight;
+                }
+                ImGui::EndCombo();
+            }
+            if (ImGui::Button("Create Light##")) {
+                LightEntityManager::Get().CreateLight(create_combo_type);
+            }
+            if (!LightEntityManager::Get().GetAllLights().empty()) {
+                destroy_name_preview = LightEntityManager::Get().GetAllLights()[destroy_select_id]->name;
+                if (ImGui::BeginCombo("Light Entity##", destroy_name_preview.c_str())) {
+                    for (int i = 0; i < LightEntityManager::Get().GetAllLights().size(); i++) {
+                        auto ent = LightEntityManager::Get().GetAllLights()[i];
+                        bool selected = i == destroy_select_id;
+                        if (ImGui::Selectable(ent->name.c_str(), selected)) {
+                            destroy_select_id = i;
+                            ImGui::SetItemDefaultFocus();
+                        }
+                    }
+                    ImGui::EndCombo();
+                }
+                if (ImGui::Button("Destroy Light")) {
+                    LightEntityManager::Get().DestroyLightByName(destroy_name_preview);
+                    if (destroy_select_id != 0) {
+                        destroy_select_id -= 1;
+                    }
+                }
+            }
+
         }
         ImGui::End();
     }

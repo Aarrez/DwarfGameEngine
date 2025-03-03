@@ -11,11 +11,9 @@
 #include "PublicEnums.h"
 
 
-using namespace std;
-
 namespace Engine {
     //std::variant with the types int, float, string, const string&
-    using Param = variant<int, float, std::string>;
+    using Param = std::variant<int, float, std::string>;
 
     struct Task {
         TaskType type;
@@ -24,22 +22,22 @@ namespace Engine {
     };
 
     struct SerializedFile {
-        string fileName;
-        string binPath;
+        std::string fileName;
+        std::string binPath;
         bool selected;
     };
 
     struct Texture {
-        string fileName;
-        string filePath;
+        std::string fileName;
+        std::string filePath;
         unsigned int textureID;
         int colorFormat;
     };
 
     struct Entity {
         int id;
-        string name;
-        string meshName;
+        std::string name;
+        std::string meshName;
         Texture texture;
         Texture spec_texture;
         float shininess;

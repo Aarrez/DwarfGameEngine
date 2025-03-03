@@ -14,20 +14,23 @@ namespace Engine {
 
     public:
         IterativeOBJParser() = default;
-        vector<Vertex> ParseVertexes(std::ifstream& file, string &prefix);
-        vector<TexCord> ParseTexCords(std::ifstream& file);
-        vector<unsigned int> ParseFaces(std::ifstream& file);
+        std::vector<Vertex> ParseVertexes(std::ifstream& file, std::string &prefix);
+        std::vector<TexCord> ParseTexCords(std::ifstream& file);
+        std::vector<unsigned int> ParseFaces(std::ifstream& file);
 
         void PrepData(
-            const vector<Vertex> &vertex, const vector<Vertex> &vertexNormal,
-            const vector<TexCord> &vertexUv, const vector<unsigned int> &faces);
+            const std::vector<Vertex> &vertex, const std::vector<Vertex> &vertexNormal,
+            const std::vector<TexCord> &vertexUv, const std::vector<unsigned int> &faces);
 
-        vector<Vertex> RearrangeVertices(vector<Vertex> vertices, vector<unsigned int> faces);
-        vector<Vertex> RearrangeVerticesNormals(vector<Vertex> vertices, vector<unsigned int> faces);
-        vector<TexCord> RearrangeVerticesUvs(vector<TexCord> vertices, vector<unsigned int> faces);
+        std::vector<Vertex> RearrangeVertices(
+            std::vector<Vertex> vertices, std::vector<unsigned int> faces);
+        std::vector<Vertex> RearrangeVerticesNormals(
+            std::vector<Vertex> vertices, std::vector<unsigned int> faces);
+        std::vector<TexCord> RearrangeVerticesUvs(
+            std::vector<TexCord> vertices, std::vector<unsigned int> faces);
 
-        vector<Vertex> vertex, vertexNormal;
-        vector<TexCord> vertexUv;
+        std::vector<Vertex> vertex, vertexNormal;
+        std::vector<TexCord> vertexUv;
 
     private:
         OBJFaceType faceType = OBJFaceType::OnlyFaces;

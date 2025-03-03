@@ -1,8 +1,4 @@
-#include <iostream>
-
 #include "Engine/GameEngine.h"
-
-
 int main() {
 
     Engine::GameEngine engine{};

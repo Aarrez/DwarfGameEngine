@@ -4,9 +4,9 @@
 
 namespace Engine {
 
-    vector<SerializedFile> OBJLoader::FilesSerialized;
+    std::vector<SerializedFile> OBJLoader::FilesSerialized;
     /* Models/BinaryFiles/ */
-    string OBJLoader::defaultBinPath = "Models/BinaryFiles/";
+    std::string OBJLoader::defaultBinPath = "Models/BinaryFiles/";
 
     void OBJLoader::GetBinaryFiles() {
         auto binFiles = DwarfPathChange::GetNameFilesInDirectory(defaultBinPath);
@@ -20,25 +20,25 @@ namespace Engine {
         }
     }
 
-    std::optional<MeshData> OBJLoader::OBJFileParser(const string& filename) {
-        vector<Vertex> vertices;
-        vector<TexCord> tex_cords;
+    std::optional<MeshData> OBJLoader::OBJFileParser(const std::string& filename) {
+        std::vector<Vertex> vertices;
+        std::vector<TexCord> tex_cords;
         std::vector<Vertex> normals;
-        vector<Face> vertices_faces;
-        vector<Face> uv_faces;
-        vector<Face> normal_faces;
+        std::vector<Face> vertices_faces;
+        std::vector<Face> uv_faces;
+        std::vector<Face> normal_faces;
 
         std::ifstream file(filename);
         std::string line;
 
         if (!file.is_open()) {
-            cerr << "File not found: " << filename << endl;
+            std::cerr << "File not found: " << filename << std::endl;
             return std::nullopt;
         }
 
         while (std::getline(file, line)) {
             std::istringstream iss(line);
-            string prefix;
+            std::string prefix;
             iss >> prefix;
             if (prefix == "v") {
                 Vertex vert;
@@ -61,7 +61,7 @@ namespace Engine {
                 Face normalIndex {0, 0, 0};
                 int j = 0;
                 char* token = std::strtok(line.data(), " /f");
-                vector<unsigned int> faceList;
+                std::vector<unsigned int> faceList;
                 while (token != nullptr) {
                     unsigned int i = std::stoi(token) - 1;
                     faceList.push_back(i);
@@ -111,8 +111,8 @@ namespace Engine {
         return mesh;
     }
 
-    vector<Vertex> OBJLoader::GetVerticesFromData(MeshData& data) {
-        vector<Vertex> ordered_vertices;
+    std::vector<Vertex> OBJLoader::GetVerticesFromData(MeshData& data) {
+        std::vector<Vertex> ordered_vertices;
         for (unsigned int i {0}; i < data.vertex_indexes.size(); i++) {
 
             Vertex temp1 =
@@ -129,8 +129,8 @@ namespace Engine {
         return ordered_vertices;
     }
 
-    vector<Vertex> OBJLoader::GetNormalsFromData(MeshData &data) {
-        vector<Vertex> ordered_normals;
+    std::vector<Vertex> OBJLoader::GetNormalsFromData(MeshData &data) {
+        std::vector<Vertex> ordered_normals;
         if (data.vertex_normals.empty()) {
             return ordered_normals;
         }
@@ -149,8 +149,8 @@ namespace Engine {
         return ordered_normals;
     }
 
-    vector<TexCord> OBJLoader::GetTexCoordFromData(MeshData &data) {
-        vector<TexCord> ordered_texcord;
+    std::vector<TexCord> OBJLoader::GetTexCoordFromData(MeshData &data) {
+        std::vector<TexCord> ordered_texcord;
         if (data.texCords.empty()) {
             return ordered_texcord;
         }
@@ -170,8 +170,8 @@ namespace Engine {
         return ordered_texcord;
     }
 
-    Mesh OBJLoader::OBJDataDeserializer(const string& filename) {
-        string fname;
+    Mesh OBJLoader::OBJDataDeserializer(const std::string& filename) {
+        std::string fname;
 
         bool foundNam = false;
         for (const SerializedFile& data : FilesSerialized) {
@@ -182,7 +182,7 @@ namespace Engine {
             }
         }
         if (!foundNam) {
-            cerr << "File name not found: " << filename << endl;
+            std::cerr << "File name not found: " << filename << std::endl;
             return {};
         }
 
@@ -191,29 +191,30 @@ namespace Engine {
         std::ifstream file;
         file.open(fname, std::ios_base::binary | std::ios_base::in);
         if (!file.is_open()) {
-            cerr << "File not found: " << filename << endl;
+            std::cerr << "File not found: " << filename << std::endl;
             return {};
         }
         if (!mesh.ReadFrom(file)) {
-            cerr << "Failed to read binary file: " << filename << endl;
+            std::cerr << "Failed to read binary file: " << filename << std::endl;
         }
 
         file.close();
         if (!file.good()) {
-            cerr << "Error while writing to binary file" << endl;
+            std::cerr << "Error while writing to binary file" << std::endl;
             return {};
         }
         return mesh;
     }
 
-    SerializedFile OBJLoader::OBJDataSerializer(Mesh &mesh, const string& filePath, const string& binPath) {
+    SerializedFile OBJLoader::OBJDataSerializer(
+    Mesh &mesh, const std::string& filePath, const std::string& binPath) {
         SerializedFile serialized_file;
 
         //"filePath" looks something like this
         //Models/BinaryFiles/{Filename}.obj
 
-        string pathToFile = binPath;
-        string filename = filePath;
+        std::string pathToFile = binPath;
+        std::string filename = filePath;
         auto i = filename.find_last_of('/') + 1;
         if (i != filename.npos)
             filename = filename.substr(i);
@@ -246,17 +247,17 @@ namespace Engine {
         std::ofstream file;
         file.open(pathToFile, std::ios_base::binary | std::ios_base::out);
         if (!file.is_open()) {
-            cerr << pathToFile << " \n is not a valid path" << endl;
+            std::cerr << pathToFile << " \n is not a valid path" << std::endl;
         }
 
         if (!mesh.WriteTo(file)) {
-            cerr << "Error while writing to binary file" << endl;
+            std::cerr << "Error while writing to binary file" << std::endl;
             return serialized_file;
         }
 
         file.close();
         if (!file.good()) {
-            cerr << "Error while writing to binary file" << endl;
+            std::cerr << "Error while writing to binary file" << std::endl;
         }
         return serialized_file;
     }

@@ -20,8 +20,6 @@
 #include "../Managers/MeshManager.h"
 #include "../Misc/LightVariables.h"
 
-using namespace glm;
-
 namespace Engine {
     class IMGUIClass {
         IMGUIClass() = default;
@@ -48,22 +46,23 @@ namespace Engine {
 
         static bool run_simulation;
 
-        static string entity_buf;
-        static string dest_preview_ent;
+        static std::string entity_buf;
+        static std::string dest_preview_ent;
         static int dest_comb_select;
 
-        static string model_buf;
+        static std::string model_buf;
         static int model_select_id;
-        static string model_preview_ent;
+        static std::string model_preview_ent;
         static int modelCombo_select_id;
 
         static int textures_select_id;
         static int spec_texture_select_id;
         static int textureCombo_select_id;
-        static string texture_preview_ent;
+        static std::string texture_preview_ent;
 
-        //Light creating variables
         static LightTypes combo_type;
+        //Light creating variables
+        static LightTypes create_combo_type;
 
         //Light values
         static glm::vec3 light_ambient;
@@ -81,8 +80,11 @@ namespace Engine {
         static glm::vec3 mat_specular;
         static float mat_specular_intensity;
 
-        static vector<float> shininess_list;
+        static std::vector<float> shininess_list;
         static int light_Select_Id;
+
+        static std::string destroy_name_preview;
+        static int destroy_select_id;
 
     };
 }

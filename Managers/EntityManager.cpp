@@ -2,11 +2,9 @@
 
 #include "TextureManager.h"
 
-using namespace std;
-
 namespace Engine{
 
-    vector<Entity*> EntityManager::entities;
+    std::vector<Entity*> EntityManager::entities;
     EntityManager* EntityManager::Instance;
 
     void EntityManager::Allocate() {
@@ -46,8 +44,8 @@ namespace Engine{
         }
     }
 
-    Entity* EntityManager::CreateEntity(const SerializedFile& file, const string &name) {
-        string nameWithIndex = name + std::to_string(entities.size());
+    Entity* EntityManager::CreateEntity(const SerializedFile& file, const std::string &name) {
+        std::string nameWithIndex = name + std::to_string(entities.size());
         auto *entity = new Entity();
         entity->id = entities.size();
         entity->name = nameWithIndex;
@@ -59,14 +57,11 @@ namespace Engine{
         return entity;
     }
 
-    void EntityManager::ChangeTexture(Texture &texture) {
-    }
-
-    vector<Entity*>& EntityManager::GetEntityList() {
+    std::vector<Entity*>& EntityManager::GetEntityList() {
         return entities;
     }
 
-    void EntityManager::RemoveEntityByName(const string &name) {
+    void EntityManager::RemoveEntityByName(const std::string &name) {
         if (entities.empty()) return;
         for (int i = 0; i < entities.size(); i++) {
             if (entities[i]->name == name) {
@@ -78,7 +73,7 @@ namespace Engine{
     }
 
     void EntityManager::RemoveAllEntities() {
-        ranges::for_each(entities.begin(), entities.end(), [](Entity *e) {
+        std::ranges::for_each(entities.begin(), entities.end(), [](Entity *e) {
             delete e;
             e = nullptr;
         });

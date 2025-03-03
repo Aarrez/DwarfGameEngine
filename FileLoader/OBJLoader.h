@@ -10,32 +10,31 @@
 #include "../Misc/PublicStructs.h"
 #include "../GL/Mesh.h"
 #include "../Misc/PublicEnums.h"
-using namespace std;
 
 namespace Engine {
     class OBJLoader{
 
         OBJLoader() = default;
         ~OBJLoader() = default;
-        static string defaultBinPath;
+        static std::string defaultBinPath;
 
 
     public:
         static void GetBinaryFiles();
 
-        static vector<Vertex> GetVerticesFromData(MeshData& data);
-        static vector<Vertex> GetNormalsFromData(MeshData& data);
-        static vector<TexCord> GetTexCoordFromData(MeshData& data);
+        static std::vector<Vertex> GetVerticesFromData(MeshData& data);
+        static std::vector<Vertex> GetNormalsFromData(MeshData& data);
+        static std::vector<TexCord> GetTexCoordFromData(MeshData& data);
 
-        static std::optional<MeshData> OBJFileParser(const string& filename);
+        static std::optional<MeshData> OBJFileParser(const std::string& filename);
         static Mesh OrderMeshData(MeshData& data);
 
-        static SerializedFile OBJDataSerializer(Mesh& mesh,const string& filePath,
-            const string& binPath = defaultBinPath);
-        static Mesh OBJDataDeserializer(const string& filename);
+        static SerializedFile OBJDataSerializer(Mesh& mesh,const std::string& filePath,
+            const std::string& binPath = defaultBinPath);
+        static Mesh OBJDataDeserializer(const std::string& filename);
 
 
-        static vector<SerializedFile> FilesSerialized;
+        static std::vector<SerializedFile> FilesSerialized;
 
     };
 }

@@ -12,11 +12,19 @@ namespace Engine {
         SpotLight = 1,
         DirectionalLight = 2
     };
-    inline const char* ToString(const LightTypes& msg) {
+    inline const char* ToCString(const LightTypes& msg) {
         switch (msg) {
-            case LightTypes::PointLight: return "PointLight";
-            case LightTypes::SpotLight: return "SpotLight";
-            case LightTypes::DirectionalLight: return "DirectionalLight";
+            case LightTypes::PointLight: return "pointlight";
+            case LightTypes::SpotLight: return "spotlight";
+            case LightTypes::DirectionalLight: return "directionallight";
+            default: return "Unknown";
+        }
+    }
+    inline std::string ToString(const LightTypes& msg) {
+        switch (msg) {
+            case LightTypes::PointLight: return "pointlight";
+            case LightTypes::SpotLight: return "spotlight";
+            case LightTypes::DirectionalLight: return "directionallight";
             default: return "Unknown";
         }
     }
@@ -27,12 +35,21 @@ namespace Engine {
         std::string name;
     private:
         LightTypes type = LightTypes::PointLight;
-        std::string shader_string = "pointlight.light";
-        std::string lowercase_type = "pointlight";
-        glm::vec3 lightDirection {-0.2f, -1.0f, -0.3f};
+        std::string shader_string = ToString(type) + ".light";
+
         glm::mat4 model = glm::mat4(1.0f);
         glm::mat4 posModel = glm::mat4(1.0);
         glm::mat4 scaleModel = glm::mat4(1.0);
+
+        //DirectionalLight Variables
+        glm::vec3 dir_lightDirection {-0.2f, -1.0f, -0.3f};
+        //PointLight Variables
+        float constant = 1.0f;
+        float linear = 0.09f;
+        float quadratic = 0.032f;
+        //Spotlight Variables
+        glm::vec3 spot_lightDirection {-0.2f, -1.0f, -0.3f};
+        float cutOff = glm::cos(glm::radians(12.5f));
     public:
         void SetModel(const glm::mat4& _model) {
             model = _model;
@@ -66,26 +83,31 @@ namespace Engine {
             model = posModel * scaleModel;
         }
 
-        glm::vec3 GetLightDirection() {
-            return lightDirection;
+        [[nodiscard("Directional light Direction")]] const glm::vec3& GetDirectionalLightDirection() const {
+            return dir_lightDirection;
         }
-        void SetLightDirection(glm::vec3 direction, Shader& shader) {
-            lightDirection = direction;
-            std::string s = lowercase_type + ".direction";
-            shader.SetVector3(s.c_str(), lightDirection);
+        void SetDirectionalLightDirection(Shader& shader, glm::vec3 direction) {
+            dir_lightDirection = direction;
+            std::string s = ToString(type) + ".direction";
+            shader.SetVector3(s.c_str(), dir_lightDirection);
         }
+
+        [[nodiscard("Spot Light Direction")]] const glm::vec3& GetPointLightDirection() const {
+            return spot_lightDirection;
+        }
+        void SetSpotLightDirection(Shader& shader, glm::vec3 direction) {
+            spot_lightDirection = direction;
+            std::string s = ToString(type) + ".direction";
+            shader.SetVector3(s.c_str(), spot_lightDirection);
+        }
+
 
         LightTypes GetLightType() {
             return type;
         }
         void ChangeLightType(LightTypes& type) {
             this->type = type;
-            std::string s = ToString(this->type);
-            std::for_each(s.begin(), s.end(), [](char& c) {
-                c = tolower(c);
-            });
-            lowercase_type = s;
-            s += ".light";
+            std::string s = ToString(this->type) + ".light";
             shader_string = s;
         }
 
@@ -101,8 +123,43 @@ namespace Engine {
             std::string s = shader_string + ".diffuse";
             shader.SetVector3(s.c_str(), specular);
         }
-    };
 
+        [[nodiscard("Constant")]] const float& GetConstant() const {
+            return constant;
+        }
+        [[nodiscard("Linear")]] const float& GetLinear() const {
+            return linear;
+        }
+        [[nodiscard("Quadratic")]] const float& GetQuadratic() const {
+            return quadratic;
+        }
+
+        void SetConstant(Shader& shader, float _constant) {
+            constant = _constant;
+            std::string s = ToString(type) + ".constant";
+            shader.SetFloat(s.c_str(), constant);
+        }
+        void SetLinear(Shader& shader, float _linear) {
+            linear = _linear;
+            std::string s = ToString(type) + ".linear";
+            shader.SetFloat(s.c_str(), _linear);
+        }
+        void SetQuadratic(Shader& shader, float _quadratic) {
+            quadratic = _quadratic;
+            std::string s = ToString(type) + ".quadratic";
+            shader.SetFloat(s.c_str(), _quadratic);
+        }
+
+        [[nodiscard("CutOff")]] const float& GetCutOff() const {
+            return cutOff;
+        }
+
+        void SetCutOff(Shader& shader, float& cutOff) {
+            this->cutOff = cutOff;
+            std::string s = shader_string + ".cutOff";
+            shader.SetFloat(s.c_str(), cutOff);
+        }
+    };
 }
 
 #endif //LIGHTVARIABLES_H

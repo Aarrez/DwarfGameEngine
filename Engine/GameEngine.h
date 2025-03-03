@@ -70,7 +70,7 @@ namespace Engine {
         float rad = 45.0f;
         int AmountOfMeshes {5};
 
-        vector<string> textures;
+        std::vector<std::string> textures;
 
     private:
         double currentTime;

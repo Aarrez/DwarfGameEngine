@@ -17,7 +17,7 @@ namespace Engine {
         static void Allocate();
         static ThreadManager* Instance();
         ThreadPool* GetThreadPool();
-        void QueueTask(const std::function<void(MeshManager&, const string&)>& func,
+        void QueueTask(const std::function<void(MeshManager&, const std::string&)>& func,
             const Param& param,
             MeshManager& manager,
             TaskType type = TaskType::Execute);

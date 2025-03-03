@@ -1,9 +1,10 @@
 #include "MeshManager.h"
 #include "ThreadManager.h"
 
+
 namespace Engine {
     MeshManager* MeshManager::instance = nullptr;
-    vector<Mesh> MeshManager::meshes {};
+    std::vector<Mesh> MeshManager::meshes {};
 
     void MeshManager::Allocate() {
         assert(instance == nullptr);
@@ -21,9 +22,11 @@ namespace Engine {
         auto msg = message.mMessage;
         switch (message.mType) {
             case MessageType::LoadMesh:
+                Memory::PrintMemory();
                 ThreadManager::Instance()->QueueTask(&MeshManager::LoadMesh, msg, *instance);
                 break;
             case MessageType::AddMesh:
+                Memory::PrintMemory();
                 ThreadManager::Instance()->QueueTask(&MeshManager::AddMesh, msg, *instance);
                 break;
             default:
@@ -41,6 +44,7 @@ namespace Engine {
             for (auto& mesh : meshes)
                 if (fileName == mesh.name)
                     return;
+        Memory::PrintMemory();
 
         for (auto& f : OBJLoader::FilesSerialized) {
             if (f.fileName == fileName) {
@@ -53,7 +57,7 @@ namespace Engine {
         std::cerr << "File not found: " << fileName << std::endl;
     }
 
-    void MeshManager::AddMesh(const string& filePath) {
+    void MeshManager::AddMesh(const std::string& filePath) {
         auto meshData = OBJLoader::OBJFileParser(filePath);
         if (!meshData.has_value()) {
             std::cout << "Can't find file: " << filePath << std::endl;
@@ -63,13 +67,14 @@ namespace Engine {
         auto file = OBJLoader::OBJDataSerializer(mesh, filePath);
         mesh.name = file.fileName;
         meshes.push_back(mesh);
+        Memory::PrintMemory();
     }
 
-    vector<Mesh> &MeshManager::GetMeshes() {
+    std::vector<Mesh> &MeshManager::GetMeshes() {
         return meshes;
     }
 
-    Mesh MeshManager::FindMesh(const string &meshName) {
+    Mesh MeshManager::FindMesh(const std::string &meshName) {
         for (auto& mesh : meshes) {
             if (mesh.name == meshName) {
                 return mesh;
