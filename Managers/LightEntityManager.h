@@ -20,6 +20,9 @@ namespace Engine {
     private:
         LightEntityManager() = default;
         static LightEntityManager* instance;
+        int PointLights;
+        int SpotLights;
+        int DirectionalLights;
         std::vector<LightEntity*> LightEntities;
 
     };

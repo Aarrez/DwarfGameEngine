@@ -50,17 +50,14 @@ namespace Engine {
     glUniform4f(glGetUniformLocation(shaderProgram,
                                      name), value1, value2, value3, value4);
   }
-
   void Shader::SetMatrix4(const char *name, glm::mat4 &value) {
-
     GLint transformLoc = glGetUniformLocation(shaderProgram, name);
     glUniformMatrix4fv(transformLoc, 1, GL_FALSE, glm::value_ptr(value));
-
   }
 
-
-
-
-
+  void Shader::SetStructArray(const char *name, int size, const int *value) {
+    GLint transformLoc = glGetUniformLocation(shaderProgram, name);
+    glUniform3fv()
+  }
 }
 

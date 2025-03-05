@@ -35,7 +35,7 @@ namespace Engine {
         std::string name;
     private:
         LightTypes type = LightTypes::PointLight;
-        std::string shader_string = ToString(type) + ".light";
+        std::string shader_string = ToString(type) + "[" + std::to_string(id) + "}.light";
 
         glm::mat4 model = glm::mat4(1.0f);
         glm::mat4 posModel = glm::mat4(1.0);
@@ -75,6 +75,10 @@ namespace Engine {
         }
         void SetPosition(glm::vec3 position) {
             posModel = glm::translate(glm::mat4(1.0f), position);
+        }
+        void SetUniformLightPosition(Shader& shader) {
+            std::string s = ToString(type) + "[" + std::to_string(id) + "].position";
+            shader.SetVector3(s.c_str(), GetPosition());
         }
         void SetScale(glm::vec3 scale) {
             scaleModel = glm::scale(glm::mat4(1.0f), scale);
@@ -136,17 +140,17 @@ namespace Engine {
 
         void SetConstant(Shader& shader, float _constant) {
             constant = _constant;
-            std::string s = ToString(type) + ".constant";
+            std::string s = ToString(type) +"[" + std::to_string(id) + "].constant";
             shader.SetFloat(s.c_str(), constant);
         }
         void SetLinear(Shader& shader, float _linear) {
             linear = _linear;
-            std::string s = ToString(type) + ".linear";
+            std::string s = ToString(type)+ "[" + std::to_string(id) + "].linear";
             shader.SetFloat(s.c_str(), _linear);
         }
         void SetQuadratic(Shader& shader, float _quadratic) {
             quadratic = _quadratic;
-            std::string s = ToString(type) + ".quadratic";
+            std::string s = ToString(type) + "[" + std::to_string(id) +"].quadratic";
             shader.SetFloat(s.c_str(), _quadratic);
         }
 

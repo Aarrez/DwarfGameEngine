@@ -36,6 +36,8 @@ namespace Engine {
         //Set Matrix variables
         void SetMatrix4(const char* name, glm::mat4 &trans);
 
+        void SetStructArray(const char* name, int size, const int *value);
+
         unsigned int shaderProgram {};
     private:
         unsigned int vertexShader{};

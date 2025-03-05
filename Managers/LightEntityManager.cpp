@@ -14,9 +14,25 @@ namespace Engine {
     }
 
     LightEntity* LightEntityManager::CreateLight(LightTypes& type, const char* name) {
+        if (DirectionalLights > 0)
+            return nullptr;
+
         auto* entity = new LightEntity();
         entity->ChangeLightType(type);
-        entity->id = LightEntities.size();
+        switch (type) {
+            case LightTypes::PointLight:
+                entity->id = PointLights;
+                PointLights++;
+                break;
+            case LightTypes::SpotLight:
+                entity->id = SpotLights;
+                SpotLights++;
+                break;
+            case LightTypes::DirectionalLight:
+                entity->id = DirectionalLights;
+                DirectionalLights++;
+                break;
+        }
         if (name && !name[0]) {
             entity->name = ToCString(type) + std::to_string(entity->id);
         }else {

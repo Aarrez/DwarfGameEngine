@@ -74,6 +74,7 @@ namespace Engine {
         auto ent = LightEntityManager::Get().CreateLight(type);
         ent->SetPosition({3.0f, 2.0f, 2.0f});
         ent->SetScale({0.5f, 0.5f, 0.5f});
+
     }
 
     void GameEngine::Update() {
@@ -101,11 +102,12 @@ namespace Engine {
         for (auto & i : LightEntityManager::Get().GetAllLights()) {
             //SetVertexBufferObjects here for light objects later
             i->SetModelMatrix(*lightShader);
-            mainShader->SetVector3("lightPos", i->GetPosition());
-            mainShader->SetVector3("viewPos", camera->GetCameraPos());
-            mainShader->SetInt("lightType", static_cast<int>(i->GetLightType()));
+            i->SetUniformLightPosition(*mainShader);
+            i->SetConstant(*mainShader, i->GetConstant());
+            i->SetLinear(*mainShader, i->GetLinear());
+            i->SetQuadratic(*mainShader, i->GetQuadratic());
         }
-
+        mainShader->SetVector3("viewPos", camera->GetCameraPos());
         mainShader->UseShaderProgram();
         camera->MoveCamera(Input::GetMoveValue(), 0.1, &view);
         mainShader->SetMatrix4("view", view);
