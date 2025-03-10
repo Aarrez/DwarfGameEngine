@@ -55,9 +55,5 @@ namespace Engine {
     glUniformMatrix4fv(transformLoc, 1, GL_FALSE, glm::value_ptr(value));
   }
 
-  void Shader::SetStructArray(const char *name, int size, const int *value) {
-    GLint transformLoc = glGetUniformLocation(shaderProgram, name);
-    glUniform3fv()
-  }
 }
 

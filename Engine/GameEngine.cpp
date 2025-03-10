@@ -99,16 +99,16 @@ namespace Engine {
         mat4 view {mat4(1.0f)};
         view = translate(view, glm::vec3(0.0f, 0.0f, -3.0f));
         TextureManager::Get()->SetTextureUniform(*mainShader);
-        for (auto & i : LightEntityManager::Get().GetAllLights()) {
-            //SetVertexBufferObjects here for light objects later
-            i->SetModelMatrix(*lightShader);
-            i->SetUniformLightPosition(*mainShader);
-            i->SetConstant(*mainShader, i->GetConstant());
-            i->SetLinear(*mainShader, i->GetLinear());
-            i->SetQuadratic(*mainShader, i->GetQuadratic());
-        }
+        mainShader->SetInt("nr_pointlights",
+                    LightEntityManager::Get().GetNumberOfLightsOfType(LightTypes::PointLight));
+        mainShader->SetInt("nr_dirlights",
+            LightEntityManager::Get().GetNumberOfLightsOfType(LightTypes::DirectionalLight));
+        mainShader->SetInt("nr_spotlights",
+            LightEntityManager::Get().GetNumberOfLightsOfType(LightTypes::SpotLight));
+        LightEntityManager::Get().SetLightsUniforms(*mainShader);
         mainShader->SetVector3("viewPos", camera->GetCameraPos());
         mainShader->UseShaderProgram();
+
         camera->MoveCamera(Input::GetMoveValue(), 0.1, &view);
         mainShader->SetMatrix4("view", view);
         mainShader->SetMatrix4("projection", projection);
@@ -132,7 +132,6 @@ namespace Engine {
 
         mainShader->UseShaderProgram();
 
-
         IMGUIClass::InitUpdateLoop();
 
         IMGUIClass::MenuBar();
@@ -150,7 +149,6 @@ namespace Engine {
         IMGUIClass::EndUpdateLoop();
 
         glfwSwapBuffers(window);
-
     }
 
     void GameEngine::Shutdown() {

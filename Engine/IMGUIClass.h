@@ -40,6 +40,7 @@ namespace Engine {
         static void ModelsWindow();
         static void TexturesWindow();
         static void LightsWindow(Shader& shader);
+        static void PhysicsWindow();
 
     private:
         static bool showDemoWindow;
@@ -58,19 +59,10 @@ namespace Engine {
         static int textures_select_id;
         static int spec_texture_select_id;
         static int textureCombo_select_id;
-        static std::string texture_preview_ent;
 
         static LightTypes combo_type;
         //Light creating variables
         static LightTypes create_combo_type;
-
-        //Light values
-        static glm::vec3 light_ambient;
-        static float light_ambient_intensity;
-        static glm::vec3 light_diffuse;
-        static float light_diffuse_intensity;
-        static glm::vec3 light_specular;
-        static float light_specular_intensity;
 
         //Material values
         static glm::vec3 mat_ambient;
@@ -86,6 +78,8 @@ namespace Engine {
         static std::string destroy_name_preview;
         static int destroy_select_id;
 
+        //Physics
+        static glm::vec3 force;
     };
 }
 

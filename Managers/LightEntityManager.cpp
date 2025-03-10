@@ -74,4 +74,20 @@ namespace Engine {
     std::vector<LightEntity *>& LightEntityManager::GetAllLights() {
         return LightEntities;
     }
+
+    int LightEntityManager::GetNumberOfLightsOfType(const LightTypes& type) const {
+        int count = 0;
+        for (auto& entity : LightEntities) {
+            if (entity->GetLightType() == type) {
+                count++;
+            }
+        }
+        return count;
+    }
+
+    void LightEntityManager::SetLightsUniforms(Shader &shader) {
+        for (auto& entity : LightEntities) {
+            entity->SetSetUnifromValues(shader);
+        }
+    }
 }

@@ -1,6 +1,7 @@
 #ifndef DWARFPUBLICSTRUCTS_H
 #define DWARFPUBLICSTRUCTS_H
 #define GLM_ENABLE_EXPERIMENTAL
+#include <glad/glad.h>
 #include <functional>
 #include <string>
 #include <variant>
@@ -27,11 +28,75 @@ namespace Engine {
         bool selected;
     };
 
+    enum class TextureWrapping {
+        Repeat = GL_REPEAT,
+        MirroredRepeat = GL_MIRRORED_REPEAT,
+        ClampToEdge = GL_CLAMP_TO_EDGE,
+        ClampToBorder = GL_CLAMP_TO_BORDER,
+    };
+
+    inline const char* ToCString(const TextureWrapping& wrapping){
+        switch (wrapping) {
+            case TextureWrapping::Repeat: return "GL_REPEAT";
+            case TextureWrapping::MirroredRepeat: return "GL_MIRRORED_REPEAT";
+            case TextureWrapping::ClampToEdge: return "GL_CLAMP_TO_EDGE";
+            case TextureWrapping::ClampToBorder: return "GL_CLAMP_TO_BORDER";
+            default: return "Unknown";
+        }
+    }
+
+    enum class TextureFilter {
+        Nearest = GL_NEAREST,
+        Linear = GL_LINEAR,
+        NearestMipmapNearest = GL_NEAREST_MIPMAP_NEAREST,
+        LinearMipmapLinear = GL_LINEAR_MIPMAP_LINEAR,
+        NearestMipmapLinear= GL_NEAREST_MIPMAP_LINEAR,
+        LinearMipmapNearest = GL_LINEAR_MIPMAP_NEAREST,
+    };
+
+    inline const char* ToCString(const TextureFilter& filtering) {
+        switch (filtering) {
+            case TextureFilter::Nearest: return "GL_NEAREST";
+            case TextureFilter::Linear: return "GL_LINEAR";
+            case TextureFilter::NearestMipmapNearest: return "GL_NEAREST_MIPMAP_NEAREST";
+            case TextureFilter::LinearMipmapLinear: return "GL_LINEAR_MIPMAP_LINEAR";
+            case TextureFilter::NearestMipmapLinear: return "GL_NEAREST_MIPMAP_LINEAR";
+            case TextureFilter::LinearMipmapNearest: return "GL_LINEAR_MIPMAP_NEAREST";
+            default: return "Unknown";
+        }
+    }
+
     struct Texture {
         std::string fileName;
         std::string filePath;
         unsigned int textureID;
         int colorFormat;
+
+    private:
+        TextureWrapping wrapping = TextureWrapping::Repeat;
+        TextureFilter filtering_min = TextureFilter::LinearMipmapLinear;
+        TextureFilter filtering_max = TextureFilter::LinearMipmapLinear;
+
+    public:
+        TextureWrapping GetWrapping() const {
+            return wrapping;
+        }
+        TextureFilter GetFilteringMin() const {
+            return filtering_min;
+        }
+        TextureFilter GetFilteringMax() const {
+            return filtering_max;
+        }
+
+        void SetWrapping(TextureWrapping wrapping) {
+            this->wrapping = wrapping;
+        }
+        void SetFilteringMin(TextureFilter min) {
+            this->filtering_min = min;
+        }
+        void SetFilteringMax(TextureFilter max) {
+            this->filtering_max = max;
+        }
     };
 
     struct Entity {
@@ -45,14 +110,17 @@ namespace Engine {
         bool selected;
 
     private:
-        glm::mat4 translateMatrix {glm::mat4(1.0f)};
+        glm::mat4 PositionMatrix {glm::mat4(1.0f)};
         glm::mat4 scaleMatrix {glm::mat4(1.0f)};
         glm::mat4 rotateMatrix {glm::mat4(1.0f)};
         glm::vec3 rotRadians {};
 
     public:
         void Translate(glm::vec3 translation) {
-            translateMatrix = glm::translate(glm::mat4(1.0f), translation);
+            PositionMatrix = glm::translate(PositionMatrix, translation);
+        }
+        void SetPostion(glm::vec3 position) {
+            PositionMatrix = glm::translate(glm::mat4(1.0f), position);
         }
         void SetScale(glm::vec3 scale) {
             scaleMatrix = glm::scale(glm::mat4(1.0f), scale);
@@ -63,7 +131,7 @@ namespace Engine {
             rotateMatrix = glm::toMat4(rotQuat);
         }
         void SetTransformMatrix() {
-            transform = translateMatrix * rotateMatrix * scaleMatrix;
+            transform = PositionMatrix * rotateMatrix * scaleMatrix;
         }
         glm::vec3 GetPosition() {
             glm::vec3 pos = transform[3];

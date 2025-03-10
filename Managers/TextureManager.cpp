@@ -41,11 +41,14 @@ namespace Engine {
     for (auto& tex : textures) {
       glGenTextures(1, &tex.textureID);
       glBindTexture(GL_TEXTURE_2D, tex.textureID);
-      glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_MIRRORED_REPEAT);
-      glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_MIRRORED_REPEAT);
+      auto wrap = tex.GetWrapping();
+      glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, static_cast<int>(wrap));
+      glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, static_cast<int>(wrap));
 
-      glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
-      glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+      auto min = tex.GetFilteringMin();
+      auto max = tex.GetFilteringMax();
+      glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, static_cast<int>(min));
+      glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, static_cast<int>(max));
 
 
       int width, height, nrChannels;
@@ -73,5 +76,24 @@ namespace Engine {
     shader.UseShaderProgram();
     shader.SetInt("material.diffuse", 0);
     shader.SetInt("material.specular", 1);
+  }
+
+  void TextureManager::ChangeMipMapSettings(Texture &texture) {
+
+    for (auto& tex : textures) {
+      glBindTexture(GL_TEXTURE_2D, tex.textureID);
+
+      auto wrap = texture.GetWrapping();
+      glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, static_cast<int>(wrap));
+      glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, static_cast<int>(wrap));
+
+      auto min = texture.GetFilteringMin();
+      auto max = texture.GetFilteringMax();
+      glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, static_cast<int>(min));
+      glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, static_cast<int>(max));
+
+      glGenerateMipmap(GL_TEXTURE_2D);
+    }
+
   }
 }

@@ -16,6 +16,8 @@ namespace Engine {
         void DestroyLightByType(LightTypes type);
         void DestroyAllLights();
         std::vector<LightEntity*>& GetAllLights();
+        [[nodiscard]] int GetNumberOfLightsOfType(const LightTypes& type) const;
+        void SetLightsUniforms(Shader& shader);
 
     private:
         LightEntityManager() = default;

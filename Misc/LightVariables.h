@@ -31,7 +31,6 @@ namespace Engine {
 
     struct LightEntity {
         unsigned int id;
-
         std::string name;
     private:
         LightTypes type = LightTypes::PointLight;
@@ -41,6 +40,14 @@ namespace Engine {
         glm::mat4 posModel = glm::mat4(1.0);
         glm::mat4 scaleModel = glm::mat4(1.0);
 
+        glm::vec3 ambient = glm::vec3(0.2f);
+        glm::vec3 diffuse = glm::vec3(.5f);
+        glm::vec3 specular = glm::vec3(1.0f);
+
+        float ambient_intensity = 1.0f;
+        float diffuse_intensity = 1.0f;
+        float specular_intensity = 1.0f;
+
         //DirectionalLight Variables
         glm::vec3 dir_lightDirection {-0.2f, -1.0f, -0.3f};
         //PointLight Variables
@@ -49,7 +56,8 @@ namespace Engine {
         float quadratic = 0.032f;
         //Spotlight Variables
         glm::vec3 spot_lightDirection {-0.2f, -1.0f, -0.3f};
-        float cutOff = glm::cos(glm::radians(12.5f));
+        float cutOff = 12.5f;
+        float outer_cutOff = 17.5;
     public:
         void SetModel(const glm::mat4& _model) {
             model = _model;
@@ -96,12 +104,12 @@ namespace Engine {
             shader.SetVector3(s.c_str(), dir_lightDirection);
         }
 
-        [[nodiscard("Spot Light Direction")]] const glm::vec3& GetPointLightDirection() const {
+        [[nodiscard("Spot Light Direction")]] const glm::vec3& GetSpotLightDirection() const {
             return spot_lightDirection;
         }
         void SetSpotLightDirection(Shader& shader, glm::vec3 direction) {
             spot_lightDirection = direction;
-            std::string s = ToString(type) + ".direction";
+            std::string s = ToString(type) + "[" + std::to_string(id) + "].direction";
             shader.SetVector3(s.c_str(), spot_lightDirection);
         }
 
@@ -111,21 +119,71 @@ namespace Engine {
         }
         void ChangeLightType(LightTypes& type) {
             this->type = type;
-            std::string s = ToString(this->type) + ".light";
+            std::string s;
+            switch (this->type) {
+                case LightTypes::DirectionalLight:
+                    s = ToString(this->type) + ".light";
+                    break;
+                default:
+                    s = ToString(this->type) + "[" + std::to_string(id) + "].light";
+                    break;
+            }
             shader_string = s;
         }
 
-        void SetAmbient(Shader& shader, glm::vec3 ambient) {
+        glm::vec3 GetAmbient() const {
+            return ambient;
+        }
+        glm::vec3 GetDiffuse() const {
+            return diffuse;
+        }
+        glm::vec3 GetSpecular() const {
+            return specular;
+        }
+
+        void SetAmbient(glm::vec3 ambient) {
+            this->ambient = ambient;
+        }
+        void SetAmbientUniform(Shader& shader) {
             std::string s = shader_string + ".ambient";
-            shader.SetVector3(s.c_str(), ambient);
+            glm::vec3 result = ambient * ambient_intensity;
+            shader.SetVector3(s.c_str(), result);
         }
-        void SetDiffuse(Shader& shader, glm::vec3 diffuse) {
-            std::string s = shader_string + ".diffuse";
-            shader.SetVector3(s.c_str(), diffuse);
+        void SetDiffuse(glm::vec3 diffuse) {
+            this->diffuse = diffuse;
         }
-        void SetSpecular(Shader& shader, glm::vec3 specular) {
+        void SetDiffuseUniform(Shader& shader) {
             std::string s = shader_string + ".diffuse";
-            shader.SetVector3(s.c_str(), specular);
+            glm::vec3 result = diffuse * diffuse_intensity;
+            shader.SetVector3(s.c_str(), result);
+        }
+        void SetSpecular(glm::vec3 specular) {
+            this->specular = specular;
+        }
+        void SetSpecularUniform(Shader& shader) {
+            std::string s = shader_string + ".specular";
+            glm::vec3 result = specular * specular_intensity;
+            shader.SetVector3(s.c_str(), result);
+        }
+
+        void SetAmbientIntensity(float intensity) {
+            ambient_intensity = intensity;
+        }
+        void SetDiffuseIntensity(float intensity) {
+            diffuse_intensity = intensity;
+        }
+        void SetSpecularIntensity(float intensity) {
+            specular_intensity = intensity;
+        }
+
+        float GetAmbinetIntensity() const {
+            return ambient_intensity;
+        }
+        float GetDiffuseIntensity() const {
+            return diffuse_intensity;
+        }
+        float GetSpecularIntensity() const {
+            return specular_intensity;
         }
 
         [[nodiscard("Constant")]] const float& GetConstant() const {
@@ -160,8 +218,47 @@ namespace Engine {
 
         void SetCutOff(Shader& shader, float& cutOff) {
             this->cutOff = cutOff;
-            std::string s = shader_string + ".cutOff";
-            shader.SetFloat(s.c_str(), cutOff);
+            std::string s = ToString(type) + "[" + std::to_string(id) + "].cutOff";
+            auto result = glm::cos(glm::radians(this->cutOff));
+            shader.SetFloat(s.c_str(), result);
+        }
+
+        [[nodiscard("OuterCutOff")]] const float& GetOuterCutOff() const {
+            return outer_cutOff;
+        }
+
+        void SetOuterCutOff(Shader& shader, float& outer_cutOff) {
+            this->outer_cutOff = outer_cutOff;
+            std::string s = ToString(type) + "[" + std::to_string(id) + "].outercutoff";
+            auto result = glm::cos(glm::radians(this->outer_cutOff));
+            shader.SetFloat(s.c_str(), result);
+        }
+
+        void SetSetUnifromValues(Shader& shader) {
+            SetAmbientUniform(shader);
+            SetDiffuseUniform(shader);
+            SetSpecularUniform(shader);
+            if (type == LightTypes::DirectionalLight) {
+                SetDirectionalLightDirection(shader, dir_lightDirection);
+                return;
+            }
+            if (type == LightTypes::PointLight) {
+                SetUniformLightPosition(shader);
+                SetConstant(shader, constant);
+                SetLinear(shader, linear);
+                SetQuadratic(shader, quadratic);
+                return;
+            }
+            if (type == LightTypes::SpotLight) {
+                SetUniformLightPosition(shader);
+                SetSpotLightDirection(shader, spot_lightDirection);
+                SetCutOff(shader, cutOff);
+                SetOuterCutOff(shader, outer_cutOff);
+                SetConstant(shader, constant);
+                SetLinear(shader, linear);
+                SetQuadratic(shader, quadratic);
+                return;
+            }
         }
     };
 }

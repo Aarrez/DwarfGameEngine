@@ -20,17 +20,9 @@ namespace Engine {
     int IMGUIClass::textures_select_id = 0;
     int IMGUIClass::spec_texture_select_id = 0;
     int IMGUIClass::textureCombo_select_id = 0;
-    std::string IMGUIClass::texture_preview_ent {};
 
     LightTypes IMGUIClass::combo_type {LightTypes::DirectionalLight};
     LightTypes IMGUIClass::create_combo_type {LightTypes::DirectionalLight};
-
-    glm::vec3 IMGUIClass::light_ambient {.2f};
-    float IMGUIClass::light_ambient_intensity {1.0f};
-    glm::vec3 IMGUIClass::light_diffuse {.5f};
-    float IMGUIClass::light_diffuse_intensity {1.0f};
-    glm::vec3 IMGUIClass::light_specular {1.0f};
-    float IMGUIClass::light_specular_intensity {1.0f};
 
     glm::vec3 IMGUIClass::mat_ambient {1.0f, 0.5f, 0.31f};
     float IMGUIClass::mat_ambient_intensity {1.0f};
@@ -85,7 +77,7 @@ namespace Engine {
         if (ImGui::BeginMainMenuBar()) {
             if (ImGui::BeginMenu("File")) {
                 ImGui::Checkbox("DemoWindow", &showDemoWindow);
-                ImGui::Checkbox("Simulate", &run_simulation);
+
                 ImGui::EndMenu();
             }
             ImGui::EndMainMenuBar();
@@ -138,7 +130,7 @@ namespace Engine {
                     std::string posName = "Position##";
                     if (ImGui::DragFloat3(posName.c_str(), value_ptr(translation),
                         0.0f, -10.0f, 10.0f, "%.2f")) {
-                        e->Translate(translation);
+                        e->SetPostion(translation);
                         }
                     vec3 scale = e->GetScale();
                     std::string sclName = "Scale##";
@@ -229,10 +221,67 @@ namespace Engine {
         ImGui::End();
     }
 
+    void ComboTextureFiltering(const char* name, TextureFilter* filter) {
+
+        if (ImGui::BeginCombo(name, ToCString(*filter))) {
+            auto e_nearest = TextureFilter::Nearest;
+            bool nearest = *filter == e_nearest;
+            if (ImGui::Selectable(ToCString(e_nearest), nearest)) {
+                *filter = e_nearest;
+            }
+            auto e_linear = TextureFilter::Linear;
+            bool linear = *filter == e_linear;
+            if (ImGui::Selectable(ToCString(e_linear), linear)) {
+                *filter = e_linear;
+            }
+            auto e_NMN = TextureFilter::NearestMipmapNearest;
+            bool NMN = *filter == e_NMN;
+            if (ImGui::Selectable(ToCString(e_NMN), NMN)) {
+                *filter = e_NMN;
+            }
+            auto e_LML = TextureFilter::LinearMipmapLinear;
+            bool LML = *filter == e_LML;
+            if (ImGui::Selectable(ToCString(e_LML), LML)) {
+                *filter = e_LML;
+            }
+            auto e_NML = TextureFilter::NearestMipmapLinear;
+            bool NML = *filter == e_NML;
+            if (ImGui::Selectable(ToCString(e_NML), NML)) {
+                *filter = e_NML;
+            }
+            auto e_LMN = TextureFilter::LinearMipmapNearest;
+            bool LMN = *filter == e_LMN;
+            if (ImGui::Selectable(ToCString(e_LMN), LMN)) {
+                *filter = e_LMN;
+            }
+            ImGui::EndCombo();
+        }
+    }
+
     void IMGUIClass::TexturesWindow() {
         if (showDemoWindow) return;
 
         if (ImGui::Begin("Texture Window")) {
+
+            ImGui::Dummy(ImVec2(0, 5));
+
+            auto entity = EntityManager::Get().GetEntityList()[textureCombo_select_id];
+            if (ImGui::BeginCombo("Entity Select", entity->name.c_str())) {
+                for (int i = 0; i < EntityManager::Get().GetEntityList().size(); i++) {
+                    const bool is_selected = textureCombo_select_id == i;
+                    if (ImGui::Selectable(EntityManager::Get().GetEntityList()[i]->name.c_str(), is_selected)) {
+                        textureCombo_select_id = i;
+                    }
+                    if (is_selected)
+                        ImGui::SetItemDefaultFocus();
+                }
+                ImGui::EndCombo();
+            }
+
+            ImGui::Dummy(ImVec2(0, 5));
+            ImGui::Text("Texture Settings");
+            ImGui::Dummy(ImVec2(0, 5));
+
             size_t size = TextureManager::Get()->GetTextures().size();
             if (ImGui::BeginListBox("Textures List", {150, size * 20.0f})) {
                 for(int i = 0; i < size; i++) {
@@ -245,23 +294,10 @@ namespace Engine {
             }
             ImGui::EndListBox();
 
-            texture_preview_ent = EntityManager::Get().GetEntityList()[textureCombo_select_id]->name;
-            if (ImGui::BeginCombo("Entity Select", texture_preview_ent.c_str())) {
-                for (int i = 0; i < EntityManager::Get().GetEntityList().size(); i++) {
-                    const bool is_selected = textureCombo_select_id == i;
-                    if (ImGui::Selectable(EntityManager::Get().GetEntityList()[i]->name.c_str(), is_selected)) {
-                        textureCombo_select_id = i;
-                    }
-                    if (is_selected)
-                        ImGui::SetItemDefaultFocus();
-                }
-                ImGui::EndCombo();
-            }
             if (ImGui::Button("Change Texture")) {
                 auto ent = EntityManager::Get().GetEntityList()[textureCombo_select_id];
                 ent->texture = TextureManager::Get()->GetTextures()[textures_select_id];
             }
-
 
             if (ImGui::BeginListBox("Specular Texture List", {150, size * 20.0f})) {
                 for(int i = 0; i < size; i++) {
@@ -278,8 +314,43 @@ namespace Engine {
                 auto ent = EntityManager::Get().GetEntityList()[textureCombo_select_id];
                 ent->spec_texture = TextureManager::Get()->GetTextures()[spec_texture_select_id];
             }
-        }
 
+            ImGui::Dummy({0, 10});
+
+            if (ImGui::Button("Change MipMap Settings")) {
+                TextureManager::Get()->ChangeMipMapSettings(entity->texture);
+            }
+            auto wrap = entity->texture.GetWrapping();
+            if (ImGui::BeginCombo("Wrapping",
+                ToCString(wrap))) {
+
+                bool repeat = wrap == TextureWrapping::Repeat;
+                if (ImGui::Selectable(ToCString(TextureWrapping::Repeat), repeat)) {
+                    entity->texture.SetWrapping(TextureWrapping::Repeat);
+                }
+                bool mirrorrepeat = wrap == TextureWrapping::MirroredRepeat;
+                if (ImGui::Selectable(ToCString(TextureWrapping::MirroredRepeat), mirrorrepeat)) {
+                    entity->texture.SetWrapping(TextureWrapping::MirroredRepeat);
+                }
+                bool clamptoedge = wrap == TextureWrapping::ClampToEdge;
+                if (ImGui::Selectable(ToCString(TextureWrapping::ClampToEdge), clamptoedge)) {
+                    entity->texture.SetWrapping(TextureWrapping::ClampToEdge);
+                }
+                bool clamptoborder = wrap == TextureWrapping::ClampToBorder;
+                if (ImGui::Selectable(ToCString(TextureWrapping::ClampToBorder), clamptoborder)) {
+                    entity->texture.SetWrapping(TextureWrapping::ClampToBorder);
+                }
+                ImGui::EndCombo();
+            }
+
+            TextureFilter min = entity->texture.GetFilteringMin();
+            ComboTextureFiltering("Min", &min);
+            entity->texture.SetFilteringMin(min);
+
+            TextureFilter max = entity->texture.GetFilteringMax();
+            ComboTextureFiltering("Max", &max);
+            entity->texture.SetFilteringMax(max);
+        }
         ImGui::End();
     }
 
@@ -299,52 +370,53 @@ namespace Engine {
                         0, -10, 10)) {
                         lightEntity->SetScale(scale);
                         }
+                    combo_type = lightEntity->GetLightType();
                     if (ImGui::BeginCombo("LightType##", ToCString(combo_type))) {
                         bool point_select = combo_type == LightTypes::PointLight;
                         if (ImGui::Selectable(ToCString(LightTypes::PointLight), point_select)) {
                             combo_type = LightTypes::PointLight;
+                            lightEntity->ChangeLightType(combo_type);
                         }
                         bool spot_select = combo_type == LightTypes::SpotLight;
                         if (ImGui::Selectable(ToCString(LightTypes::SpotLight), spot_select)) {
                             combo_type = LightTypes::SpotLight;
+                            lightEntity->ChangeLightType(combo_type);
                         }
                         bool dir_select = combo_type == LightTypes::DirectionalLight;
                         if (ImGui::Selectable(ToCString(LightTypes::DirectionalLight), dir_select)) {
                             combo_type = LightTypes::DirectionalLight;
+                            lightEntity->ChangeLightType(combo_type);
                         }
                         ImGui::EndCombo();
                     }
-                    lightEntity->ChangeLightType(combo_type);
                     glm::vec3 dir;
-                    float c, l, q, cutOff;
+                    float c, l, q, cutOff, outer_cutOff;
                     switch (combo_type) {
                         case LightTypes::PointLight:
-                            c = lightEntity->GetConstant();
-                            lightEntity->SetConstant(shader, c);
-
-                            l = lightEntity->GetLinear();
-                            lightEntity->SetLinear(shader, l);
-
-                            q = lightEntity->GetQuadratic();
-                            lightEntity->SetQuadratic(shader, q);
 
                             break;
                         case LightTypes::SpotLight:
-                            dir = lightEntity->GetDirectionalLightDirection();
-                            ImGui::DragFloat3("Light Direction##",
-                                value_ptr(dir), 0.1f, -1, 1);
-                            lightEntity->SetDirectionalLightDirection(shader, dir);
+                            dir = lightEntity->GetSpotLightDirection();
+                            if (ImGui::DragFloat3("Light Direction##",
+                            value_ptr(dir), 0.1f, -360, 360)) {
+                                lightEntity->SetSpotLightDirection(shader, dir);
+                            }
 
                             cutOff = lightEntity->GetCutOff();
                             ImGui::DragFloat("Light Cutoff##", &cutOff,
                                 0.5, 0, 180);
                             lightEntity->SetCutOff(shader, cutOff);
+
+                            outer_cutOff = lightEntity->GetOuterCutOff();
+                            ImGui::DragFloat("Light Outer Cutoff##", &outer_cutOff,
+                                 0.5, 0, 180);
+                            lightEntity->SetOuterCutOff(shader, outer_cutOff);
                             break;
 
                         case LightTypes::DirectionalLight:
                             dir = lightEntity->GetDirectionalLightDirection();
                             if (ImGui::DragFloat3("Light Direction##",
-                                value_ptr(dir), 0.1f, -100 , 100)) {
+                                value_ptr(dir), 0.1f, -360 , 360)) {
                                 lightEntity->SetDirectionalLightDirection(shader, dir);
                             }
                             break;
@@ -352,21 +424,29 @@ namespace Engine {
 
                     ImGui::Dummy({0, 10});
                     ImGui::Text("Light values:");
+                    glm::vec3 ambient = lightEntity->GetAmbient();
+                    float i_ambient = lightEntity->GetAmbinetIntensity();
+                    ImGui::ColorEdit3("Ambient##", value_ptr(ambient));
+                    ImGui::DragFloat("AmbientIntensity##",
+                        &i_ambient, 0.1, 1, 5);
+                    lightEntity->SetAmbientIntensity(i_ambient);
+                    lightEntity->SetAmbient(ambient);
 
-                    ImGui::ColorEdit3("Ambient##", value_ptr(light_ambient));
-                    ImGui::DragFloat("AmbientIntensity##", &light_ambient_intensity, 0.1, 1, 5);
-                    auto ambient_result = light_ambient_intensity * light_ambient;
-                    lightEntity->SetAmbient(shader, ambient_result);
+                    glm::vec3 diffuse = lightEntity->GetDiffuse();
+                    float i_diffuse = lightEntity->GetDiffuseIntensity();
+                    ImGui::ColorEdit3("Diffuse##", value_ptr(diffuse));
+                    ImGui::DragFloat("DiffuseIntensity##",
+                        &i_diffuse, .1, 1, 5);
+                    lightEntity->SetDiffuseIntensity(i_diffuse);
+                    lightEntity->SetDiffuse(diffuse);
 
-                    ImGui::ColorEdit3("Diffuse##", value_ptr(light_diffuse));
-                    ImGui::DragFloat("DiffuseIntensity##", &light_diffuse_intensity, .1, 1, 5);
-                    auto diffuse_result = light_diffuse * light_diffuse_intensity;
-                    lightEntity->SetDiffuse(shader, diffuse_result);
-
-                    ImGui::ColorEdit3("Specular##", value_ptr(light_specular));
-                    ImGui::DragFloat("SpecularIntensity##", &light_specular_intensity, .1, 1, 5);
-                    auto specular_result = light_specular * light_specular_intensity;
-                    lightEntity->SetSpecular(shader, specular_result);
+                    glm::vec3 specular = lightEntity->GetSpecular();
+                    float i_specular = lightEntity->GetSpecularIntensity();
+                    ImGui::ColorEdit3("Specular##", value_ptr(specular));
+                    ImGui::DragFloat("SpecularIntensity##",
+                        &i_specular, .1, 1, 5);
+                    lightEntity->SetSpecularIntensity(i_specular);
+                    lightEntity->SetSpecular(specular);
                 }
                 lightEntity->CombineModels();
             }
@@ -414,4 +494,21 @@ namespace Engine {
         }
         ImGui::End();
     }
+
+    glm::vec3 IMGUIClass::force = glm::vec3(0);
+
+    void IMGUIClass::PhysicsWindow() {
+        if (ImGui::Begin("Physics Window")) {
+            if (ImGui::DragFloat3("Forces", value_ptr(force), 0.1, -1, 1)) {
+
+            }
+            ImGui::Checkbox("Simulate", &run_simulation);
+            if (run_simulation) {
+
+            }
+
+        }
+        ImGui::End();
+    }
+
 }

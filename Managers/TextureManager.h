@@ -28,7 +28,7 @@ namespace Engine {
     void StbGenerateTextures();
     void DrawTexture(const Texture& texture);
     void SetTextureUniform(Shader& shader);
-
+    void ChangeMipMapSettings(Texture& texture);
   };
 
 }

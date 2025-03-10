@@ -65,6 +65,8 @@ add_executable(GameEngine
         Managers/LightEntityManager.cpp
         Managers/LightEntityManager.h
         Misc/LightVariables.h
+        Physics/Physics.cpp
+        Physics/Physics.h
 )
 
 find_package(imgui CONFIG REQUIRED)
