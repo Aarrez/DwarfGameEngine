@@ -20,6 +20,14 @@ namespace Engine {
         }
     }
 
+    SerializedFile* OBJLoader::FindFile(const std::string &filename) {
+        for (auto& file : FilesSerialized) {
+            if (file.fileName == filename){}
+            return &file;
+        }
+        return nullptr;
+    }
+
     std::optional<MeshData> OBJLoader::OBJFileParser(const std::string& filename) {
         std::vector<Vertex> vertices;
         std::vector<TexCord> tex_cords;

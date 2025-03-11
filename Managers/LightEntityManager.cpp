@@ -38,6 +38,7 @@ namespace Engine {
         }else {
             entity->name = name;
         }
+        entity->SetScale(glm::vec3(0.25f));
         LightEntities.push_back(entity);
         return entity;
     }

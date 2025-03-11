@@ -2,19 +2,17 @@
 #define PHYSICS_H
 
 
+namespace Engine {
+  class Physics {
 
-class Physics {
+  public:
 
-public:
+    void Simulate(float delta);
 
-  void Simulate(float delta);
-
-  void CheckCollision();
-  void HandleGravity();
-
-
-
-};
+    void CheckCollision();
+    void HandleGravity();
+  };
+}
 
 
 

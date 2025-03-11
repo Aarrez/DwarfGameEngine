@@ -50,8 +50,6 @@ namespace Engine {
                 2 * sizeof(float), (void*)0);
             glEnableVertexAttribArray(2);
         }
-
-        BindLightVAO();
     }
 
     void VirtualObject::BindLightVAO() {

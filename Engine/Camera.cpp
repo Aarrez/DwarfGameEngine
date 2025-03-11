@@ -7,8 +7,8 @@
 using namespace Engine;
 
 Camera::Camera(){
-    view = mat4(1.0f);
-    cameraPos = vec3(0,0,20.0f);
+    view = glm::mat4(1.0f);
+    cameraPos = glm::vec3(0,0,20.0f);
     cameraDirection = glm::vec3(0, 0, -1);
     /*cameraDirection = glm::normalize(cameraPos - cameraTarget);*/
     cameraRight = normalize(cross(up, cameraDirection));
@@ -27,7 +27,7 @@ void Camera::SetCameraPos(const glm::vec3& pos) {
     cameraPos = pos;
 }
 
-vec3 Camera::GetCameraPos() {
+glm::vec3 Camera::GetCameraPos() {
     return cameraPos;
 }
 
@@ -56,7 +56,7 @@ void Camera::RotateCamera(double Xpos, double Ypos, bool first) {
 
     if (pitch > 89.0f) pitch = 89.0f;
     if (pitch < -89.0f) pitch = -89.0f;
-    vec3 tempdir;
+    glm::vec3 tempdir;
     tempdir.x = cos(glm::radians(yaw)) * cos(glm::radians(pitch));
     tempdir.y = sin(glm::radians(pitch));
     tempdir.z = sin(glm::radians(yaw)) * cos(glm::radians(pitch));

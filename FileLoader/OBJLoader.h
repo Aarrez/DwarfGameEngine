@@ -10,6 +10,7 @@
 #include "../Misc/PublicStructs.h"
 #include "../GL/Mesh.h"
 #include "../Misc/PublicEnums.h"
+#include "../Managers/MeshManager.h"
 
 namespace Engine {
     class OBJLoader{
@@ -21,6 +22,8 @@ namespace Engine {
 
     public:
         static void GetBinaryFiles();
+
+        static SerializedFile* FindFile(const std::string& filename);
 
         static std::vector<Vertex> GetVerticesFromData(MeshData& data);
         static std::vector<Vertex> GetNormalsFromData(MeshData& data);

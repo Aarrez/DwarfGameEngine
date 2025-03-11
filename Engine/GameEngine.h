@@ -3,6 +3,7 @@
 #define GLM_ENABLE_EXPERIMENTAL
 #include <glad/glad.h>
 #include <GLFW/glfw3.h>
+
 #include <memory>
 #include <iostream>
 #include <thread>
@@ -11,10 +12,12 @@
 
 #pragma region Dwarf-Includes
 //Singelton Managers
+#include "../Managers/ShadowManager.h"
 #include "../Managers/ThreadManager.h"
 #include "../Managers/MeshManager.h"
 #include "../Managers/EntityManager.h"
 #include "../Managers/TextureManager.h"
+
 
 /*#include "../DwarfGL/Mesh/DwarfMesh.h"*/
 #include "../GL/VirtualObject.h"
@@ -32,11 +35,12 @@
 #include "Input.h"
 #include "IMGUIClass.h"
 
+
+
 #pragma endregion Dwarf-Includes
 
 
 namespace Engine {
-
     class GameEngine {
     public:
         GameEngine();
@@ -47,6 +51,7 @@ namespace Engine {
         void Init();
         void Update();
         void Render();
+        void RenderScene(Shader& shader);
         void Shutdown();
 
         //Variables
@@ -57,16 +62,20 @@ namespace Engine {
 
         std::shared_ptr<Shader> mainShader {};
         std::shared_ptr<Shader> lightShader {};
+        std::shared_ptr<Shader> simpleDepthShader {};
 
         std::unique_ptr<VirtualObject> virtual_object {};
         std::unique_ptr<Camera> camera {};
 
+        Mesh cube_mesh;
+        ShadowMap shadow_map;
+
         double deltaTime;
 
         //Transform variables
-        vec3 model_position {0, 0, 0};
-        vec3 model_rotation {0, 0, 0};
-        vec3 model_scale {.5f, .5f, .5f};
+        glm::vec3 model_position {0, 0, 0};
+        glm::vec3 model_rotation {0, 0, 0};
+        glm::vec3 model_scale {.5f, .5f, .5f};
         float rad = 45.0f;
         int AmountOfMeshes {5};
 

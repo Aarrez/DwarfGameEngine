@@ -77,13 +77,10 @@ namespace Engine {
         if (ImGui::BeginMainMenuBar()) {
             if (ImGui::BeginMenu("File")) {
                 ImGui::Checkbox("DemoWindow", &showDemoWindow);
-
                 ImGui::EndMenu();
             }
             ImGui::EndMainMenuBar();
         }
-
-
     }
 
     void IMGUIClass::EntityWindow(Shader& shader) {
@@ -126,25 +123,24 @@ namespace Engine {
 
             for (auto & e : EntityManager::Get().GetEntityList()) {
                 if (ImGui::CollapsingHeader(e->name.c_str(), ImGuiTreeNodeFlags_None)) {
-                    vec3 translation = e->GetPosition();
+                    glm::vec3 translation = e->GetPosition();
                     std::string posName = "Position##";
                     if (ImGui::DragFloat3(posName.c_str(), value_ptr(translation),
                         0.0f, -10.0f, 10.0f, "%.2f")) {
                         e->SetPostion(translation);
                         }
-                    vec3 scale = e->GetScale();
+                    glm::vec3 scale = e->GetScale();
                     std::string sclName = "Scale##";
-                    if (ImGui::DragFloat3(sclName.c_str(), value_ptr(scale),
+                    if (ImGui::DragFloat3(sclName.c_str(), glm::value_ptr(scale),
                         0.0f, 0.0f, 10.0f, "%.2f")) {
                         e->SetScale(scale);
                         }
-                    vec3 rotation = e->GetRotation();
+                    glm::vec3 rotation = e->GetRotation();
                     std::string sroName = "Rotation##";
-                    if (ImGui::DragFloat3(sroName.c_str(), value_ptr(rotation),
+                    if (ImGui::DragFloat3(sroName.c_str(), glm::value_ptr(rotation),
                         0, -360, 360)) {
                         e->SetRotation(rotation);
                         }
-                    e->SetTransformMatrix();
 
                     if (ImGui::BeginCombo("Shininess", std::to_string(e->shininess).c_str())) {
                         for (int i = 0; i < shininess_list.size(); i++) {
@@ -165,14 +161,14 @@ namespace Engine {
     void IMGUIClass::CameraWindow(Camera& camera) {
         if (showDemoWindow) return;
         if (ImGui::CollapsingHeader("Camera")) {
-            vec3 camPos = camera.GetCameraPos();
-            if (ImGui::DragFloat3("Camera Position", value_ptr(camPos),
+            glm::vec3 camPos = camera.GetCameraPos();
+            if (ImGui::DragFloat3("Camera Position", glm::value_ptr(camPos),
                 0.0f, -100.0f, 100.0f, "%.2f")) {
                 camera.SetCameraPos(camPos);
                 }
 
-            vec3 camRot = camera.GetCameraRotation();
-            if (ImGui::DragFloat3("Camera Rotation", value_ptr(camRot),
+            glm::vec3 camRot = camera.GetCameraRotation();
+            if (ImGui::DragFloat3("Camera Rotation", glm::value_ptr(camRot),
                 0, -1, 1)) {
                 camera.SetCameraRotation(camRot);
                 }
