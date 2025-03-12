@@ -63,6 +63,7 @@ namespace Engine {
         std::shared_ptr<Shader> mainShader {};
         std::shared_ptr<Shader> lightShader {};
         std::shared_ptr<Shader> simpleDepthShader {};
+        std::shared_ptr<Shader> debugDepthMapQuad {};
 
         std::unique_ptr<VirtualObject> virtual_object {};
         std::unique_ptr<Camera> camera {};

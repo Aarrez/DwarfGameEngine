@@ -149,7 +149,7 @@ namespace Engine {
             auto rotQuat = glm::quat(glm::radians(rotation));
             rotateMatrix = glm::toMat4(rotQuat);
         }
-        void SetTransformMatrix() {
+        void CombineTransformMatrix() {
             transform = PositionMatrix * rotateMatrix * scaleMatrix;
         }
         glm::vec3 GetPosition() {

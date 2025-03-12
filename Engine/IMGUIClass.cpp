@@ -356,16 +356,19 @@ namespace Engine {
             for (auto& lightEntity : LightEntityManager::Get().GetAllLights()) {
                 std::string name = lightEntity->name;
                 if (ImGui::CollapsingHeader(name.c_str())) {
+
                     auto pos = lightEntity->GetPosition();
                     if (ImGui::DragFloat3("Position##", value_ptr(pos),
                         0.0f, -10, 10)) {
                         lightEntity->SetPosition(pos);
                         }
+
                     auto scale = lightEntity->GetScale();
                     if (ImGui::DragFloat3("Scale##", value_ptr(scale),
                         0, -10, 10)) {
                         lightEntity->SetScale(scale);
                         }
+
                     combo_type = lightEntity->GetLightType();
                     if (ImGui::BeginCombo("LightType##", ToCString(combo_type))) {
                         bool point_select = combo_type == LightTypes::PointLight;
@@ -386,7 +389,7 @@ namespace Engine {
                         ImGui::EndCombo();
                     }
                     glm::vec3 dir;
-                    float c, l, q, cutOff, outer_cutOff;
+                    float cutOff, outer_cutOff;
                     switch (combo_type) {
                         case LightTypes::PointLight:
 
@@ -399,14 +402,16 @@ namespace Engine {
                             }
 
                             cutOff = lightEntity->GetCutOff();
-                            ImGui::DragFloat("Light Cutoff##", &cutOff,
-                                0.5, 0, 180);
-                            lightEntity->SetCutOff(shader, cutOff);
+                            if (ImGui::DragFloat("Light Cutoff##", &cutOff,
+                                0.5, 0, 180)) {
+                                lightEntity->SetCutOff(shader, cutOff);
+                            };
 
                             outer_cutOff = lightEntity->GetOuterCutOff();
-                            ImGui::DragFloat("Light Outer Cutoff##", &outer_cutOff,
-                                 0.5, 0, 180);
-                            lightEntity->SetOuterCutOff(shader, outer_cutOff);
+                            if (ImGui::DragFloat("Light Outer Cutoff##", &outer_cutOff,
+                                 0.5, 0, 180)) {
+                                lightEntity->SetOuterCutOff(shader, outer_cutOff);
+                            }
                             break;
 
                         case LightTypes::DirectionalLight:

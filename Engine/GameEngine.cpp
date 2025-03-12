@@ -60,6 +60,11 @@ namespace Engine {
         simpleDepthShader = std::make_shared<Shader>(
             "ShaderScripts/Shadow/SimpleDepthShader.vert",
             "ShaderScripts/Shadow/SimpleDepthShader.frag");
+        debugDepthMapQuad = std::make_shared<Shader>(
+        "ShaderScripts/Shadow/debug_quad.vert",
+        "ShaderScripts/Shadow/debug_quad_depth.frag");
+
+
 
         TextureManager::Get()->StbGenerateTextures();
         camera = std::make_unique<Camera>();
@@ -68,7 +73,6 @@ namespace Engine {
         cube_mesh = MeshManager::Instance()->FindMesh(s);
         virtual_object = make_unique<VirtualObject>(mainShader, cube_mesh);
         virtual_object->BindLightVAO();
-
 
         EntityMessage entMsg(MessageType::CreateEntity, "Entity");
         entMsg.file = OBJLoader::FilesSerialized[5];
@@ -86,10 +90,13 @@ namespace Engine {
 
         LightTypes type {LightTypes::PointLight};
         auto ent = LightEntityManager::Get().CreateLight(type);
-        ent->SetPosition({3.0f, 2.0f, 2.0f});
+        ent->SetPosition({3.0f, 5.0f, 2.0f});
         ShadowManager::Get()->GenerateDepthMap(&shadow_map);
 
         TextureManager::Get()->SetTextureUniform(*mainShader);
+        debugDepthMapQuad->UseShaderProgram();
+
+        debugDepthMapQuad->SetInt("depthMap", shadow_map.depthMap-1);
     }
 
     void GameEngine::Update() {
@@ -102,7 +109,6 @@ namespace Engine {
     void GameEngine::Render() {
 
         glfwGetFramebufferSize(window, &Width, &Height);
-
 
         glClearColor(clear_color.x, clear_color.y, clear_color.z, clear_color.w);
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
@@ -117,15 +123,17 @@ namespace Engine {
           glm::vec3(0.0f, 0.0f, 0.0f),
           glm::vec3(0.0f, 1.0f, 0.0f));
         glm::mat4 lightSpaceMatrix = lightView * lightProjection;
-        simpleDepthShader->UseShaderProgram();
-        simpleDepthShader->SetMatrix4("lightSpaceMatrix", lightSpaceMatrix);
+
+
 
         glViewport(0, 0, shadow_map.GetShadowWidth(), shadow_map.GetShadowHeight());
         glBindFramebuffer(GL_FRAMEBUFFER, shadow_map.depthMapFBO);
         glClear(GL_DEPTH_BUFFER_BIT);
-        TextureManager::Get()->DrawTexture(TextureManager::Get()->GetTextures()[0]);
-        TextureManager::Get()->DrawTexture(TextureManager::Get()->GetTextures()[1]);
-        /*RenderScene(*simpleDepthShader);*/
+        simpleDepthShader->UseShaderProgram();
+        simpleDepthShader->SetMatrix4("lightSpaceMatrix", lightSpaceMatrix);
+        glActiveTexture(GL_TEXTURE0);
+        glBindTexture(GL_TEXTURE_2D, TextureManager::Get()->GetTextures()[0].textureID);
+        RenderScene(*simpleDepthShader);
         for (auto & i : LightEntityManager::Get().GetAllLights()) {
             i->SetModelMatrix(*simpleDepthShader);
         }
@@ -143,8 +151,8 @@ namespace Engine {
         view = translate(view, glm::vec3(0.0f, 0.0f, -3.0f));
         TextureManager::Get()->SetTextureUniform(*mainShader);
         LightEntityManager::Get().SetLightsUniforms(*mainShader);
-        mainShader->SetVector3("viewPos", camera->GetCameraPos());
 
+        mainShader->SetVector3("viewPos", camera->GetCameraPos());
 
         mainShader->SetInt("nr_pointlights",
                     LightEntityManager::Get().GetNumberOfLightsOfType(LightTypes::PointLight));
@@ -153,14 +161,26 @@ namespace Engine {
         mainShader->SetInt("nr_spotlights",
             LightEntityManager::Get().GetNumberOfLightsOfType(LightTypes::SpotLight));
 
+
+
+        glActiveTexture(GL_TEXTURE0);
+        glBindTexture(GL_TEXTURE_2D, TextureManager::Get()->GetTextures()[0].textureID);
+        glActiveTexture(GL_TEXTURE1);
+        glBindTexture(GL_TEXTURE_2D, TextureManager::Get()->GetTextures()[1].textureID);
+        ShadowManager::Get()->DrawShadowMap(shadow_map);
         mainShader->SetMatrix4("view", view);
         mainShader->SetMatrix4("projection", projection);
         mainShader->SetMatrix4("lightSpaceMatrix", lightSpaceMatrix);
-
-        TextureManager::Get()->DrawTexture(TextureManager::Get()->GetTextures()[0]);
-        TextureManager::Get()->DrawTexture(TextureManager::Get()->GetTextures()[1]);
-        ShadowManager::Get()->DrawShadowMap(shadow_map);
         RenderScene(*mainShader);
+
+        debugDepthMapQuad->UseShaderProgram();
+        debugDepthMapQuad->SetFloat("near_plane", near_plane);
+        debugDepthMapQuad->SetFloat("far_plane", far_plane);
+
+        ShadowManager::Get()->DrawShadowMap(shadow_map);
+
+        mainShader->UseShaderProgram();
+
 
         IMGUIClass::InitUpdateLoop();
 
@@ -196,7 +216,7 @@ namespace Engine {
 
     void GameEngine::RenderScene(Shader& shader) {
         for (auto & i : EntityManager::Get().GetEntityList()) {
-            i->SetTransformMatrix();
+            i->CombineTransformMatrix();
             shader.SetMatrix4("model", i->transform);
             Mesh m = MeshManager::Instance()->FindMesh(i->meshName);
             virtual_object->SetVertexBufferObjects(m);

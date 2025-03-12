@@ -20,10 +20,13 @@ namespace Engine {
   void ShadowManager::GenerateDepthMap(ShadowMap* shadow_map) {
     glGenFramebuffers(1, &shadow_map->depthMapFBO);
 
+    std::cout << shadow_map->GetShadowHeight() << std::endl;
+    std::cout << shadow_map->GetShadowWidth() << std::endl;
+
     glGenTextures(1, &shadow_map->depthMap);
     glBindTexture(GL_TEXTURE_2D, shadow_map->depthMap);
-    glTexImage2D(GL_TEXTURE_2D, GL_DEPTH_COMPONENT ,
-      0, shadow_map->GetShadowWidth(), shadow_map->GetShadowHeight(), 0,
+    glTexImage2D(GL_TEXTURE_2D,  0, GL_DEPTH_COMPONENT,
+      shadow_map->GetShadowWidth(), shadow_map->GetShadowHeight(), 0,
       GL_DEPTH_COMPONENT, GL_FLOAT, NULL);
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
@@ -39,7 +42,7 @@ namespace Engine {
   }
 
   void ShadowManager::DrawShadowMap(const ShadowMap & shadow_map) {
-    glActiveTexture(GL_TEXTURE0 + 2);
+    glActiveTexture(GL_TEXTURE2);
     glBindTexture(GL_TEXTURE_2D, shadow_map.depthMap);
   }
 

@@ -68,7 +68,7 @@ namespace Engine {
   }
 
   void TextureManager::DrawTexture(const Texture &texture) {
-    glActiveTexture(GL_TEXTURE0 + texture.textureID -1);
+    glActiveTexture(GL_TEXTURE0);
     glBindTexture(GL_TEXTURE_2D, texture.textureID);
   }
 
