@@ -55,7 +55,7 @@ namespace Engine {
         void Shutdown();
 
         void RenderScene(Shader& shader);
-        void TempRenderScene(Shader& shader);
+        /*void TempRenderScene(Shader& shader);*/
         void RenderNormalScene(Shader& shader, glm::mat4& lightSpaceMatrix);
         //Variables
         ImVec4 clear_color = ImVec4(.2, .2, .2, 1.0f);
@@ -76,7 +76,7 @@ namespace Engine {
 
         double deltaTime;
 
-        glm::vec3 lightPos = {-2.0f, 10.0f, -1.0f};
+        glm::vec3 lightPos = {2.0f, 5.0f, -1.0f};
 
         std::vector<std::string> textures;
 

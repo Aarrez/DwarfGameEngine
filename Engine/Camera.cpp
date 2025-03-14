@@ -8,7 +8,7 @@ using namespace Engine;
 
 Camera::Camera(){
     view = glm::mat4(1.0f);
-    cameraPos = glm::vec3(0,5,10.0f);
+    cameraPos = glm::vec3(0,3.0f ,10);
     cameraDirection = glm::vec3(0, 0, -1);
     /*cameraDirection = glm::normalize(cameraPos - cameraTarget);*/
     cameraRight = normalize(cross(up, cameraDirection));

@@ -46,7 +46,7 @@ namespace Engine {
 
     void GameEngine::InitializeGL() {
 
-        /*IMGUIClass::InitImGui(window);*/
+        IMGUIClass::InitImGui(window);
     }
 
     void GameEngine::Init() {
@@ -69,28 +69,32 @@ namespace Engine {
         TextureManager::Get()->StbGenerateTextures();
         camera = std::make_unique<Camera>();
         Input::SetCameraRef(camera.get());
-        /*std::string s = "TheCube.bin";
+        std::string s = "TheCube.bin";
         cube_mesh = MeshManager::Instance()->FindMesh(s);
         virtual_object = make_unique<VirtualObject>(mainShader, cube_mesh);
-        virtual_object->BindLightVAO();*/
+        virtual_object->BindLightVAO();
 
         EntityMessage entMsg(MessageType::CreateEntity, "Entity");
-        /*entMsg.file = OBJLoader::FilesSerialized[1];*/
-        /*entMsg.texture = TextureManager::Get()->GetTextures()[0];*/
-        /*entMsg.spec_texture = TextureManager::Get()->GetTextures()[1];*/
+        entMsg.file = OBJLoader::FilesSerialized[2];
+        entMsg.texture = TextureManager::Get()->GetTextures()[0];
+        entMsg.spec_texture = TextureManager::Get()->GetTextures()[1];
         EntityManager::Get().ProcessMessages(entMsg);
 
         EntityMessage entMsg2(MessageType::CreateEntity, "Entity");
+        entMsg2.file = OBJLoader::FilesSerialized[6];
+        entMsg2.texture = TextureManager::Get()->GetTextures()[0];
+        entMsg2.spec_texture = TextureManager::Get()->GetTextures()[1];
         EntityManager::Get().ProcessMessages(entMsg2);
 
         auto* entlist = &EntityManager::Get().GetEntityList();
+
         for(int i = 0; i < entlist->size(); i++) {
-            entlist->at(i)->Translate({-3 * i, 3, 0});
+            entlist->at(i)->Translate({0, 3 * i, 0});
         }
 
         LightTypes type {LightTypes::PointLight};
         auto ent = LightEntityManager::Get().CreateLight(type);
-        ent->SetPosition({0.0f, 10.0f, 0.0f});
+        ent->SetPosition({0.0f, 3.0f, -1.0f});
         ent->CombineModels();
 
 
@@ -163,11 +167,12 @@ namespace Engine {
             far_plane);*/
         glm::mat4 lightSpaceMatrix;
         glm::mat4 lightView = glm::lookAt(
-          glm::vec3(-2.0f, 4.0f, -1.0),
-          glm::vec3(0.0f),
+          lightPos,
+          glm::vec3(0.0f, 0.0f, 0.0f),
           glm::vec3(0.0f, 1.0f, 0.0f));
         lightSpaceMatrix = lightView * lightProjection;
-
+        simpleDepthShader->UseShaderProgram();
+        simpleDepthShader->SetMatrix4("lightSpaceMatrix", lightSpaceMatrix);
 
         glViewport(0, 0,
             static_cast<int>(shadow_map.ShadowWidth),
@@ -176,28 +181,24 @@ namespace Engine {
             glClear(GL_DEPTH_BUFFER_BIT);
             glActiveTexture(GL_TEXTURE0);
             glBindTexture(GL_TEXTURE_2D, TextureManager::Get()->GetTextures()[0].textureID);
-            simpleDepthShader->UseShaderProgram();
-            simpleDepthShader->SetMatrix4("lightSpaceMatrix", lightSpaceMatrix);
-            TempRenderScene(*simpleDepthShader);
-
+            RenderScene(*simpleDepthShader);
         glBindFramebuffer(GL_FRAMEBUFFER, 0);
 
 
         glViewport(0, 0, Width, Height);
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-        /*RenderNormalScene(*lightShader, lightSpaceMatrix);*/
+        RenderNormalScene(*lightShader, lightSpaceMatrix);
 
         debugDepthMapQuad->UseShaderProgram();
         debugDepthMapQuad->SetFloat("near_plane", near_plane);
         debugDepthMapQuad->SetFloat("far_plane", far_plane);
         glActiveTexture(GL_TEXTURE0);
         glBindTexture(GL_TEXTURE_2D, shadow_map.depthMap);
-        renderQuad();
+        /*renderQuad();*/
         /*
         mainShader->UseShaderProgram();*/
 
-        /*
         IMGUIClass::InitUpdateLoop();
 
         IMGUIClass::MenuBar();
@@ -213,7 +214,6 @@ namespace Engine {
         IMGUIClass::LightsWindow(*lightShader);
 
         IMGUIClass::EndUpdateLoop();
-        */
 
 
         glfwSwapBuffers(window);
@@ -221,7 +221,7 @@ namespace Engine {
     }
 
     void GameEngine::Shutdown() {
-        /*IMGUIClass::EndImGui();*/
+        IMGUIClass::EndImGui();
     }
 
     GameEngine::~GameEngine() {
@@ -245,44 +245,49 @@ namespace Engine {
 
     }
 
-    void GameEngine::TempRenderScene(Shader &shader) {
+    /*void GameEngine::TempRenderScene(Shader &shader) {
         glm::mat4 model = glm::mat4(1.0f);
         shader.SetMatrix4("model", model);
         virtual_object->RenderPlane();
         for (auto& i : EntityManager::Get().GetEntityList()) {
             i->SetScale(glm::vec3(0.5f));
-            i->SetPostion(glm::vec3(0));
+            i->SetPostion(glm::vec3(0, 2, 0));
             i->CombineTransformMatrix();
             shader.SetMatrix4("model", i->transform);
             virtual_object->RenderCube();
         }
-    }
+    }*/
 
     void GameEngine::RenderNormalScene(Shader &shader, glm::mat4& lightSpaceMatrix) {
         shader.UseShaderProgram();
         glm::mat4 projection;
 
 
-        /*projection = glm::ortho(-10.0f, 10.0f,
+        projection = glm::ortho(-10.0f, 10.0f,
           -10.0f, 10.0f,
-        .1f, 100.0f);*/
+        1.0f, 7.5f);
 
         //Perspective
-        projection = glm::perspective(glm::radians(45.0f),
+        /*projection = glm::perspective(glm::radians(45.0f),
             static_cast<float>(Width) / static_cast<float>(Height),
-            0.1f, 100.0f);
+            0.1f, 100.0f);*/
 
         glm::mat4 view {glm::mat4(1.0f)};
-        camera->MoveCamera(Input::GetMoveValue(), 0.1, &view);
+        view = glm::lookAt(
+            lightPos,
+            glm::vec3(0, 0, 0),
+            glm::vec3(0, 1, 0)
+            );
+        /*camera->MoveCamera(Input::GetMoveValue(), 0.1, &view);*/
 
-        /*TextureManager::Get()->SetTextureUniform(shader);
-        LightEntityManager::Get().SetLightsUniforms(shader);*/
+        /*TextureManager::Get()->SetTextureUniform(shader);*/
+        LightEntityManager::Get().SetLightsUniforms(shader);
         shader.SetMatrix4("view", view);
         shader.SetMatrix4("projection", projection);
 
         shader.SetVector3("viewPos", camera->GetCameraPos());
         shader.SetVector3("lightPos",
-            LightEntityManager::Get().GetAllLights()[0]->GetPosition());
+            lightPos);
         shader.SetMatrix4("lightSpaceMatrix", lightSpaceMatrix);
 
         /*shader.SetInt("nr_pointlights",
@@ -294,13 +299,13 @@ namespace Engine {
 
         glActiveTexture(GL_TEXTURE0);
         glBindTexture(GL_TEXTURE_2D, TextureManager::Get()->GetTextures()[0].textureID);
-        glActiveTexture(GL_TEXTURE1);
-        glBindTexture(GL_TEXTURE_2D, shadow_map.depthMap);
         /*glActiveTexture(GL_TEXTURE1);
         glBindTexture(GL_TEXTURE_2D, TextureManager::Get()->GetTextures()[1].textureID);*/
+        glActiveTexture(GL_TEXTURE1);
+        glBindTexture(GL_TEXTURE_2D, shadow_map.depthMap);
 
-        /*ShadowManager::Get()->DrawShadowMap(shadow_map);*/
-        TempRenderScene(shader);
+        RenderScene(shader);
+
 
     }
 

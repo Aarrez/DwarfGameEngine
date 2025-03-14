@@ -89,12 +89,10 @@ namespace Engine {
          ImGui::Begin("EntityWindow");
             ImGui::InputText("Entity Name", &entity_buf);
             if (ImGui::Button("Create Entity")) {
-                Texture tex {};
-                tex.filePath = "Images/container.jpg";
-                tex.colorFormat = GL_RGB;
                 if (entity_buf.empty()) entity_buf = "Entity";
                 EntityMessage msg(MessageType::CreateEntity, entity_buf);
-                msg.texture = tex;
+                msg.texture = TextureManager::Get()->GetTextures()[0];
+                msg.spec_texture = TextureManager::Get()->GetTextures()[1];
                 msg.file = OBJLoader::FilesSerialized[4];
                 EntityManager::Get().ProcessMessages(msg);
             }
