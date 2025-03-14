@@ -3,7 +3,7 @@
 
 using namespace Engine;
 
-std::string DwarfGetShader::ReadShaderFile(const char *pathToFile) {
+std::string GetShader::ReadShaderFile(const char *pathToFile) {
     std::ifstream fileStream(pathToFile, std::ios::in);
     std::string content;
     if(!fileStream.is_open()){
@@ -20,7 +20,7 @@ std::string DwarfGetShader::ReadShaderFile(const char *pathToFile) {
     return content;
 }
 
-GLuint DwarfGetShader::LoadFragmentShader(const char* path) {
+GLuint GetShader::LoadFragmentShader(const char* path) {
 
     int result;
     char Log[512];
@@ -43,7 +43,7 @@ GLuint DwarfGetShader::LoadFragmentShader(const char* path) {
     return FragmentShader;
 }
 
-GLuint DwarfGetShader::LoadVertexShader(const char* path) {
+GLuint GetShader::LoadVertexShader(const char* path) {
 
     int result;
     char Log[512];

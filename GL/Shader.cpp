@@ -10,8 +10,8 @@ namespace Engine {
     int result;
     char Log[512];
 
-    vertexShader = DwarfGetShader::LoadVertexShader(vertexShaderPath);
-    fragmentShader = DwarfGetShader::LoadFragmentShader(fragmentShaderPath);
+    vertexShader = GetShader::LoadVertexShader(vertexShaderPath);
+    fragmentShader = GetShader::LoadFragmentShader(fragmentShaderPath);
 
     shaderProgram = glCreateProgram();
 

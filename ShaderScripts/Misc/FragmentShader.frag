@@ -58,12 +58,10 @@ out vec4 FragColor;
 in vec3 Normal;
 in vec3 FragPos;
 in vec4 FragPosLightSpace;
+in vec2 TexCoord;
 
 uniform vec3 viewPos;
 uniform vec3 lightPos;
-uniform vec3 lightColor;
-
-in vec2 TexCoord;
 
 uniform sampler2D shadowMap;
 

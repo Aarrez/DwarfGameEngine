@@ -287,8 +287,9 @@ namespace Engine {
                         textures_select_id = i;
                     }
                 }
+                ImGui::EndListBox();
             }
-            ImGui::EndListBox();
+
 
             if (ImGui::Button("Change Texture")) {
                 auto ent = EntityManager::Get().GetEntityList()[textureCombo_select_id];
@@ -303,8 +304,9 @@ namespace Engine {
                         spec_texture_select_id = i;
                         }
                 }
+                ImGui::EndListBox();
             }
-            ImGui::EndListBox();
+
 
             if (ImGui::Button("Change Specular Texture")) {
                 auto ent = EntityManager::Get().GetEntityList()[textureCombo_select_id];
@@ -359,13 +361,13 @@ namespace Engine {
 
                     auto pos = lightEntity->GetPosition();
                     if (ImGui::DragFloat3("Position##", value_ptr(pos),
-                        0.0f, -10, 10)) {
+                        1)) {
                         lightEntity->SetPosition(pos);
                         }
 
                     auto scale = lightEntity->GetScale();
                     if (ImGui::DragFloat3("Scale##", value_ptr(scale),
-                        0, -10, 10)) {
+                        1)) {
                         lightEntity->SetScale(scale);
                         }
 

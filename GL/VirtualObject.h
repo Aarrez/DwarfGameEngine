@@ -17,6 +17,9 @@ namespace Engine{
 
         void Draw(GLuint _VAO);
 
+        void RenderCube();
+        void RenderPlane();
+
         ~VirtualObject();
 
         GLuint lightVAO{};
@@ -33,8 +36,6 @@ namespace Engine{
         GLuint VBO{};
         GLuint NVBO{};
         GLuint TVBO{};
-
-
 
         GLuint texture1 {};
 

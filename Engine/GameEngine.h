@@ -9,6 +9,7 @@
 #include <thread>
 #include <mutex>
 #include "glm/gtx/matrix_decompose.hpp"
+#include "glm/gtx/string_cast.hpp"
 
 #pragma region Dwarf-Includes
 //Singelton Managers
@@ -51,9 +52,11 @@ namespace Engine {
         void Init();
         void Update();
         void Render();
-        void RenderScene(Shader& shader);
         void Shutdown();
 
+        void RenderScene(Shader& shader);
+        void TempRenderScene(Shader& shader);
+        void RenderNormalScene(Shader& shader, glm::mat4& lightSpaceMatrix);
         //Variables
         ImVec4 clear_color = ImVec4(.2, .2, .2, 1.0f);
         GLsizei Width = 1200;
@@ -73,12 +76,7 @@ namespace Engine {
 
         double deltaTime;
 
-        //Transform variables
-        glm::vec3 model_position {0, 0, 0};
-        glm::vec3 model_rotation {0, 0, 0};
-        glm::vec3 model_scale {.5f, .5f, .5f};
-        float rad = 45.0f;
-        int AmountOfMeshes {5};
+        glm::vec3 lightPos = {-2.0f, 10.0f, -1.0f};
 
         std::vector<std::string> textures;
 

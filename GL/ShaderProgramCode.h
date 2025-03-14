@@ -10,7 +10,7 @@ namespace fs = std::filesystem;
 
 namespace Engine {
 
-    class DwarfGetShader {
+    class GetShader {
     public:
         static GLuint LoadVertexShader(const char* path);
 

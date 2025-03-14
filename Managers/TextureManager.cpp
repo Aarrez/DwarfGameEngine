@@ -56,6 +56,21 @@ namespace Engine {
         stbi_load(tex.filePath.c_str(),
           &width, &height, &nrChannels, 0);
       if (data) {
+        GLenum format;
+        switch (nrChannels) {
+          case 1:
+            tex.colorFormat = GL_RED;
+            break;
+          case 3:
+            tex.colorFormat = GL_RGB;
+            break;
+          case 4:
+            tex.colorFormat = GL_RGBA;
+            break;
+          default:
+            tex.colorFormat = GL_RGB;
+            break;
+        }
         glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB,
           width, height, 0, tex.colorFormat, GL_UNSIGNED_BYTE, data);
         glGenerateMipmap(GL_TEXTURE_2D);
@@ -75,10 +90,7 @@ namespace Engine {
 
 
   void TextureManager::SetTextureUniform(Shader& shader) {
-    shader.UseShaderProgram();
-    shader.SetInt("material.diffuse", 0);
-    shader.SetInt("material.specular", 1);
-    shader.SetInt("shadowMap", 2);
+
   }
 
   void TextureManager::ChangeMipMapSettings(Texture &texture) {

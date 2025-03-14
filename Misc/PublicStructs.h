@@ -70,18 +70,8 @@ namespace Engine {
         unsigned int depthMapFBO;
         unsigned int depthMap;
 
-    private:
         const unsigned int ShadowWidth = 1024;
         const unsigned int ShadowHeight = 1024;
-
-    public:
-        [[nodiscard]]unsigned int GetShadowWidth() const {
-            return ShadowWidth;
-        }
-
-        [[nodiscard]]unsigned int GetShadowHeight() const {
-            return ShadowHeight;
-        }
 
     };
 

@@ -20,16 +20,14 @@ namespace Engine {
   void ShadowManager::GenerateDepthMap(ShadowMap* shadow_map) {
     glGenFramebuffers(1, &shadow_map->depthMapFBO);
 
-    std::cout << shadow_map->GetShadowHeight() << std::endl;
-    std::cout << shadow_map->GetShadowWidth() << std::endl;
-
     glGenTextures(1, &shadow_map->depthMap);
     glBindTexture(GL_TEXTURE_2D, shadow_map->depthMap);
     glTexImage2D(GL_TEXTURE_2D,  0, GL_DEPTH_COMPONENT,
-      shadow_map->GetShadowWidth(), shadow_map->GetShadowHeight(), 0,
+      shadow_map->ShadowWidth, shadow_map->ShadowHeight, 0,
       GL_DEPTH_COMPONENT, GL_FLOAT, NULL);
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
 
@@ -37,13 +35,12 @@ namespace Engine {
     glFramebufferTexture2D(GL_FRAMEBUFFER,
       GL_DEPTH_ATTACHMENT, GL_TEXTURE_2D, shadow_map->depthMap, 0);
     glDrawBuffer(GL_NONE);
-    glReadBuffer(GL_NONE);
+    /*glReadBuffer(GL_NONE);*/
     glBindFramebuffer(GL_FRAMEBUFFER, 0);
   }
 
   void ShadowManager::DrawShadowMap(const ShadowMap & shadow_map) {
-    glActiveTexture(GL_TEXTURE2);
-    glBindTexture(GL_TEXTURE_2D, shadow_map.depthMap);
+
   }
 
 }
