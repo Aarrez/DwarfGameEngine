@@ -76,11 +76,19 @@ namespace Engine {
 
         double deltaTime;
 
-        glm::vec3 lightPos = {2.0f, 5.0f, -1.0f};
+        glm::vec3 lightPos = {2.0f, 6.0f, 0.0f};
+
 
         std::vector<std::string> textures;
 
     private:
+
+        float light_near_plane = .1f;
+        float light_far_plane = 10.0f;
+
+        float near_plane = 0.1f;
+        float far_plane = 100.0f;
+
         double currentTime;
         double lastTime;
 
