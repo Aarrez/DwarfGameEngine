@@ -32,8 +32,7 @@ namespace Engine {
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
 
     glBindFramebuffer(GL_FRAMEBUFFER, shadow_map->depthMapFBO);
-    glFramebufferTexture2D(GL_FRAMEBUFFER,
-      GL_DEPTH_ATTACHMENT, GL_TEXTURE_2D, shadow_map->depthMap, 0);
+    glFramebufferTexture2D(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_TEXTURE_2D, shadow_map->depthMap, 0);
     glDrawBuffer(GL_NONE);
     glReadBuffer(GL_NONE);
     glBindFramebuffer(GL_FRAMEBUFFER, 0);

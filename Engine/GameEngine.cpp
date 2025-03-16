@@ -12,6 +12,7 @@ namespace Engine {
         glfwWindowHint(GLFW_OPENGL_FORWARD_COMPAT, GL_TRUE);
 #endif
 
+
         DwarfPathChange::ChangeCurrentPathToProjectRoot();
         window = glfwCreateWindow(Width, Height, "DwarfEngine", nullptr, nullptr);
         if (window == nullptr) {
@@ -27,8 +28,8 @@ namespace Engine {
             glfwTerminate();
             return;
         }
-
         glEnable(GL_DEPTH_TEST);
+
 
         glfwSetFramebufferSizeCallback(window, framebuffer_size_callback);
     }
@@ -89,7 +90,9 @@ namespace Engine {
         auto* entlist = &EntityManager::Get().GetEntityList();
 
         for(int i = 0; i < entlist->size(); i++) {
-            entlist->at(i)->Translate({0, 3 * i, 0});
+            entlist->at(i)->Translate({0, -2.5 * i, 0});
+            if (i == 1)
+                entlist->at(i)->SetScale({10, .2, 10});
         }
 
         LightTypes type {LightTypes::PointLight};
@@ -151,14 +154,12 @@ namespace Engine {
         glClearColor(clear_color.x, clear_color.y, clear_color.z, clear_color.w);
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-        float near_plane = 1.0f;
-        float far_plane = 7.5f;
 
         glm::mat4 lightProjection;
         //Orthographic
         lightProjection = glm::ortho(-10.0f, 10.0f,
           -10.0f, 10.0f,
-            near_plane, far_plane);
+            light_near_plane, light_far_plane);
         //Perspective
         /*lightProjection = glm::perspective(glm::radians(45.0f),
             static_cast<GLfloat>(shadow_map.ShadowWidth)/
@@ -179,23 +180,25 @@ namespace Engine {
             static_cast<int>(shadow_map.ShadowHeight));
         glBindFramebuffer(GL_FRAMEBUFFER, shadow_map.depthMapFBO);
             glClear(GL_DEPTH_BUFFER_BIT);
+
             glActiveTexture(GL_TEXTURE0);
-            glBindTexture(GL_TEXTURE_2D, TextureManager::Get()->GetTextures()[0].textureID);
+            glBindTexture(GL_TEXTURE_2D,
+                TextureManager::Get()->GetTextures()[0].textureID);
+
             RenderScene(*simpleDepthShader);
         glBindFramebuffer(GL_FRAMEBUFFER, 0);
-
 
         glViewport(0, 0, Width, Height);
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-        RenderNormalScene(*lightShader, lightSpaceMatrix);
+        /*RenderNormalScene(*lightShader, lightSpaceMatrix);*/
 
         debugDepthMapQuad->UseShaderProgram();
-        debugDepthMapQuad->SetFloat("near_plane", near_plane);
-        debugDepthMapQuad->SetFloat("far_plane", far_plane);
+        debugDepthMapQuad->SetFloat("near_plane", light_near_plane);
+        debugDepthMapQuad->SetFloat("far_plane", light_far_plane);
         glActiveTexture(GL_TEXTURE0);
         glBindTexture(GL_TEXTURE_2D, shadow_map.depthMap);
-        /*renderQuad();*/
+        renderQuad();
         /*
         mainShader->UseShaderProgram();*/
 
@@ -238,9 +241,10 @@ namespace Engine {
             i->CombineTransformMatrix();
             shader.SetMatrix4("model", i->transform);
             Mesh m = MeshManager::Instance()->FindMesh(i->meshName);
-            virtual_object->SetVertexBufferObjects(m);
+            /*virtual_object->SetVertexBufferObjects(m);
 
-            virtual_object->Draw(virtual_object->VAO);
+            virtual_object->Draw(virtual_object->VAO);*/
+            virtual_object->RenderCube();
         }
 
     }
@@ -265,7 +269,7 @@ namespace Engine {
 
         projection = glm::ortho(-10.0f, 10.0f,
           -10.0f, 10.0f,
-        1.0f, 7.5f);
+        light_near_plane, light_far_plane);
 
         //Perspective
         /*projection = glm::perspective(glm::radians(45.0f),
@@ -305,8 +309,6 @@ namespace Engine {
         glBindTexture(GL_TEXTURE_2D, shadow_map.depthMap);
 
         RenderScene(shader);
-
-
     }
 
 
