@@ -70,7 +70,7 @@ namespace Engine {
             "ShaderScripts/Light/LightingVertexShader.vert",
             "ShaderScripts/Light/LightingFragmentShader.frag");*/
 
-        /*TextureManager::Get()->StbGenerateTextures();*/
+        TextureManager::Get()->StbGenerateTextures();
 
         glGenFramebuffers(1, &depthMapFBO);
 
@@ -96,13 +96,13 @@ namespace Engine {
         virtual_object->BindLightVAO();
 
         EntityMessage entMsg(MessageType::CreateEntity, "Entity");
-        entMsg.file = OBJLoader::FilesSerialized[2];
+        entMsg.file = OBJLoader::FilesSerialized[6];
         entMsg.texture = TextureManager::Get()->GetTextures()[0];
         entMsg.spec_texture = TextureManager::Get()->GetTextures()[1];
         EntityManager::Get().ProcessMessages(entMsg);
 
         EntityMessage entMsg2(MessageType::CreateEntity, "Entity");
-        entMsg2.file = OBJLoader::FilesSerialized[6];
+        entMsg2.file = OBJLoader::FilesSerialized[2];
         entMsg2.texture = TextureManager::Get()->GetTextures()[0];
         entMsg2.spec_texture = TextureManager::Get()->GetTextures()[1];
         EntityManager::Get().ProcessMessages(entMsg2);
@@ -111,8 +111,6 @@ namespace Engine {
 
         for(int i = 0; i < entlist->size(); i++) {
             entlist->at(i)->Translate({0, -2.5 * i, 0});
-            if (i == 1)
-                entlist->at(i)->SetScale({10, .2, 10});
         }
 
         LightTypes type {LightTypes::PointLight};
@@ -124,6 +122,7 @@ namespace Engine {
         lightShader->UseShaderProgram();
         lightShader->SetInt("diffuseTexture", 0);
         lightShader->SetInt("shadowMap", 1);
+        lightShader->SetInt("specular", 2);
 
 
         debugDepthMapQuad->UseShaderProgram();
@@ -180,11 +179,12 @@ namespace Engine {
 
         RenderNormalScene(*lightShader, lightSpaceMatrix);
 
+        /*
         debugDepthMapQuad->UseShaderProgram();
         debugDepthMapQuad->SetFloat("near_plane", light_near_plane);
         debugDepthMapQuad->SetFloat("far_plane", light_far_plane);
         glActiveTexture(GL_TEXTURE0);
-        glBindTexture(GL_TEXTURE_2D, depthMap);
+        glBindTexture(GL_TEXTURE_2D, depthMap);*/
         /*renderQuad();*/
 
 
@@ -281,10 +281,11 @@ namespace Engine {
 
         glActiveTexture(GL_TEXTURE0);
         glBindTexture(GL_TEXTURE_2D, TextureManager::Get()->GetTextures()[0].textureID);
-        /*glActiveTexture(GL_TEXTURE1);
-        glBindTexture(GL_TEXTURE_2D, TextureManager::Get()->GetTextures()[1].textureID);*/
         glActiveTexture(GL_TEXTURE1);
         glBindTexture(GL_TEXTURE_2D, depthMap);
+        glActiveTexture(GL_TEXTURE2);
+        glBindTexture(GL_TEXTURE_2D, TextureManager::Get()->GetTextures()[1].textureID);
+
 
         RenderScene(shader);
     }
