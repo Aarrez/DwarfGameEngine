@@ -19,7 +19,7 @@ namespace Engine{
 
         void RenderCube();
         void RenderPlane();
-
+        void RenderQuad();
         ~VirtualObject();
 
         GLuint lightVAO{};

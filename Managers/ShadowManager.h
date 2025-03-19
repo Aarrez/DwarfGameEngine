@@ -14,12 +14,16 @@ namespace Engine {
 
     static ShadowManager* instance;
 
+    /*ShadowMap shadow_map;*/
+
   public:
 
     static void Allocate();
     static ShadowManager* Get();
 
-    void GenerateDepthMap(ShadowMap* shadow_map);
+    /*ShadowMap& GetShadowMap();*/
+
+    void GenerateShadowMap();
 
     void DrawShadowMap(const ShadowMap& shadow_map);
   };

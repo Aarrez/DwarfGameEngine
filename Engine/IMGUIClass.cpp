@@ -151,7 +151,7 @@ namespace Engine {
                         ImGui::EndCombo();
                     }
                 }
-                shader.SetFloat("material.shininess", e->shininess);
+                shader.SetFloat("shininess", e->shininess);
             }
             ImGui::End();
     }

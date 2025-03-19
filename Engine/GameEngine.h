@@ -3,13 +3,8 @@
 #define GLM_ENABLE_EXPERIMENTAL
 #include <glad/glad.h>
 #include <GLFW/glfw3.h>
-
 #include <memory>
 #include <iostream>
-#include <thread>
-#include <mutex>
-#include "glm/gtx/matrix_decompose.hpp"
-#include "glm/gtx/string_cast.hpp"
 
 #pragma region Dwarf-Includes
 //Singelton Managers
@@ -19,16 +14,12 @@
 #include "../Managers/EntityManager.h"
 #include "../Managers/TextureManager.h"
 
-
-/*#include "../DwarfGL/Mesh/DwarfMesh.h"*/
 #include "../GL/VirtualObject.h"
 #include "../GL/Shader.h"
-#include "../GL/Mesh.h"
 
 //DwarfMisc
 #include "../Misc/Path.h"
 #include "../Misc/Memory.h"
-/*#include "../DwarfMisc/Memory.h"*/
 
 //OBJLoaders
 #include "../FileLoader/OBJLoader.h"
@@ -58,12 +49,11 @@ namespace Engine {
         /*void TempRenderScene(Shader& shader);*/
         void RenderNormalScene(Shader& shader, glm::mat4& lightSpaceMatrix);
         //Variables
-        ImVec4 clear_color = ImVec4(.2, .2, .2, 1.0f);
+        ImVec4 clear_color = ImVec4(.1, .1, .1, 1.0f);
         GLsizei Width = 1200;
         GLsizei Height = 920;
         GLFWwindow* window {};
 
-        std::shared_ptr<Shader> mainShader {};
         std::shared_ptr<Shader> lightShader {};
         std::shared_ptr<Shader> simpleDepthShader {};
         std::shared_ptr<Shader> debugDepthMapQuad {};
@@ -72,12 +62,10 @@ namespace Engine {
         std::unique_ptr<Camera> camera {};
 
         Mesh cube_mesh;
-        ShadowMap shadow_map;
 
         double deltaTime;
 
-        glm::vec3 lightPos = {2.0f, 6.0f, 0.0f};
-
+        glm::vec3 lightPos = {-2.0f, 3.0f, 1.0f};
 
         std::vector<std::string> textures;
 

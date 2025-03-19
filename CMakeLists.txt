@@ -6,7 +6,7 @@ set(CMAKE_CXX_STANDARD 23)
 
 add_executable(GameEngine
 
-        Stb/stb_image.cpp
+        ../LearnOpenGLTestProject/stb_image.cpp
 
         #DwarfGL
         GL/ShaderProgramCode.h

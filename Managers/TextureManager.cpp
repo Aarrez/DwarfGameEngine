@@ -29,7 +29,6 @@ namespace Engine {
   void TextureManager::FillTextureList() {
     for (auto& path : imagePathList) {
       Texture tempTexture{};
-      tempTexture.colorFormat = GL_RGBA;
       tempTexture.filePath = "Images/" + path;
       tempTexture.fileName = path;
       tempTexture.textureID = 0;
@@ -109,6 +108,5 @@ namespace Engine {
 
       glGenerateMipmap(GL_TEXTURE_2D);
     }
-
   }
 }

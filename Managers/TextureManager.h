@@ -9,8 +9,6 @@
 #include <stb_image.h>
 #include "../Misc/Path.h"
 
-
-
 namespace Engine {
   class Shader;
 
@@ -30,10 +28,5 @@ namespace Engine {
     void SetTextureUniform(Shader& shader);
     void ChangeMipMapSettings(Texture& texture);
   };
-
 }
-
-
-
-
 #endif //TEXTUREMANAGER_H
