@@ -22,11 +22,16 @@ namespace Engine {
         auto msg = message.mMessage;
         switch (message.mType) {
             case MessageType::LoadMesh:
+#ifdef WIN32
                 Memory::PrintMemory();
+#endif
+
                 ThreadManager::Instance()->QueueTask(&MeshManager::LoadMesh, msg, *instance);
                 break;
             case MessageType::AddMesh:
+#ifdef WIN32
                 Memory::PrintMemory();
+#endif
                 ThreadManager::Instance()->QueueTask(&MeshManager::AddMesh, msg, *instance);
                 break;
             default:
@@ -44,7 +49,9 @@ namespace Engine {
             for (auto& mesh : meshes)
                 if (fileName == mesh.name)
                     return;
+#ifdef WIN32
         Memory::PrintMemory();
+#endif
 
         for (auto& f : OBJLoader::FilesSerialized) {
             if (f.fileName == fileName) {
@@ -67,7 +74,9 @@ namespace Engine {
         auto file = OBJLoader::OBJDataSerializer(mesh, filePath);
         mesh.name = file.fileName;
         meshes.push_back(mesh);
+#ifdef WIN32
         Memory::PrintMemory();
+#endif
     }
 
     std::vector<Mesh> &MeshManager::GetMeshes() {
