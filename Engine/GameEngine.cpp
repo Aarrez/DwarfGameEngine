@@ -79,8 +79,10 @@ namespace Engine {
         glTexImage2D(GL_TEXTURE_2D, 0, GL_DEPTH_COMPONENT, ShadowWidth, ShadowHeight, 0, GL_DEPTH_COMPONENT, GL_FLOAT, NULL);
         glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
         glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
-        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
-        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
+        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_BORDER);
+        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_BORDER);
+        float borderColor[] = {1.0f, 1.0f, 1.0f, 1.0f};
+        glTexParameterfv(GL_TEXTURE_2D, GL_TEXTURE_BORDER_COLOR, borderColor);
         // attach depth texture as FBO's depth buffer
         glBindFramebuffer(GL_FRAMEBUFFER, depthMapFBO);
         glFramebufferTexture2D(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_TEXTURE_2D, depthMap, 0);
@@ -112,6 +114,8 @@ namespace Engine {
         for(int i = 0; i < entlist->size(); i++) {
             entlist->at(i)->Translate({0, -2.5 * i, 0});
         }
+        entlist->at(0)->SetRotation({0, 60, 30});
+        entlist->at(0)->SetScale(glm::vec3(.5));
 
         LightTypes type {LightTypes::PointLight};
         auto ent = LightEntityManager::Get().CreateLight(type);
@@ -156,13 +160,15 @@ namespace Engine {
             far_plane);*/
 
         lightView = glm::lookAt(
-          lightPos,
+          LightEntityManager::Get().GetAllLights()[0]->GetPosition(),
           glm::vec3(0.0f, 0.0f, 0.0f),
           glm::vec3(0.0f, 1.0f, 0.0f));
         lightSpaceMatrix = lightProjection *lightView;
         simpleDepthShader->UseShaderProgram();
         simpleDepthShader->SetMatrix4("lightSpaceMatrix", lightSpaceMatrix);
 
+
+        glCullFace(GL_FRONT);
         glViewport(0, 0,
             ShadowWidth,
             ShadowHeight);
@@ -173,7 +179,7 @@ namespace Engine {
                 TextureManager::Get()->GetTextures()[0].textureID);
             RenderScene(*simpleDepthShader);
         glBindFramebuffer(GL_FRAMEBUFFER, 0);
-
+        glCullFace(GL_BACK);
         glViewport(0, 0, Width, Height);
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 

@@ -134,7 +134,7 @@ namespace Engine {
         void SetScale(glm::vec3 scale) {
             scaleMatrix = glm::scale(glm::mat4(1.0f), scale);
         }
-        void SetRotation(glm::vec3& rotation) {
+        void SetRotation(const glm::vec3& rotation) {
             rotRadians = rotation;
             auto rotQuat = glm::quat(glm::radians(rotation));
             rotateMatrix = glm::toMat4(rotQuat);
