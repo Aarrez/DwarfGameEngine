@@ -146,12 +146,69 @@ namespace Engine {
                             if (ImGui::Selectable(std::to_string(shininess_list[i]).c_str(), selected)) {
                                 light_Select_Id = i;
                                 e->shininess = shininess_list[i];
+                                shader.SetFloat("shininess", e->shininess);
                             }
                         }
                         ImGui::EndCombo();
                     }
+
+                    if (ImGui::Checkbox("Simulate?##", &e->simulate)) {
+                        if (e->simulate) {
+                            Physics::Get()->AddEntityToSimulate(e);
+                        }
+                        if (!e->simulate) {
+                            Physics::Get()->RemoveEntityToSimulate(e);
+                        }
+                    }
+                    ImGui::Checkbox("Has Gravity##", &e->collider.hasGravity);
+                    ImGui::DragFloat("GravityModifier##",
+                        &Physics::Get()->gravityModifier, .1);
+
+                    if (ImGui::BeginCombo("CollisionType##",
+                        ToCString(e->collision_type))) {
+                        CollisionTypes type = CollisionTypes::NoCollision;
+                        bool selected = type == e->collision_type;
+                        if (ImGui::Selectable(ToCString(type), selected)) {
+                            e->collision_type = type;
+                        }
+                        type = CollisionTypes::SphereCollision;
+                        selected = type == e->collision_type;
+                        if (ImGui::Selectable(ToCString(type), selected)) {
+                            e->collision_type = type;
+                        }
+                        type = CollisionTypes::BoxCollision;
+                        selected = type == e->collision_type;
+                        if (ImGui::Selectable(ToCString(type), selected)) {
+                            e->collision_type = type;
+                        }
+                        type = CollisionTypes::RaySphereCollision;
+                        selected = type == e->collision_type;
+                        if (ImGui::Selectable(ToCString(type), selected)) {
+                            e->collision_type = type;
+                        }
+                        type = CollisionTypes::RaySphereCollision;
+                        selected = type == e->collision_type;
+                        if (ImGui::Selectable(ToCString(type), selected)) {
+                            e->collision_type = type;
+                        }
+
+                        ImGui::EndCombo();
+                    }
+
+                    switch (e->collision_type) {
+                        case CollisionTypes::SphereCollision:
+                            ImGui::DragFloat("Sphere radius##",
+                                &e->collider.radius, .1f);
+                            break;
+                        case CollisionTypes::BoxCollision:
+                            ImGui::DragFloat3("Box Extents##",
+                                glm::value_ptr(e->collider.extent), .1);
+                            break;
+                        default: break;
+                    }
                 }
                 shader.SetFloat("shininess", e->shininess);
+
             }
             ImGui::End();
     }

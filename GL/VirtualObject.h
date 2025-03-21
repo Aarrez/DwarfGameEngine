@@ -28,18 +28,12 @@ namespace Engine{
 
         size_t vertices_size;
 
-        size_t texture_count = 0;
-
         std::shared_ptr<Shader> shader;
 
         //Used for models and other stuff that is viable
         GLuint VBO{};
         GLuint NVBO{};
         GLuint TVBO{};
-
-        GLuint texture1 {};
-
-        size_t points_count{};
 
     };
 

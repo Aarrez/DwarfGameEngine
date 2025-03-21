@@ -43,6 +43,7 @@ namespace Engine {
         TextureManager::Allocate();
         ThreadManager::Allocate();
         EntityManager::Allocate();
+        Physics::Allocate();
         /*ShadowManager::Allocate();*/
     }
 
@@ -109,13 +110,28 @@ namespace Engine {
         entMsg2.spec_texture = TextureManager::Get()->GetTextures()[1];
         EntityManager::Get().ProcessMessages(entMsg2);
 
+        EntityMessage entMsg3(MessageType::CreateEntity, "Entity");
+        entMsg.file = OBJLoader::FilesSerialized[6];
+        entMsg.texture = TextureManager::Get()->GetTextures()[0];
+        entMsg.spec_texture = TextureManager::Get()->GetTextures()[1];
+        EntityManager::Get().ProcessMessages(entMsg);
+
+
+
         auto* entlist = &EntityManager::Get().GetEntityList();
 
         for(int i = 0; i < entlist->size(); i++) {
             entlist->at(i)->Translate({0, -2.5 * i, 0});
         }
-        entlist->at(0)->SetRotation({0, 60, 30});
-        entlist->at(0)->SetScale(glm::vec3(.5));
+        /*entlist->at(0)->SetRotation({0, 60, 30});
+        entlist->at(0)->SetScale(glm::vec3(.5));*/
+        entlist->at(2)->SetPostion(glm::vec3(0, 4, 0));
+        entlist->at(0)->simulate = true;
+        entlist->at(2)->simulate = true;
+        
+        Physics::Get()->AddEntityToSimulate(entlist->at(0));
+        Physics::Get()->AddEntityToSimulate(entlist->at(2));
+
 
         LightTypes type {LightTypes::PointLight};
         auto ent = LightEntityManager::Get().CreateLight(type);
@@ -131,9 +147,17 @@ namespace Engine {
 
         debugDepthMapQuad->UseShaderProgram();
         debugDepthMapQuad->SetInt("depthMap", 0);
+
+        lastTime = glfwGetTime();
     }
 
     void GameEngine::Update() {
+        nowTime = glfwGetTime();
+        deltaTime = (nowTime - lastTime);
+        lastTime = nowTime;
+
+        auto phy = Physics::Get();
+        phy->Simulate(deltaTime);
 
         glfwPollEvents();
     }
@@ -240,19 +264,6 @@ namespace Engine {
             /*virtual_object->RenderCube();*/
         }
     }
-
-    /*void GameEngine::TempRenderScene(Shader &shader) {
-        glm::mat4 model = glm::mat4(1.0f);
-        shader.SetMatrix4("model", model);
-        virtual_object->RenderPlane();
-        for (auto& i : EntityManager::Get().GetEntityList()) {
-            i->SetScale(glm::vec3(0.5f));
-            i->SetPostion(glm::vec3(0, 2, 0));
-            i->CombineTransformMatrix();
-            shader.SetMatrix4("model", i->transform);
-            virtual_object->RenderCube();
-        }
-    }*/
 
     void GameEngine::RenderNormalScene(Shader &shader, glm::mat4& lightSpaceMatrix) {
         shader.UseShaderProgram();

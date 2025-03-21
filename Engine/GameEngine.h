@@ -21,11 +21,14 @@
 #include "../Misc/Path.h"
 #include "../Misc/Memory.h"
 
+#include "../Physics/Physics.h"
+
 //OBJLoaders
 #include "../FileLoader/OBJLoader.h"
 #include "Camera.h"
 #include "Input.h"
 #include "IMGUIClass.h"
+
 
 
 
@@ -77,8 +80,8 @@ namespace Engine {
         float near_plane = 0.1f;
         float far_plane = 100.0f;
 
-        double currentTime;
-        double lastTime;
+        double lastTime, nowTime;
+        double limitFPS = 1.0/60.0;
 
         static void framebuffer_size_callback(GLFWwindow* window, int width, int height);
 

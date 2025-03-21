@@ -12,6 +12,7 @@
 #include "../Managers/TextureManager.h"
 
 #include "Camera.h"
+#include "../Physics/Physics.h"
 #include "../Misc/PublicStructs.h"
 #include "../Message/EntityMessage.h"
 #include "../FileLoader/OBJLoader.h"

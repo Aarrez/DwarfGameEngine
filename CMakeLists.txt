@@ -69,6 +69,7 @@ add_executable(GameEngine
         Physics/Physics.h
         Managers/ShadowManager.cpp
         Managers/ShadowManager.h
+        Physics/PhysicsVariables.h
 )
 
 find_package(imgui CONFIG REQUIRED)

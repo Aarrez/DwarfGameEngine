@@ -10,6 +10,7 @@
 #include <glm/gtc/quaternion.hpp>
 #include <glm/gtx/quaternion.hpp>
 #include "PublicEnums.h"
+#include "../Physics/PhysicsVariables.h"
 
 
 namespace Engine {
@@ -108,7 +109,10 @@ namespace Engine {
         }
     };
 
-    struct Entity {
+
+
+
+    struct Entity{
         int id;
         std::string name;
         std::string meshName;
@@ -116,8 +120,9 @@ namespace Engine {
         Texture spec_texture;
         float shininess;
         glm::mat4 transform;
-        bool selected;
-
+        CollisionTypes collision_type;
+        Collider collider;
+        bool simulate;
     private:
         glm::mat4 PositionMatrix {glm::mat4(1.0f)};
         glm::mat4 scaleMatrix {glm::mat4(1.0f)};

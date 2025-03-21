@@ -41,6 +41,26 @@ namespace Engine {
             default: return "Unknown";
         }
     }
+
+    enum class CollisionTypes {
+        NoCollision,
+        BoxCollision,
+        SphereCollision,
+        RayBoxCollision,
+        RaySphereCollision
+    };
+
+    inline const char* ToCString(const CollisionTypes& type) {
+        switch (type) {
+            case CollisionTypes::NoCollision: return "NoCollision";
+            case CollisionTypes::SphereCollision: return "SphereCollision";
+            case CollisionTypes::BoxCollision: return "BoxCollision";
+            case CollisionTypes::RaySphereCollision: return "RaySphereCollision";
+            case CollisionTypes::RayBoxCollision: return "RayBoxCollision";
+            default: return "Unknown";
+
+        }
+    }
 }
 
 #endif //PUBLICENUMS_H
