@@ -51,9 +51,12 @@ namespace Engine{
         entity->name = nameWithIndex;
         entity->transform = glm::mat4(1.0f);
         entity->collision_type = CollisionTypes::NoCollision;
-        entity->collider.velocity = glm::vec3(0);
+        entity->collider.velocity = glm::vec3(0.0f);
         entity->collider.simulate = false;
         entity->collider.hasGravity = false;
+        entity->collider.extent = glm::vec3(1.0f);
+        entity->collider.radius = 1.0f;
+        entity->collider.direction = glm::vec3(1, 0, 0);
         entity->meshName = file.fileName;
         entity->shininess = 2.f;
         entities.push_back(entity);

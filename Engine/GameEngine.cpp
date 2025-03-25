@@ -98,38 +98,45 @@ namespace Engine {
         virtual_object = make_unique<VirtualObject>(lightShader, cube_mesh);
         virtual_object->BindLightVAO();
 
-        EntityMessage entMsg(MessageType::CreateEntity, "Entity");
-        entMsg.file = OBJLoader::FilesSerialized[6];
-        entMsg.texture = TextureManager::Get()->GetTextures()[0];
-        entMsg.spec_texture = TextureManager::Get()->GetTextures()[1];
-        EntityManager::Get().ProcessMessages(entMsg);
-
-        EntityMessage entMsg2(MessageType::CreateEntity, "Entity");
-        entMsg2.file = OBJLoader::FilesSerialized[2];
-        entMsg2.texture = TextureManager::Get()->GetTextures()[0];
-        entMsg2.spec_texture = TextureManager::Get()->GetTextures()[1];
-        EntityManager::Get().ProcessMessages(entMsg2);
-
-        EntityMessage entMsg3(MessageType::CreateEntity, "Entity");
-        entMsg.file = OBJLoader::FilesSerialized[6];
-        entMsg.texture = TextureManager::Get()->GetTextures()[0];
-        entMsg.spec_texture = TextureManager::Get()->GetTextures()[1];
-        EntityManager::Get().ProcessMessages(entMsg);
+        {
+            EntityMessage entMsg(MessageType::CreateEntity, "Entity");
+            entMsg.file = OBJLoader::FilesSerialized[2];
+            entMsg.texture = TextureManager::Get()->GetTextures()[0];
+            entMsg.spec_texture = TextureManager::Get()->GetTextures()[1];
+            EntityManager::Get().ProcessMessages(entMsg);
+        }
+        {
+            EntityMessage entMsg(MessageType::CreateEntity, "Entity");
+            entMsg.file = OBJLoader::FilesSerialized[6];
+            entMsg.texture = TextureManager::Get()->GetTextures()[0];
+            entMsg.spec_texture = TextureManager::Get()->GetTextures()[1];
+            EntityManager::Get().ProcessMessages(entMsg);
+        }
+        {
+            EntityMessage entMsg(MessageType::CreateEntity, "Entity");
+            entMsg.file = OBJLoader::FilesSerialized[6];
+            entMsg.texture = TextureManager::Get()->GetTextures()[0];
+            entMsg.spec_texture = TextureManager::Get()->GetTextures()[1];
+            EntityManager::Get().ProcessMessages(entMsg);
+        }
 
 
 
         auto* entlist = &EntityManager::Get().GetEntityList();
 
         for(int i = 0; i < entlist->size(); i++) {
-            entlist->at(i)->Translate({0, -2.5 * i, 0});
+            entlist->at(i)->Translate({0, 4 * i, 0});
         }
         /*entlist->at(0)->SetRotation({0, 60, 30});
         entlist->at(0)->SetScale(glm::vec3(.5));*/
-        entlist->at(2)->SetPostion(glm::vec3(0, 4, 0));
-        entlist->at(0)->simulate = true;
+        /*entlist->at(2)->SetPostion(glm::vec3(0, 4, 0));*/
+        entlist->at(1)->simulate = true;
+        entlist->at(1)->collision_type = CollisionTypes::RayCollision;
         entlist->at(2)->simulate = true;
+        entlist->at(2)->collision_type = CollisionTypes::SphereCollision;
+
         
-        Physics::Get()->AddEntityToSimulate(entlist->at(0));
+        Physics::Get()->AddEntityToSimulate(entlist->at(1));
         Physics::Get()->AddEntityToSimulate(entlist->at(2));
 
 

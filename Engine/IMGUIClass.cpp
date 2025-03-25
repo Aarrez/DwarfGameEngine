@@ -181,17 +181,16 @@ namespace Engine {
                         if (ImGui::Selectable(ToCString(type), selected)) {
                             e->collision_type = type;
                         }
-                        type = CollisionTypes::RaySphereCollision;
+                        type = CollisionTypes::RayCollision;
                         selected = type == e->collision_type;
                         if (ImGui::Selectable(ToCString(type), selected)) {
                             e->collision_type = type;
                         }
-                        type = CollisionTypes::RaySphereCollision;
+                        type = CollisionTypes::RayABBBCollision;
                         selected = type == e->collision_type;
                         if (ImGui::Selectable(ToCString(type), selected)) {
                             e->collision_type = type;
                         }
-
                         ImGui::EndCombo();
                     }
 
@@ -204,6 +203,9 @@ namespace Engine {
                             ImGui::DragFloat3("Box Extents##",
                                 glm::value_ptr(e->collider.extent), .1);
                             break;
+                        case CollisionTypes::RayCollision:
+                            ImGui::DragFloat3("RayDirection##",
+                                glm::value_ptr(e->collider.direction), .1f, -1, 1);
                         default: break;
                     }
                 }

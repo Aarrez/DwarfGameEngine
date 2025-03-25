@@ -1,6 +1,7 @@
 #ifndef PHYSICS_H
 #define PHYSICS_H
 #include "../Managers/EntityManager.h"
+#include "glm/gtx/norm.hpp"
 
 
 namespace Engine {
@@ -28,8 +29,15 @@ namespace Engine {
 
     void CheckCollision();
     void HandleGravity(Entity* entity);
-    void SphereIntersection(Entity* ent1, Entity* ent2);
-    void BoxIntersection(Entity* ent1, Entity* ent2);
+
+
+    bool IntersectionSelect(Entity* ent1, Entity* ent2);
+    bool SphereIntersection(Entity* ent1, Entity* ent2);
+    bool BoxIntersection(Entity* ent1, Entity* ent2);
+    bool BoxSphereIntersection(Entity* BoxEnt, Entity* SphereEnt);
+    bool RayIntersect(Entity* ent1, Entity* ent2, RayHit* hit);
+    bool RayBoxIntersection(Entity* RayEnt, Entity* BoxEnt, RayHit* hit);
+    bool RaySphereIntersection(Entity* RayEnt, Entity* SphereEnt, RayHit* hit);
   };
 }
 
